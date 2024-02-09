@@ -1,0 +1,38 @@
+.bottom-bar {
+  height: 80px;
+  width: 100%;
+  background-color: #00121f;
+
+  &_control-tools{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    height: 80px;
+
+    button {
+      color: white;
+      padding: 5px;
+      border: none;
+      outline: none;
+      margin: 0 10px;
+      font-size: 14px;
+      cursor: pointer;
+      background: gold;
+      border-radius: 5px;
+      transition: 0.3s ease-in-out;
+
+      &:hover{
+        background: rgba(255, 215, 0, 0.66);
+      }
+
+      &:disabled{
+        background: rgba(255, 215, 0, 0.35);
+      }
+
+      &.active{
+        background: rgba(255, 215, 0, 0.35);
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+.spot {
+  &_tabs {
+    display: flex;
+  }
+
+  &_market{
+    & > .input-range{
+      margin-bottom: 15px;
+    }
+  }
+}

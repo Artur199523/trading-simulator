@@ -1,0 +1,37 @@
+.input {
+  width: 100%;
+  color: white;
+  height: 35px;
+  outline: none;
+  padding: 0 15px;
+  font-size: 16px;
+  margin-bottom:15px;
+  border-radius: 10px;
+  border: 1px solid gray;
+  transition: 0.2s ease-in-out;
+  background: rgba(128, 128, 128, 0.18);
+
+  &[type="number"] {
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      display: none;
+    }
+  }
+
+  &:not(:disabled):hover{
+    border: 1px solid gold;
+  }
+
+  &:focus{
+    border: 1px solid gold;
+  }
+
+  &.error{
+    border: 1px solid red;
+  }
+
+  &:disabled{
+    background: rgb(71, 77, 87);
+    color: gray;
+  }
+}
