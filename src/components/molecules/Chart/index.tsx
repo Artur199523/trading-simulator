@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState, memo} from "react";
 import {createChart} from "lightweight-charts";
 
-import {useSimulatorOptionsContext, useSimulatorToolsContext, useSimulatorTradingChartDetailsContext} from "layouts/providers";
+import {useSimulatorOptionsContext, useSimulatorPlayerInfoContext, useSimulatorToolsContext, useSimulatorTradingChartDetailsContext} from "layouts/providers";
 import {candleStickOptions, chartOptions, histogramApplyOptions, histogramOptions} from "./options";
 import {getCryptoTradingHistory} from "store/simulator/actions";
 import {useAppDispatch, useAppSelector} from "store";
@@ -9,13 +9,23 @@ import {useAppDispatch, useAppSelector} from "store";
 import {HistoryItem, TradingVolumeITF} from "store/simulator/type";
 
 import "./style.scss"
+import {multiply, plus} from "../../../utils";
 
 const Chart: React.FC = () => {
     const dispatch = useAppDispatch()
 
-    const {isPlay, next, currentSpeed, setNext} = useSimulatorToolsContext()
     const {currency, interval, cryptoType, date} = useSimulatorOptionsContext()
-    const {setCurrentCryptoData,marketOrdersMarks,currentCryptoData} = useSimulatorTradingChartDetailsContext()
+    const {isPlay, next, currentSpeed, setNext} = useSimulatorToolsContext()
+    const {setBalanceTradeableCrypto, setBalanceUSDT} = useSimulatorPlayerInfoContext()
+    const {
+        setCurrentCryptoData,
+        marketOrdersMarks,
+        limitOrdersMarks,
+        currentCryptoData,
+        limitOrders,
+        setLimitOrders,
+        setLimitOrdersMarks
+    } = useSimulatorTradingChartDetailsContext()
 
     const [newSeries, setNewSeries] = useState<any>(null)
     const [newVolumeSeries, setNewVolumeSeries] = useState<any>(null)
@@ -64,7 +74,7 @@ const Chart: React.FC = () => {
                 newSeries.setData(partHistory);
                 volumeSeries.setData(partVolumeHistory);
 
-                setCurrentCryptoData(partHistory[partHistory.length-1])
+                setCurrentCryptoData(partHistory[partHistory.length - 1])
 
                 volumeSeries.priceScale().applyOptions(histogramApplyOptions);
 
@@ -133,10 +143,104 @@ const Chart: React.FC = () => {
     }, [next])
 
     useEffect(() => {
-        if(marketOrdersMarks.length > 1){
-            newSeries.setMarkers(marketOrdersMarks.slice(1))
+        if (marketOrdersMarks.length > 1) {
+            if (limitOrdersMarks.length > 1) {
+                newSeries.setMarkers([...marketOrdersMarks.slice(1), ...limitOrdersMarks.slice(1)])
+            } else {
+                newSeries.setMarkers(marketOrdersMarks.slice(1))
+            }
         }
-    }, [marketOrdersMarks]);
+
+        if (limitOrdersMarks.length > 1) {
+            if (marketOrdersMarks.length > 1) {
+                newSeries.setMarkers([...marketOrdersMarks.slice(1), ...limitOrdersMarks.slice(1)])
+            } else {
+                newSeries.setMarkers(limitOrdersMarks.slice(1))
+            }
+        }
+    }, [marketOrdersMarks, limitOrdersMarks]);
+
+    useEffect(() => {
+        const WORKING_STATUS = "Working";
+        const FILLED_STATUS = "Filled";
+
+        const limitOrdersWorking = limitOrders.filter(order => order.status === WORKING_STATUS)
+
+        if (currentCryptoData && currentCryptoData.close && limitOrdersWorking) {
+            setLimitOrders(prev => {
+               return  prev.map(order=>{
+                   if(currentCryptoData.close >= order.limit_price && order.status === WORKING_STATUS){
+                       if(order.side === "Buy"){
+                           setBalanceTradeableCrypto(prev => plus(prev, order.quantity))
+
+                           setLimitOrdersMarks(prev => [...prev, {
+                               time: Number(currentCryptoData.time),
+                               position: "aboveBar",
+                               color: "green",
+                               shape: 'arrowUp',
+                               size: 1.5,
+                               id: `limit_${order.order_id}`,
+                               text: `BUY @ $${multiply(order.quantity, order.limit_price)}`,
+                           }])
+
+                           return {...order,status: FILLED_STATUS}
+                       }
+
+                       if(order.side === "Sell"){
+                           setBalanceUSDT(prev => plus(prev, order.quantity * order.limit_price))
+
+                           return {...order,status: FILLED_STATUS}
+                       }
+                   }
+
+                   return order
+               })
+            })
+            // limitOrdersWorking.forEach(orderWorkings => {
+            //     if (orderWorkings.limit_price <= currentCryptoData.close) {
+            //         const limitOrdersCopy = [...limitOrders]
+            //         const newData = limitOrdersCopy.map(order => {
+            //             if (order.order_id === orderWorkings.order_id && order.status === WORKING_STATUS) {
+            //                 if (order.side === "Buy") {
+            //                     setBalanceTradeableCrypto(prev => plus(prev, order.quantity))
+            //
+            //                     setLimitOrdersMarks(prev => [...prev, {
+            //                         time: Number(currentCryptoData.time),
+            //                         position: "aboveBar",
+            //                         color: "green",
+            //                         shape: 'arrowUp',
+            //                         size: 1.5,
+            //                         id: `limit_${order.order_id}`,
+            //                         text: `BUY @ $${multiply(order.quantity,order.limit_price)}`,
+            //                     }])
+            //                 }
+            //
+            //                 if(order.side === "Sell"){
+            //                     setBalanceUSDT(prev => plus(prev, order.quantity * order.limit_price))
+            //
+            //                     setLimitOrdersMarks(prev => [...prev, {
+            //                         time: Number(currentCryptoData.time),
+            //                         position: "belowBar",
+            //                         color: "red",
+            //                         shape: 'arrowDown',
+            //                         size: 1.5,
+            //                         id: `limit_${order.order_id}`,
+            //                         text: `SELL @ $${multiply(order.quantity,order.limit_price)}`,
+            //                     }])
+            //                 }
+            //
+            //                 return {...order, status: FILLED_STATUS}
+            //             }
+            //             return order
+            //         })
+            //
+            //         setLimitOrders(newData as any)
+            //     }
+            // })
+        }
+    }, [currentCryptoData?.close]);
+
+    console.log(limitOrders)
 
     return (
         <div className="chart">

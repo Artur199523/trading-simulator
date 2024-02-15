@@ -1,12 +1,12 @@
 import React, {useState} from "react";
-import {TabItem, TabContent, Market, Balance} from "components";
+import {TabItem, TabContent, Market, Balance, LimitOrder, StopLimit} from "components";
 
 import "./style.scss"
 
-const Spot:React.FC = () => {
-    const [activeTab,setActiveTab] = useState("limit")
+const Spot: React.FC = () => {
+    const [activeTab, setActiveTab] = useState("limit")
 
-    return(
+    return (
         <div className="spot">
             <div className="spot_tabs">
                 <TabItem activeTab={activeTab} id="limit" setActiveTab={setActiveTab}>Limit</TabItem>
@@ -14,9 +14,9 @@ const Spot:React.FC = () => {
                 <TabItem activeTab={activeTab} id="stop-limit" setActiveTab={setActiveTab}>Stop-limit</TabItem>
             </div>
             <Balance/>
-            <TabContent id="limit" activeTab={activeTab}>Limit</TabContent>
+            <TabContent id="limit" activeTab={activeTab}><LimitOrder/></TabContent>
             <TabContent id="market" activeTab={activeTab}><Market/></TabContent>
-            <TabContent id="stop-limit" activeTab={activeTab}>Stop-limit</TabContent>
+            <TabContent id="stop-limit" activeTab={activeTab}><StopLimit/></TabContent>
         </div>
     )
 }

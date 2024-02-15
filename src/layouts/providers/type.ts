@@ -55,39 +55,44 @@ export interface SimulatorToolsContextITF {
 }
 
 export interface SimulatorTradingContextITF {
-    process: ProcessT,
-    tradingType: TradingType,
-    setProcess: (process: ProcessT) => void,
-    setTradingType: (trading: TradingType) => void,
+    process: ProcessT
+    tradingType: TradingType
+    setProcess: (process: ProcessT) => void
+    setTradingType: (trading: TradingType) => void
 }
 
 export interface SimulatorPlayerInfoContextITF {
-    balanceUSDT: number,
-    balanceTradeableCrypto: number,
-    setBalanceUSDT: (balance: (prev:number) => number) => void,
+    balanceUSDT: number
+    balanceTradeableCrypto: number
+    setBalanceUSDT: (balance: (prev:number) => number) => void
     setBalanceTradeableCrypto: (balance: (prev:number) => number) => void
 }
 
 export interface SimulatorTradingChartDetailsContextITF {
+    marketOrders: OrderITF[]
+    limitOrders: OrderITF[]
+    currentCryptoData: HistoryItem
+    limitOrdersMarks: OrderMarkITF[]
     marketOrdersMarks: OrderMarkITF[]
-    marketOrders: OrderITF[],
-    currentCryptoData: HistoryItem,
-    setMarketOrders: (order: (prev:OrderITF[]) => OrderITF[]) => void,
-    setCurrentCryptoData: (data: HistoryItem) => void,
-    setMarketOrdersMarks: (mark: (prev:OrderMarkITF[]) => OrderMarkITF[]) => void,
+    setCurrentCryptoData: (data: HistoryItem) => void
+    setLimitOrders: (order: (prev: OrderITF[]) =>any[]) => void
+    setMarketOrders: (order: (prev:OrderITF[]) => OrderITF[]) => void
+    setLimitOrdersMarks:(mark: (prev:OrderMarkITF[]) => OrderMarkITF[]) => void
+    setMarketOrdersMarks: (mark: (prev:OrderMarkITF[]) => OrderMarkITF[]) => void
 }
 
 export interface OrderITF {
-    symbol: SymbolT,
-    side: SideT,
-    type: TypeT,
-    quantity: number,
-    price:number,
-    limit_price: number,
-    stop_price: number,
-    last: number,
-    status: StatusT,
-    order_id: number
+    date: Date;
+    symbol: SymbolT;
+    side: SideT;
+    quantity: number;
+    stop_price: number;
+    last: number;
+    price: number;
+    type: TypeT;
+    limit_price: number;
+    order_id: number;
+    status: string
 }
 
 export interface OrderMarkITF {
@@ -99,11 +104,11 @@ export interface OrderMarkITF {
     text: string,
 }
 
-export type SymbolT = "ETH" | "BTC"
+export type SymbolT = "ETH" | "BTC" | ""
 
-export type SideT = "Buy" | "Sell"
+export type SideT = "Buy" | "Sell" | ""
 
-export type TypeT = "Market" | "Limit" | "Stop"
+export type TypeT = "Market" | "Limit" | "Stop" | ""
 
 export type StatusT = "Filled" | "Working" | "Canceled"
 
@@ -117,8 +122,8 @@ export type CurrentSpeedT = 1 | 3 | 10
 
 export type TradingType = "spot" | "futures"
 
-export type ProcessT = "buy" | "sell"
+export type ProcessT = "buy" | "sell" | ""
 
-export type MarkPositionT = "aboveBar" | "belowBar"
+export type MarkPositionT = "aboveBar" | "belowBar" | "inBar"
 
-export type MarkShapeT = "circle"
+export type MarkShapeT = "circle" | "arrowUp" | "arrowDown" | "triangleUp" | "triangleDown"

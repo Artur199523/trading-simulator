@@ -15,16 +15,17 @@ const defaultData: HistoryItem = {
 }
 
 const defaultOrder:OrderITF= {
-    symbol:"ETH",
-    side:"Buy",
-    type:"Market",
+    symbol:"",
+    side:"",
+    type:"",
     quantity:0,
     price:0,
     limit_price:0,
     stop_price:0,
     last:0,
-    status:"Filled",
-    order_id:0
+    status:"",
+    order_id:0,
+    date: new Date()
 }
 
 const defaultMarketOrderMark:OrderMarkITF = {
@@ -37,24 +38,38 @@ const defaultMarketOrderMark:OrderMarkITF = {
 }
 
 const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartDetailsContextITF>({
+    limitOrders:[defaultOrder],
     marketOrders:[defaultOrder],
-    marketOrdersMarks:[defaultMarketOrderMark],
     currentCryptoData: defaultData,
+    limitOrdersMarks:[defaultMarketOrderMark],
+    marketOrdersMarks:[defaultMarketOrderMark],
+    setLimitOrders:()=>{},
     setMarketOrders:()=>{},
+    setLimitOrdersMarks:()=>{},
     setMarketOrdersMarks:()=>{},
     setCurrentCryptoData: () => {},
 })
 export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF> = memo(({children}) => {
     const [currentCryptoData, setCurrentCryptoData] = useState<HistoryItem>(defaultData)
-    const [marketOrders,setMarketOrders] = useState<any>([defaultOrder])
-    const [marketOrdersMarks,setMarketOrdersMarks] = useState<any>([defaultMarketOrderMark])
+
+    //Market
+    const [marketOrders,setMarketOrders] = useState<OrderITF[]>([defaultOrder])
+    const [marketOrdersMarks,setMarketOrdersMarks] = useState<OrderMarkITF[]>([defaultMarketOrderMark])
+
+    //Limit Order
+    const [limitOrders,setLimitOrders] = useState<OrderITF[]>([defaultOrder])
+    const [limitOrdersMarks,setLimitOrdersMarks] = useState<OrderMarkITF[]>([defaultMarketOrderMark])
 
     return (
         <SimulatorTradingChartDetailsContext.Provider value={{
+            limitOrders,
             marketOrders,
+            limitOrdersMarks,
             currentCryptoData,
             marketOrdersMarks,
+            setLimitOrders,
             setMarketOrders,
+            setLimitOrdersMarks,
             setCurrentCryptoData,
             setMarketOrdersMarks
         }}>

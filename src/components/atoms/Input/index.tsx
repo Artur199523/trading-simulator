@@ -13,6 +13,7 @@ const Input: React.FC<InputITF> = ({placeholder, disabled, onChange, name, type,
             name={name}
             type={type}
             value={value}
+
         />
     )
 }

@@ -3,9 +3,13 @@
     display: flex;
   }
 
-  &_market{
-    & > .input-range{
+  &_market {
+    & > .input-range {
       margin-bottom: 15px;
     }
+  }
+
+  &_limit-order {
+
   }
 }

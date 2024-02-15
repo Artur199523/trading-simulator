@@ -34,4 +34,8 @@
     background: rgb(71, 77, 87);
     color: gray;
   }
+
+  &::placeholder{
+    font-size: 14px;
+  }
 }

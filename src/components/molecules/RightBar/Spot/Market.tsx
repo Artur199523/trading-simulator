@@ -1,37 +1,38 @@
 import React, {memo, useEffect, useState} from "react";
 
-import {useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
+import {useSimulatorOptionsContext, useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
 
+import {divide, minus, multiply, plus} from "utils";
 import {Input, InputRange} from "components";
 import TradeButton from "../TradeButton";
+
 import {ProcessT} from "layouts/providers/type";
 
 const Market: React.FC = () => {
-    const {process} = useSimulatorTradingContext()
-    const {currentCryptoData, setMarketOrders, setMarketOrdersMarks, marketOrders, marketOrdersMarks} = useSimulatorTradingChartDetailsContext()
     const {balanceUSDT, setBalanceUSDT, balanceTradeableCrypto, setBalanceTradeableCrypto} = useSimulatorPlayerInfoContext()
+    const {currentCryptoData, setMarketOrders, setMarketOrdersMarks} = useSimulatorTradingChartDetailsContext()
+    const {cryptoType} = useSimulatorOptionsContext()
+    const {process} = useSimulatorTradingContext()
 
-    const [price, setPrice] = useState("")
     const [percent, setPercent] = useState(0)
+    const [price, setPrice] = useState("")
     const [value, setValue] = useState("")
 
     useEffect(() => {
         setValue("")
     }, [process]);
 
-    console.log(balanceUSDT, balanceTradeableCrypto, marketOrders, marketOrdersMarks)
-
     const tradeInMarket = (side: ProcessT) => {
         switch (side) {
             case "buy":
-                if (Number(value) <= balanceUSDT) {
+                if (balanceUSDT >= Number(value)) {
                     let orderId = 0
 
                     setValue("")
                     setPercent(0)
 
-                    setBalanceTradeableCrypto(prev => prev + (Number(value) / currentCryptoData.close))
-                    setBalanceUSDT(prev => prev - Number(value))
+                    setBalanceTradeableCrypto(prev => plus(prev,divide(value,currentCryptoData.close)))
+                    setBalanceUSDT(prev => minus(prev,value))
 
                     setMarketOrders(prev => {
                         orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
@@ -39,13 +40,14 @@ const Market: React.FC = () => {
                             symbol: "ETH",
                             side: "Buy",
                             type: "Market",
-                            quantity: Number(value) / currentCryptoData.close,
+                            quantity: divide(value,currentCryptoData.close),
                             price: Number(value),
                             limit_price: 0,
                             stop_price: 0,
-                            last: Number(price),
+                            last: 0,
                             status: "Filled",
-                            order_id: prev.length ? prev[prev.length - 1].order_id + 1 : 1
+                            order_id: orderId,
+                            date: new Date()
                         }]
                     })
 
@@ -53,23 +55,24 @@ const Market: React.FC = () => {
                         time: Number(currentCryptoData.time),
                         position: "aboveBar",
                         color: "green",
-                        shape: 'circle',
+                        shape: "arrowUp",
+                        size:1.5,
                         id: `market_${orderId}`,
-                        text: `BUY @ ${currentCryptoData.close}`,
+                        text: `BUY @ $${value}`,
                     }])
                 } else {
-                    alert("You do not have usdt")
+                    alert("Insufficient USDT balance")
                 }
                 break
             case "sell":
-                if (Number(value) <= balanceTradeableCrypto) {
+                if (balanceTradeableCrypto >= Number(value)) {
                     let orderId = 0
 
                     setValue("")
                     setPercent(0)
 
-                    setBalanceUSDT(prev => prev + (Number(value) * currentCryptoData.close))
-                    setBalanceTradeableCrypto(prev => prev - Number(value))
+                    setBalanceUSDT(prev => plus(prev,multiply(value,currentCryptoData.close)))
+                    setBalanceTradeableCrypto(prev => minus(prev,value))
 
                     setMarketOrders(prev => {
                         orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
@@ -77,13 +80,14 @@ const Market: React.FC = () => {
                             symbol: "ETH",
                             side: "Sell",
                             type: "Market",
-                            quantity: Number(value) * currentCryptoData.close,
+                            quantity: multiply(value,currentCryptoData.close),
                             price: Number(value),
                             limit_price: 0,
                             stop_price: 0,
                             last: Number(price),
                             status: "Filled",
-                            order_id: prev.length ? prev[prev.length - 1].order_id + 1 : 1
+                            order_id: orderId,
+                            date: new Date()
                         }]
                     })
 
@@ -91,28 +95,30 @@ const Market: React.FC = () => {
                         time: Number(currentCryptoData.time),
                         position: "belowBar",
                         color: "red",
-                        shape: 'circle',
+                        shape: "arrowDown",
+                        size: 1.5,
                         id: `market_${orderId}`,
-                        text: `SELL @ ${currentCryptoData.close}`,
+                        text: `SELL @ $${multiply(value,currentCryptoData.close).toFixed(2)}`,
                     }])
                 } else {
-                    alert("You do not have crypto")
+                    alert(`Insufficient ${cryptoType} balance`)
                 }
                 break
         }
     }
 
-    const rangeHandle = (e: number) => {
-        setPercent(e)
+    const rangeHandle = (percent: number) => {
         const processBalance = process === "buy" ? balanceUSDT : balanceTradeableCrypto
-        const currentPrice = ((processBalance * e) / 100).toString() === "0" ? "" : ((processBalance * e) / 100).toString()
+        const calculatedPrice = divide(multiply(processBalance,percent),100)
+        const currentPrice = calculatedPrice === 0 ? "" : processBalance.toString()
 
+        setPercent(percent)
         setValue(currentPrice)
     }
 
-    const usdtHandle = (e: string) => {
+    const valueHandle = (value: string) => {
         setPercent(0)
-        setValue(e)
+        setValue(value)
     }
 
     return (
@@ -130,7 +136,7 @@ const Market: React.FC = () => {
                 value={value}
                 type="number"
                 placeholder={process === "buy" ? "USDT" : "ETH"}
-                onChange={(e) => usdtHandle(e.target.value)}
+                onChange={(e) => valueHandle(e.target.value)}
             />
             <InputRange value={percent} onChange={(e) => rangeHandle(e as any)}/>
             <TradeButton onClick={tradeInMarket}/>
