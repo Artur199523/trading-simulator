@@ -5,12 +5,17 @@ import {useSimulatorOptionsContext, useSimulatorPlayerInfoContext, useSimulatorT
 import {candleStickOptions, chartOptions, histogramApplyOptions, histogramOptions} from "./options";
 import {getCryptoTradingHistory} from "store/simulator/actions";
 import {useAppDispatch, useAppSelector} from "store";
+import {multiply, plus} from "utils";
 
 import {HistoryItem, TradingVolumeITF} from "store/simulator/type";
 
 import "./style.scss"
-import {multiply, plus} from "../../../utils";
 
+/**
+ * Represents a chart component.
+ * @function Chart
+ * @returns {JSX.Element} - The rendered component.
+ */
 const Chart: React.FC = () => {
     const dispatch = useAppDispatch()
 
@@ -59,38 +64,38 @@ const Chart: React.FC = () => {
     }, [allHistory, allVolumeHistory]);
 
     useEffect(() => {
-            const chartRef = chartContainerRef.current
-            if (partHistory && partVolumeHistory && chartRef && chartContainerRef.current) {
-                const handleResize = () => {
-                    chart.applyOptions({width: chartContainerRef.current.clientWidth});
-                };
+        const chartRef = chartContainerRef.current
+        if (partHistory && partVolumeHistory && chartRef && chartContainerRef.current) {
+            const handleResize = () => {
+                chart.applyOptions({width: chartContainerRef.current.clientWidth});
+            };
 
-                const chart = createChart(chartContainerRef.current, chartOptions(chartRef));
-                chart.timeScale().fitContent();
+            const chart = createChart(chartContainerRef.current, chartOptions(chartRef));
+            chart.timeScale().fitContent();
 
-                const newSeries = chart.addCandlestickSeries(candleStickOptions as any);
-                const volumeSeries = chart.addHistogramSeries(histogramOptions as any);
+            const newSeries = chart.addCandlestickSeries(candleStickOptions as any);
+            const volumeSeries = chart.addHistogramSeries(histogramOptions as any);
 
-                newSeries.setData(partHistory);
-                volumeSeries.setData(partVolumeHistory);
+            newSeries.setData(partHistory);
+            volumeSeries.setData(partVolumeHistory);
 
-                setCurrentCryptoData(partHistory[partHistory.length - 1])
+            setCurrentCryptoData(partHistory[partHistory.length - 1])
 
-                volumeSeries.priceScale().applyOptions(histogramApplyOptions);
+            volumeSeries.priceScale().applyOptions(histogramApplyOptions);
 
-                setNewSeries(newSeries as any)
-                setNewVolumeSeries(volumeSeries as any)
+            setNewSeries(newSeries as any)
+            setNewVolumeSeries(volumeSeries as any)
 
-                window.addEventListener('resize', handleResize);
+            window.addEventListener('resize', handleResize);
 
-                return () => {
-                    window.removeEventListener('resize', handleResize);
+            return () => {
+                window.removeEventListener('resize', handleResize);
 
-                    chart.remove();
-                };
-            }
-        },
-        [partHistory, partVolumeHistory]);
+                chart.remove();
+            };
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [partHistory, partVolumeHistory]);
 
     useEffect(() => {
         let int: any
@@ -118,6 +123,7 @@ const Chart: React.FC = () => {
         return () => {
             clearInterval(int)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [newSeries, isPlay, newVolumeSeries, currentSpeed, history, volume])
 
     useEffect(() => {
@@ -140,6 +146,7 @@ const Chart: React.FC = () => {
                 }
             }, timeOut);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [next])
 
     useEffect(() => {
@@ -158,6 +165,7 @@ const Chart: React.FC = () => {
                 newSeries.setMarkers(limitOrdersMarks.slice(1))
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [marketOrdersMarks, limitOrdersMarks]);
 
     useEffect(() => {
@@ -168,79 +176,47 @@ const Chart: React.FC = () => {
 
         if (currentCryptoData && currentCryptoData.close && limitOrdersWorking) {
             setLimitOrders(prev => {
-               return  prev.map(order=>{
-                   if(currentCryptoData.close >= order.limit_price && order.status === WORKING_STATUS){
-                       if(order.side === "Buy"){
-                           setBalanceTradeableCrypto(prev => plus(prev, order.quantity))
+                return prev.map(order => {
+                    if (currentCryptoData.close >= order.limit_price && order.status === WORKING_STATUS) {
+                        if (order.side === "Buy") {
+                            setBalanceTradeableCrypto(prev => plus(prev, order.quantity))
 
-                           setLimitOrdersMarks(prev => [...prev, {
-                               time: Number(currentCryptoData.time),
-                               position: "aboveBar",
-                               color: "green",
-                               shape: 'arrowUp',
-                               size: 1.5,
-                               id: `limit_${order.order_id}`,
-                               text: `BUY @ $${multiply(order.quantity, order.limit_price)}`,
-                           }])
+                            setLimitOrdersMarks(prev => [...prev, {
+                                time: Number(currentCryptoData.time),
+                                position: "aboveBar",
+                                color: "green",
+                                shape: 'arrowUp',
+                                size: 1.5,
+                                id: `limit_${order.order_id}`,
+                                text: `BUY @ $${multiply(order.quantity, order.limit_price)}`,
+                            }])
 
-                           return {...order,status: FILLED_STATUS}
-                       }
+                            return {...order, status: FILLED_STATUS}
+                        }
 
-                       if(order.side === "Sell"){
-                           setBalanceUSDT(prev => plus(prev, order.quantity * order.limit_price))
+                        if (order.side === "Sell") {
+                            setBalanceUSDT(prev => plus(prev, order.quantity * order.limit_price))
 
-                           return {...order,status: FILLED_STATUS}
-                       }
-                   }
+                            setLimitOrdersMarks(prev => [...prev, {
+                                time: Number(currentCryptoData.time),
+                                position: "belowBar",
+                                color: "red",
+                                shape: 'arrowDown',
+                                size: 1.5,
+                                id: `limit_${order.order_id}`,
+                                text: `SELL @ $${multiply(order.quantity, order.limit_price)}`,
+                            }])
 
-                   return order
-               })
+                            return {...order, status: FILLED_STATUS}
+                        }
+                    }
+
+                    return order
+                })
             })
-            // limitOrdersWorking.forEach(orderWorkings => {
-            //     if (orderWorkings.limit_price <= currentCryptoData.close) {
-            //         const limitOrdersCopy = [...limitOrders]
-            //         const newData = limitOrdersCopy.map(order => {
-            //             if (order.order_id === orderWorkings.order_id && order.status === WORKING_STATUS) {
-            //                 if (order.side === "Buy") {
-            //                     setBalanceTradeableCrypto(prev => plus(prev, order.quantity))
-            //
-            //                     setLimitOrdersMarks(prev => [...prev, {
-            //                         time: Number(currentCryptoData.time),
-            //                         position: "aboveBar",
-            //                         color: "green",
-            //                         shape: 'arrowUp',
-            //                         size: 1.5,
-            //                         id: `limit_${order.order_id}`,
-            //                         text: `BUY @ $${multiply(order.quantity,order.limit_price)}`,
-            //                     }])
-            //                 }
-            //
-            //                 if(order.side === "Sell"){
-            //                     setBalanceUSDT(prev => plus(prev, order.quantity * order.limit_price))
-            //
-            //                     setLimitOrdersMarks(prev => [...prev, {
-            //                         time: Number(currentCryptoData.time),
-            //                         position: "belowBar",
-            //                         color: "red",
-            //                         shape: 'arrowDown',
-            //                         size: 1.5,
-            //                         id: `limit_${order.order_id}`,
-            //                         text: `SELL @ $${multiply(order.quantity,order.limit_price)}`,
-            //                     }])
-            //                 }
-            //
-            //                 return {...order, status: FILLED_STATUS}
-            //             }
-            //             return order
-            //         })
-            //
-            //         setLimitOrders(newData as any)
-            //     }
-            // })
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentCryptoData?.close]);
-
-    console.log(limitOrders)
 
     return (
         <div className="chart">

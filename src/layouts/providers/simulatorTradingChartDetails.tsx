@@ -28,7 +28,7 @@ const defaultOrder:OrderITF= {
     date: new Date()
 }
 
-const defaultMarketOrderMark:OrderMarkITF = {
+const defaultOrderMark:OrderMarkITF = {
     time: 0,
     position: 'aboveBar',
     color: "",
@@ -41,8 +41,8 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     limitOrders:[defaultOrder],
     marketOrders:[defaultOrder],
     currentCryptoData: defaultData,
-    limitOrdersMarks:[defaultMarketOrderMark],
-    marketOrdersMarks:[defaultMarketOrderMark],
+    limitOrdersMarks:[defaultOrderMark],
+    marketOrdersMarks:[defaultOrderMark],
     setLimitOrders:()=>{},
     setMarketOrders:()=>{},
     setLimitOrdersMarks:()=>{},
@@ -54,11 +54,11 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
 
     //Market
     const [marketOrders,setMarketOrders] = useState<OrderITF[]>([defaultOrder])
-    const [marketOrdersMarks,setMarketOrdersMarks] = useState<OrderMarkITF[]>([defaultMarketOrderMark])
+    const [marketOrdersMarks,setMarketOrdersMarks] = useState<OrderMarkITF[]>([defaultOrderMark])
 
     //Limit Order
     const [limitOrders,setLimitOrders] = useState<OrderITF[]>([defaultOrder])
-    const [limitOrdersMarks,setLimitOrdersMarks] = useState<OrderMarkITF[]>([defaultMarketOrderMark])
+    const [limitOrdersMarks,setLimitOrdersMarks] = useState<OrderMarkITF[]>([defaultOrderMark])
 
     return (
         <SimulatorTradingChartDetailsContext.Provider value={{
