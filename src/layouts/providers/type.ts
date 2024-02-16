@@ -64,8 +64,8 @@ export interface SimulatorTradingContextITF {
 export interface SimulatorPlayerInfoContextITF {
     balanceUSDT: number
     balanceTradeableCrypto: number
-    setBalanceUSDT: (balance: (prev:number) => number) => void
-    setBalanceTradeableCrypto: (balance: (prev:number) => number) => void
+    setBalanceUSDT: (balance: (prev: number) => number) => void
+    setBalanceTradeableCrypto: (balance: (prev: number) => number) => void
 }
 
 export interface SimulatorTradingChartDetailsContextITF {
@@ -75,10 +75,10 @@ export interface SimulatorTradingChartDetailsContextITF {
     limitOrdersMarks: OrderMarkITF[]
     marketOrdersMarks: OrderMarkITF[]
     setCurrentCryptoData: (data: HistoryItem) => void
-    setLimitOrders: (order: (prev: OrderITF[]) =>any[]) => void
-    setMarketOrders: (order: (prev:OrderITF[]) => OrderITF[]) => void
-    setLimitOrdersMarks:(mark: (prev:OrderMarkITF[]) => OrderMarkITF[]) => void
-    setMarketOrdersMarks: (mark: (prev:OrderMarkITF[]) => OrderMarkITF[]) => void
+    setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
+    setMarketOrders: (order: (prev: OrderITF[]) => OrderITF[]) => void
+    setLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
+    setMarketOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
 }
 
 export interface OrderITF {

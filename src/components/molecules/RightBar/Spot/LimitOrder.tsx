@@ -6,7 +6,7 @@ import {
     useSimulatorPlayerInfoContext,
     useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
-import {divide, minus, multiply, plus} from "utils";
+import {divide, ERROR, minus, multiply, plus, showNotification} from "utils";
 
 import {Input, InputRange} from "components";
 import TradeButton from "../TradeButton";
@@ -18,8 +18,6 @@ const LimitOrder: React.FC = () => {
     const {currentCryptoData, setLimitOrders, setLimitOrdersMarks, limitOrders, limitOrdersMarks} = useSimulatorTradingChartDetailsContext()
     const {cryptoType} = useSimulatorOptionsContext()
     const {process} = useSimulatorTradingContext()
-
-    // console.log(limitOrders, limitOrdersMarks)
 
     const [priceUSDT, setPriceUSDT] = useState<number | string>("")
     const [quantityCrypto, setQuantityCrypto] = useState("")
@@ -95,6 +93,11 @@ const LimitOrder: React.FC = () => {
 
                         setLimitOrders((prev: OrderITF[]) => {
                             orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
+
+                            showNotification(`Order L${orderId} placed (BUY:Limit)`, "info", 500)
+
+                            showNotification(`Order L${orderId} executed (BUY:Limit)`, "info", 1000)
+
                             return [...prev, {
                                 symbol: cryptoType,
                                 side: "Buy",
@@ -120,7 +123,7 @@ const LimitOrder: React.FC = () => {
                             text: `BUY @ ${currentPrice.toFixed(2)}`,
                         }])
                     } else {
-                        alert("Insufficient USDT balance")
+                        showNotification(ERROR.INSUFFICIENT, "error", 0)
                     }
                 } else {
                     if (balanceUSDT >= Number(totalPrice)) {
@@ -131,6 +134,9 @@ const LimitOrder: React.FC = () => {
 
                         setLimitOrders((prev: OrderITF[]) => {
                             orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
+
+                            showNotification(`Order L${orderId} placed (BUY:Limit)`, "info", 500)
+
                             return [...prev, {
                                 symbol: cryptoType,
                                 side: "Buy",
@@ -160,8 +166,13 @@ const LimitOrder: React.FC = () => {
                         setBalanceUSDT(prev => plus(prev, multiply(quantityCrypto, priceUSDT)))
                         resetData()
 
-                        setLimitOrders((prev:OrderITF[]) => {
+                        setLimitOrders((prev: OrderITF[]) => {
                             orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
+
+                            showNotification(`Order L${orderId} placed (SELL:Limit)`, "info", 500)
+
+                            showNotification(`Order L${orderId} executed (SELL:Limit)`, "info", 1000)
+
                             return [...prev, {
                                 symbol: cryptoType,
                                 side: "Sell",
@@ -187,7 +198,7 @@ const LimitOrder: React.FC = () => {
                             text: `SELL @ $${totalPrice}`,
                         }])
                     } else {
-                        alert(`Insufficient ${cryptoType} balance`)
+                        showNotification(ERROR.INSUFFICIENT, "error", 0)
                     }
                 } else {
                     if (balanceTradeableCrypto >= Number(quantityCrypto)) {
@@ -198,6 +209,9 @@ const LimitOrder: React.FC = () => {
 
                         setLimitOrders((prev: OrderITF[]) => {
                             orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
+
+                            showNotification(`Order L${orderId} placed (SELL:Limit)`, "info", 500)
+
                             return [...prev, {
                                 symbol: cryptoType,
                                 side: "Sell",
@@ -213,7 +227,7 @@ const LimitOrder: React.FC = () => {
                             }]
                         })
                     } else {
-                        alert(`Insufficient ${cryptoType} balance`)
+                        showNotification(ERROR.INSUFFICIENT, "error", 0)
                     }
                 }
                 break

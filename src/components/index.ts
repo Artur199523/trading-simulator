@@ -2,6 +2,7 @@ export {default as Input} from "./atoms/Input"
 export {default as TabItem} from "./atoms/Tabs/TabItem"
 export {default as InputRange} from "./atoms/InputRange"
 export {default as TabContent} from "./atoms/Tabs/TabContent"
+export {default as ToastGlobalContainer} from "./atoms/Toastify/ToastContainer"
 
 export {default as Chart} from "./molecules/Chart"
 export {default as TopBar} from "./molecules/TopBar"

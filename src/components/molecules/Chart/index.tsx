@@ -4,18 +4,13 @@ import {createChart} from "lightweight-charts";
 import {useSimulatorOptionsContext, useSimulatorPlayerInfoContext, useSimulatorToolsContext, useSimulatorTradingChartDetailsContext} from "layouts/providers";
 import {candleStickOptions, chartOptions, histogramApplyOptions, histogramOptions} from "./options";
 import {getCryptoTradingHistory} from "store/simulator/actions";
+import {multiply, plus, showNotification} from "utils";
 import {useAppDispatch, useAppSelector} from "store";
-import {multiply, plus} from "utils";
 
 import {HistoryItem, TradingVolumeITF} from "store/simulator/type";
 
 import "./style.scss"
 
-/**
- * Represents a chart component.
- * @function Chart
- * @returns {JSX.Element} - The rendered component.
- */
 const Chart: React.FC = () => {
     const dispatch = useAppDispatch()
 
@@ -181,6 +176,8 @@ const Chart: React.FC = () => {
                         if (order.side === "Buy") {
                             setBalanceTradeableCrypto(prev => plus(prev, order.quantity))
 
+                            showNotification(`Order L${order.order_id} executed (BUY:Limit)`, "info", 0)
+
                             setLimitOrdersMarks(prev => [...prev, {
                                 time: Number(currentCryptoData.time),
                                 position: "aboveBar",
@@ -196,6 +193,8 @@ const Chart: React.FC = () => {
 
                         if (order.side === "Sell") {
                             setBalanceUSDT(prev => plus(prev, order.quantity * order.limit_price))
+
+                            showNotification(`Order L${order.order_id} executed (SELL:Limit)`, "info", 0)
 
                             setLimitOrdersMarks(prev => [...prev, {
                                 time: Number(currentCryptoData.time),
