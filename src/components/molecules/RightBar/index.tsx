@@ -1,6 +1,6 @@
 import React ,{memo}from "react";
 
-import {useSimulatorContext, useSimulatorTradingContext} from "layouts/providers";
+import {useSimulatorTradingContext} from "layouts/providers";
 
 import {TabContent, Spot, Futures} from "components";
 
@@ -8,10 +8,7 @@ import "./style.scss"
 import classNames from "classnames";
 
 const RightBar: React.FC = () => {
-    // const {tradingType, setProcess, process} = useSimulatorContext()
     const {process,setProcess,tradingType} = useSimulatorTradingContext()
-
-    console.log(process)
 
     const buyBtnStyle = classNames({"active-buy": process === "buy"})
     const sellBtnStyle = classNames({"active-sell": process === "sell"})

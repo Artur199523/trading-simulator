@@ -81,7 +81,7 @@ const LimitOrder: React.FC = () => {
 
         switch (side) {
             case "buy":
-                if (priceUSDT <= currentCryptoData.close) {
+                if (priceUSDT >= currentCryptoData.close) {
                     const currentPrice = Number(multiply(currentCryptoData.close, quantityCrypto))
 
                     if (currentBalance >= currentPrice) {
@@ -258,7 +258,7 @@ const LimitOrder: React.FC = () => {
                 placeholder='Total (USDT)'
                 onChange={(e) => totalUSDTHandle(e.target.value)}
             />
-            <TradeButton onClick={tradeInLimitOrder}/>
+            <TradeButton disabled={(!priceUSDT || !quantityCrypto)} onClick={tradeInLimitOrder}/>
         </div>
     )
 }

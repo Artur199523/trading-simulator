@@ -1,5 +1,9 @@
 import React, {useState} from "react";
+
+import {StopOrderLimitModalsProvider} from "layouts/providers/stopLimitOrderProvider";
+
 import {TabItem, TabContent, Market, Balance, LimitOrder, StopLimit} from "components";
+import Modals from "./Modals";
 
 import "./style.scss"
 
@@ -16,7 +20,12 @@ const Spot: React.FC = () => {
             <Balance/>
             <TabContent id="limit" activeTab={activeTab}><LimitOrder/></TabContent>
             <TabContent id="market" activeTab={activeTab}><Market/></TabContent>
-            <TabContent id="stop-limit" activeTab={activeTab}><StopLimit/></TabContent>
+            <TabContent id="stop-limit" activeTab={activeTab}>
+                <StopOrderLimitModalsProvider>
+                    <StopLimit/>
+                    <Modals/>
+                </StopOrderLimitModalsProvider>
+            </TabContent>
         </div>
     )
 }

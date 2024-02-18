@@ -172,8 +172,7 @@ const Chart: React.FC = () => {
         if (currentCryptoData && currentCryptoData.close && limitOrdersWorking) {
             setLimitOrders(prev => {
                 return prev.map(order => {
-                    if (currentCryptoData.close >= order.limit_price && order.status === WORKING_STATUS) {
-                        if (order.side === "Buy") {
+                    if (currentCryptoData.close <= order.limit_price && order.status === WORKING_STATUS && order.side === "Buy") {
                             setBalanceTradeableCrypto(prev => plus(prev, order.quantity))
 
                             showNotification(`Order L${order.order_id} executed (BUY:Limit)`, "info", 0)
@@ -189,9 +188,9 @@ const Chart: React.FC = () => {
                             }])
 
                             return {...order, status: FILLED_STATUS}
-                        }
+                    }
 
-                        if (order.side === "Sell") {
+                    if(currentCryptoData.close >= order.limit_price && order.status === WORKING_STATUS &&  order.side === "Sell"){
                             setBalanceUSDT(prev => plus(prev, order.quantity * order.limit_price))
 
                             showNotification(`Order L${order.order_id} executed (SELL:Limit)`, "info", 0)
@@ -207,7 +206,6 @@ const Chart: React.FC = () => {
                             }])
 
                             return {...order, status: FILLED_STATUS}
-                        }
                     }
 
                     return order

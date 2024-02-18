@@ -69,16 +69,22 @@ export interface SimulatorPlayerInfoContextITF {
 }
 
 export interface SimulatorTradingChartDetailsContextITF {
-    marketOrders: OrderITF[]
+    stopValues: any
+    stopLimitOrders: any
     limitOrders: OrderITF[]
+    marketOrders: OrderITF[]
+    stopLimitOrdersMarks: any
     currentCryptoData: HistoryItem
     limitOrdersMarks: OrderMarkITF[]
     marketOrdersMarks: OrderMarkITF[]
+    setStopValue: (value:any) => void
+    setStopLimitOrders: (order:any) => void
     setCurrentCryptoData: (data: HistoryItem) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
     setMarketOrders: (order: (prev: OrderITF[]) => OrderITF[]) => void
     setLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setMarketOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
+    setStopLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
 }
 
 export interface OrderITF {
@@ -95,6 +101,11 @@ export interface OrderITF {
     status: string
 }
 
+export interface StopOrderITF extends OrderITF{
+    fee:string
+    total: string
+}
+
 export interface OrderMarkITF {
     time: number,
     position: MarkPositionT,
@@ -102,6 +113,10 @@ export interface OrderMarkITF {
     shape: MarkShapeT,
     id: string,
     text: string,
+}
+
+export interface ModalsContextITF {
+    children: React.ReactNode
 }
 
 export type SymbolT = "ETH" | "BTC" | ""
@@ -127,3 +142,5 @@ export type ProcessT = "buy" | "sell" | ""
 export type MarkPositionT = "aboveBar" | "belowBar" | "inBar"
 
 export type MarkShapeT = "circle" | "arrowUp" | "arrowDown" | "triangleUp" | "triangleDown"
+
+export type StopLimitOrderT = "order-confirm" | ""

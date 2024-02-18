@@ -148,7 +148,7 @@ const Market: React.FC = () => {
                 onChange={(e) => valueHandle(e.target.value)}
             />
             <InputRange value={percent} onChange={(e) => rangeHandle(e as any)}/>
-            <TradeButton onClick={tradeInMarket}/>
+            <TradeButton disabled={!value} onClick={tradeInMarket}/>
         </div>
     )
 }

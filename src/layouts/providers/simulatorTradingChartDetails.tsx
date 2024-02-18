@@ -38,16 +38,22 @@ const defaultOrderMark:OrderMarkITF = {
 }
 
 const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartDetailsContextITF>({
+    stopValues:[],
+    stopLimitOrders:[],
     limitOrders:[defaultOrder],
     marketOrders:[defaultOrder],
     currentCryptoData: defaultData,
     limitOrdersMarks:[defaultOrderMark],
     marketOrdersMarks:[defaultOrderMark],
+    stopLimitOrdersMarks: [],
+    setStopValue:()=>{},
     setLimitOrders:()=>{},
     setMarketOrders:()=>{},
+    setStopLimitOrders:()=>{},
     setLimitOrdersMarks:()=>{},
     setMarketOrdersMarks:()=>{},
     setCurrentCryptoData: () => {},
+    setStopLimitOrdersMarks:()=>{}
 })
 export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF> = memo(({children}) => {
     const [currentCryptoData, setCurrentCryptoData] = useState<HistoryItem>(defaultData)
@@ -60,18 +66,29 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
     const [limitOrders,setLimitOrders] = useState<OrderITF[]>([defaultOrder])
     const [limitOrdersMarks,setLimitOrdersMarks] = useState<OrderMarkITF[]>([defaultOrderMark])
 
+    //Stop Limit Order
+    const [stopValues,setStopValue] = useState<any>([])
+    const [stopLimitOrders,setStopLimitOrders] = useState<any>([])
+    const [stopLimitOrdersMarks,setStopLimitOrdersMarks] = useState<any>([])
+
     return (
         <SimulatorTradingChartDetailsContext.Provider value={{
+            stopValues,
             limitOrders,
             marketOrders,
+            stopLimitOrders,
             limitOrdersMarks,
             currentCryptoData,
             marketOrdersMarks,
+            stopLimitOrdersMarks,
+            setStopValue,
             setLimitOrders,
             setMarketOrders,
+            setStopLimitOrders,
             setLimitOrdersMarks,
             setCurrentCryptoData,
-            setMarketOrdersMarks
+            setMarketOrdersMarks,
+            setStopLimitOrdersMarks
         }}>
             {children}
         </SimulatorTradingChartDetailsContext.Provider>
