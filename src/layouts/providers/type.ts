@@ -69,20 +69,18 @@ export interface SimulatorPlayerInfoContextITF {
 }
 
 export interface SimulatorTradingChartDetailsContextITF {
-    stopValues: any
-    stopLimitOrders: any
     limitOrders: OrderITF[]
     marketOrders: OrderITF[]
     stopLimitOrdersMarks: any
     currentCryptoData: HistoryItem
+    stopLimitOrders: StopOrderITF[]
     limitOrdersMarks: OrderMarkITF[]
     marketOrdersMarks: OrderMarkITF[]
-    setStopValue: (value:any) => void
-    setStopLimitOrders: (order:any) => void
     setCurrentCryptoData: (data: HistoryItem) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
     setMarketOrders: (order: (prev: OrderITF[]) => OrderITF[]) => void
     setLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
+    setStopLimitOrders: (order: (prev: StopOrderITF[]) => StopOrderITF[]) => void
     setMarketOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setStopLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
 }
@@ -101,9 +99,10 @@ export interface OrderITF {
     status: string
 }
 
-export interface StopOrderITF extends OrderITF{
-    fee:string
-    total: string
+export interface StopOrderITF extends OrderITF {
+    fee: number
+    total: number
+    influence: InfluenceT
 }
 
 export interface OrderMarkITF {
@@ -144,3 +143,5 @@ export type MarkPositionT = "aboveBar" | "belowBar" | "inBar"
 export type MarkShapeT = "circle" | "arrowUp" | "arrowDown" | "triangleUp" | "triangleDown"
 
 export type StopLimitOrderT = "order-confirm" | ""
+
+export type InfluenceT = "up" | "down" | ""

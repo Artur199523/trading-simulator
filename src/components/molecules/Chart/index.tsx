@@ -18,13 +18,15 @@ const Chart: React.FC = () => {
     const {isPlay, next, currentSpeed, setNext} = useSimulatorToolsContext()
     const {setBalanceTradeableCrypto, setBalanceUSDT} = useSimulatorPlayerInfoContext()
     const {
-        setCurrentCryptoData,
+        currentCryptoData,
         marketOrdersMarks,
         limitOrdersMarks,
-        currentCryptoData,
+        stopLimitOrders,
         limitOrders,
+        setCurrentCryptoData,
+        setLimitOrdersMarks,
+        setStopLimitOrders,
         setLimitOrders,
-        setLimitOrdersMarks
     } = useSimulatorTradingChartDetailsContext()
 
     const [newSeries, setNewSeries] = useState<any>(null)
@@ -169,49 +171,63 @@ const Chart: React.FC = () => {
 
         const limitOrdersWorking = limitOrders.filter(order => order.status === WORKING_STATUS)
 
+
         if (currentCryptoData && currentCryptoData.close && limitOrdersWorking) {
             setLimitOrders(prev => {
                 return prev.map(order => {
                     if (currentCryptoData.close <= order.limit_price && order.status === WORKING_STATUS && order.side === "Buy") {
-                            setBalanceTradeableCrypto(prev => plus(prev, order.quantity))
+                        setBalanceTradeableCrypto(prev => plus(prev, order.quantity))
 
-                            showNotification(`Order L${order.order_id} executed (BUY:Limit)`, "info", 0)
+                        showNotification(`Order L${order.order_id} executed (BUY:Limit)`, "info", 0)
 
-                            setLimitOrdersMarks(prev => [...prev, {
-                                time: Number(currentCryptoData.time),
-                                position: "aboveBar",
-                                color: "green",
-                                shape: 'arrowUp',
-                                size: 1.5,
-                                id: `limit_${order.order_id}`,
-                                text: `BUY @ $${multiply(order.quantity, order.limit_price)}`,
-                            }])
+                        setLimitOrdersMarks(prev => [...prev, {
+                            time: Number(currentCryptoData.time),
+                            position: "aboveBar",
+                            color: "green",
+                            shape: 'arrowUp',
+                            size: 1.5,
+                            id: `limit_${order.order_id}`,
+                            text: `BUY @ $${multiply(order.quantity, order.limit_price)}`,
+                        }])
 
-                            return {...order, status: FILLED_STATUS}
+                        return {...order, status: FILLED_STATUS}
                     }
 
-                    if(currentCryptoData.close >= order.limit_price && order.status === WORKING_STATUS &&  order.side === "Sell"){
-                            setBalanceUSDT(prev => plus(prev, order.quantity * order.limit_price))
+                    if (currentCryptoData.close >= order.limit_price && order.status === WORKING_STATUS && order.side === "Sell") {
+                        setBalanceUSDT(prev => plus(prev, order.quantity * order.limit_price))
 
-                            showNotification(`Order L${order.order_id} executed (SELL:Limit)`, "info", 0)
+                        showNotification(`Order L${order.order_id} executed (SELL:Limit)`, "info", 0)
 
-                            setLimitOrdersMarks(prev => [...prev, {
-                                time: Number(currentCryptoData.time),
-                                position: "belowBar",
-                                color: "red",
-                                shape: 'arrowDown',
-                                size: 1.5,
-                                id: `limit_${order.order_id}`,
-                                text: `SELL @ $${multiply(order.quantity, order.limit_price)}`,
-                            }])
+                        setLimitOrdersMarks(prev => [...prev, {
+                            time: Number(currentCryptoData.time),
+                            position: "belowBar",
+                            color: "red",
+                            shape: 'arrowDown',
+                            size: 1.5,
+                            id: `limit_${order.order_id}`,
+                            text: `SELL @ $${multiply(order.quantity, order.limit_price)}`,
+                        }])
 
-                            return {...order, status: FILLED_STATUS}
+                        return {...order, status: FILLED_STATUS}
                     }
 
                     return order
                 })
             })
         }
+
+        const stopLimitOrdersWorking = stopLimitOrders.filter(order => order.status === WORKING_STATUS)
+
+        if (currentCryptoData && currentCryptoData.close && stopLimitOrdersWorking.length) {
+            setStopLimitOrders(prev => {
+                return prev.map(order => {
+                    // @TODO will continue tomorrow to write checking stop limit orders logic
+
+                    return order
+                })
+            })
+        }
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentCryptoData?.close]);
 

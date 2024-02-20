@@ -10,16 +10,17 @@ import {
 
 import {Input, InputRange} from "components";
 import TradeButton from "../TradeButton";
-import {divide, multiply} from "utils";
+import {divide, ERROR, multiply, showNotification} from "utils";
+import {ProcessT} from "layouts/providers/type";
 
-const StopLimit:React.FC = () => {
-    const {balanceUSDT, balanceTradeableCrypto, setBalanceUSDT, setBalanceTradeableCrypto} = useSimulatorPlayerInfoContext()
-    const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
-    const {setCurrentModal} = useStopOrderLimitModalContext()
+const StopLimit: React.FC = () => {
+    const {balanceUSDT, balanceTradeableCrypto} = useSimulatorPlayerInfoContext()
+    const {currentCryptoData, stopLimitOrders} = useSimulatorTradingChartDetailsContext()
+    const {setCurrentModal, setDataForModal} = useStopOrderLimitModalContext()
     const {cryptoType} = useSimulatorOptionsContext()
     const {process} = useSimulatorTradingContext()
 
-    const [stopUSDT,setStopUSDT] = useState("")
+    const [stopUSDT, setStopUSDT] = useState("")
     const [limitUSDT, setLimitUSDT] = useState<number | string>("")
     const [quantityCrypto, setQuantityCrypto] = useState("")
     const [totalPrice, setTotalPrice] = useState("")
@@ -65,11 +66,45 @@ const StopLimit:React.FC = () => {
         setTotalPrice(multiply(quantity, limitUSDT).toString())
     }
 
-    const tradeInLimitOrder = ()=> {
+    const tradeInLimitOrder = (side: ProcessT) => {
+        const Influence = Number(stopUSDT) > Number(currentCryptoData.close) ? "up" : "down"
+
+        if (side === "buy" && Number(totalPrice) > currentBalance) {
+            showNotification(ERROR.INSUFFICIENT, "error", 0)
+            return
+        }
+
+        if (side === "sell" && Number(quantityCrypto) > currentBalance) {
+            showNotification(ERROR.INSUFFICIENT, "error", 0)
+            return;
+        }
+
+        setDataForModal({
+            symbol: cryptoType,
+            side: side === "sell" ? "Sell" : "Buy",
+            type: "Stop",
+            quantity: Number(quantityCrypto),
+            price: 0,
+            limit_price: Number(limitUSDT),
+            stop_price: Number(stopUSDT),
+            last: 0,
+            status: "Working",
+            order_id: null,
+            date: null,
+            influence: Influence,
+            total: totalPrice,
+            fee: 0.00001
+        })
+
+        setPercent(0)
+        setTotalPrice("")
+        setQuantityCrypto("")
         setCurrentModal("order-confirm")
     }
 
-    return(
+    console.log(stopLimitOrders)
+
+    return (
         <div className="spot_stop-limit">
             <Input
                 name="stop"
