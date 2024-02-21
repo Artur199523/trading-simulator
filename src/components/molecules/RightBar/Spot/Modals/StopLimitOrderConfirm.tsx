@@ -1,7 +1,7 @@
 import React from "react";
 
 import {useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext, useStopOrderLimitModalContext} from "layouts/providers";
-import {minus, multiply, plus, showNotification,SUCCESS} from "utils";
+import {minus, multiply, showNotification, SUCCESS} from "utils";
 
 import ModalWindow from "components/atoms/ModalWindow";
 import Button from "components/atoms/Button";
@@ -13,26 +13,28 @@ import "./style.scss"
 const StopLimitOrderConfirm: React.FC = () => {
     const {setBalanceUSDT, setBalanceTradeableCrypto} = useSimulatorPlayerInfoContext()
     const {dataForModal, setCurrentModal} = useStopOrderLimitModalContext()
-    const {setStopLimitOrders} = useSimulatorTradingChartDetailsContext()
+    const {setStopLimitPreOrders} = useSimulatorTradingChartDetailsContext()
 
     const confirmStopOrder = () => {
         const data = {...dataForModal}
-        const {quantityCrypto, currentPrice, side, limit_price} = dataForModal
+        const {side, limit_price, quantity, influence, stop_price} = dataForModal
 
         delete dataForModal.fee
         delete dataForModal.total
 
-        if (side === "buy") {
-            setBalanceTradeableCrypto(prev => plus(prev, quantityCrypto))
-            setBalanceUSDT(prev => minus(prev, currentPrice))
+        if (side === "Buy") {
+            if ((influence === "up" && stop_price >= limit_price) || (influence === "down" && stop_price <= limit_price)) {
+                setBalanceUSDT(prev => minus(prev, multiply(quantity, stop_price)))
+            } else {
+                setBalanceUSDT(prev => minus(prev, multiply(quantity, limit_price)))
+            }
         }
 
-        if (side === "sell") {
-            setBalanceTradeableCrypto(prev => minus(prev, quantityCrypto))
-            setBalanceUSDT(prev => plus(prev, multiply(quantityCrypto, limit_price)))
+        if (side === "Sell") {
+            setBalanceTradeableCrypto(prev => minus(prev, quantity))
         }
 
-        setStopLimitOrders((prev: OrderITF[]) => {
+        setStopLimitPreOrders((prev: OrderITF[]) => {
             let orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
 
             return [...prev, {...data, order_id: orderId, date: new Date()}]

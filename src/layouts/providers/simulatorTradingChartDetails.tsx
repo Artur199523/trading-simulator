@@ -29,11 +29,12 @@ const defaultOrder: OrderITF = {
     date: new Date()
 }
 
-const defaultStopOrder: StopOrderITF = {
+const defaultStopPreOrder: StopOrderITF = {
     ...defaultOrder,
     influence: "",
     fee: 0,
-    total: 0
+    total: 0,
+    isActive: false
 }
 
 const defaultOrderMark: OrderMarkITF = {
@@ -52,29 +53,40 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     currentCryptoData: defaultData,
     limitOrdersMarks: [defaultOrderMark],
     marketOrdersMarks: [defaultOrderMark],
+    stopLimitPreOrders: [defaultStopPreOrder],
     stopLimitOrdersMarks: [],
-    setLimitOrders: () => {},
-    setMarketOrders: () => {},
-    setStopLimitOrders: () => {},
-    setLimitOrdersMarks: () => {},
-    setMarketOrdersMarks: () => {},
-    setCurrentCryptoData: () => {},
-    setStopLimitOrdersMarks: () => {}
+    setLimitOrders: () => {
+    },
+    setMarketOrders: () => {
+    },
+    setStopLimitOrders: () => {
+    },
+    setLimitOrdersMarks: () => {
+    },
+    setMarketOrdersMarks: () => {
+    },
+    setCurrentCryptoData: () => {
+    },
+    setStopLimitPreOrders: () => {
+    },
+    setStopLimitOrdersMarks: () => {
+    }
 })
 export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF> = memo(({children}) => {
     const [currentCryptoData, setCurrentCryptoData] = useState<HistoryItem>(defaultData)
 
     //Market
     const [marketOrders, setMarketOrders] = useState<OrderITF[]>([defaultOrder])
-    const [marketOrdersMarks, setMarketOrdersMarks] = useState<OrderMarkITF[]>([defaultOrderMark])
+    const [marketOrdersMarks, setMarketOrdersMarks] = useState<OrderMarkITF[] | []>([])
 
     //Limit Order
     const [limitOrders, setLimitOrders] = useState<OrderITF[]>([defaultOrder])
-    const [limitOrdersMarks, setLimitOrdersMarks] = useState<OrderMarkITF[]>([defaultOrderMark])
+    const [limitOrdersMarks, setLimitOrdersMarks] = useState<OrderMarkITF[] | []>([])
 
     //Stop Limit Order
-    const [stopLimitOrders, setStopLimitOrders] = useState<StopOrderITF[]>([defaultStopOrder])
-    const [stopLimitOrdersMarks, setStopLimitOrdersMarks] = useState<any>([])
+    const [stopLimitOrders, setStopLimitOrders] = useState<StopOrderITF[] | []>([])
+    const [stopLimitPreOrders, setStopLimitPreOrders] = useState<StopOrderITF[] | []>([])
+    const [stopLimitOrdersMarks, setStopLimitOrdersMarks] = useState<OrderMarkITF[] | []>([])
 
     return (
         <SimulatorTradingChartDetailsContext.Provider value={{
@@ -84,6 +96,7 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
             limitOrdersMarks,
             currentCryptoData,
             marketOrdersMarks,
+            stopLimitPreOrders,
             stopLimitOrdersMarks,
             setLimitOrders,
             setMarketOrders,
@@ -91,6 +104,7 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
             setLimitOrdersMarks,
             setCurrentCryptoData,
             setMarketOrdersMarks,
+            setStopLimitPreOrders,
             setStopLimitOrdersMarks
         }}>
             {children}

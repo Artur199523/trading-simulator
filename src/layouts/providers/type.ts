@@ -71,17 +71,19 @@ export interface SimulatorPlayerInfoContextITF {
 export interface SimulatorTradingChartDetailsContextITF {
     limitOrders: OrderITF[]
     marketOrders: OrderITF[]
-    stopLimitOrdersMarks: any
     currentCryptoData: HistoryItem
     stopLimitOrders: StopOrderITF[]
     limitOrdersMarks: OrderMarkITF[]
     marketOrdersMarks: OrderMarkITF[]
+    stopLimitPreOrders: StopOrderITF[]
+    stopLimitOrdersMarks: OrderMarkITF[]
     setCurrentCryptoData: (data: HistoryItem) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
     setMarketOrders: (order: (prev: OrderITF[]) => OrderITF[]) => void
     setLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setStopLimitOrders: (order: (prev: StopOrderITF[]) => StopOrderITF[]) => void
     setMarketOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
+    setStopLimitPreOrders: (order: (prev: StopOrderITF[]) => StopOrderITF[]) => void
     setStopLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
 }
 
@@ -103,6 +105,7 @@ export interface StopOrderITF extends OrderITF {
     fee: number
     total: number
     influence: InfluenceT
+    isActive: boolean
 }
 
 export interface OrderMarkITF {
