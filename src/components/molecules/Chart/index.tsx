@@ -4,13 +4,13 @@ import {createChart} from "lightweight-charts";
 import {useSimulatorOptionsContext, useSimulatorPlayerInfoContext, useSimulatorToolsContext, useSimulatorTradingChartDetailsContext} from "layouts/providers";
 import {candleStickOptions, chartOptions, histogramApplyOptions, histogramOptions} from "./options";
 import {getCryptoTradingHistory} from "store/simulator/actions";
-import {minus, multiply, plus, showNotification} from "utils";
+import {multiply, plus, showNotification} from "utils";
 import {useAppDispatch, useAppSelector} from "store";
 
 import {HistoryItem, TradingVolumeITF} from "store/simulator/type";
+import {StopOrderITF} from "layouts/providers/type";
 
 import "./style.scss"
-import {StopOrderITF} from "../../../layouts/providers/type";
 
 const Chart: React.FC = () => {
     const dispatch = useAppDispatch()
@@ -56,6 +56,7 @@ const Chart: React.FC = () => {
             currencyType: currency,
             cryptoType: cryptoType
         }))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dispatch])
 
     useEffect(() => {
@@ -250,6 +251,8 @@ const Chart: React.FC = () => {
                     if ((influence === "up" && stop_price <= currentCryptoData.close && currentCryptoData.close <= limit_price) ||
                         (influence === "down" && stop_price >= currentCryptoData.close && currentCryptoData.close >= limit_price)) {
                         prepareOrderForStorage(order)
+
+                        showNotification(`Order ST${order_id} placed (${side}:Limit)`, "info", 0)
                     }
 
                     if ((influence === "up" && stop_price <= currentCryptoData.close && stop_price >= limit_price) ||
@@ -295,7 +298,33 @@ const Chart: React.FC = () => {
         if (currentCryptoData && currentCryptoData.close && stopLimitOrdersWorking.length) {
             setStopLimitOrders(prev => {
                 return prev.map(order => {
-                    // @TODO will be added the order checking and trading logic
+                    const {order_id, side, quantity, limit_price, influence, status} = order
+                    const isBuySide = side === "Buy"
+
+                    if (status === WORKING_STATUS
+                        && (influence === "up" && limit_price <= currentCryptoData.close)
+                        || (influence === "down" && limit_price >= currentCryptoData.close)) {
+
+                        order.status = FILLED_STATUS
+
+                        if (isBuySide) {
+                            setBalanceTradeableCrypto(prev => plus(prev, quantity))
+                        } else {
+                            setBalanceUSDT(prev => plus(prev, multiply(quantity, limit_price)))
+                        }
+
+                        showNotification(`Order ST${order_id} executed (${side}:Limit)`, "info", 1000)
+
+                        setStopLimitOrdersMarks(prev => [...prev, {
+                            time: Number(currentCryptoData.time),
+                            position: isBuySide ? "aboveBar" : "belowBar",
+                            color: isBuySide ? "green" : "red",
+                            shape: isBuySide ? "arrowUp" : "arrowDown",
+                            size: 1.5,
+                            id: `stop_limit_${order_id}`,
+                            text: `${isBuySide ? "BUY" : "SELL"} @ ${multiply(quantity, limit_price).toFixed(2)}`,
+                        }])
+                    }
 
                     return order
                 })
