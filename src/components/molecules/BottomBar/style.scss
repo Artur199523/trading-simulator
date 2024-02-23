@@ -1,12 +1,33 @@
 .bottom-bar {
   height: 80px;
   width: 100%;
+  display: flex;
+  padding: 0 10px;
   background-color: #00121f;
+  align-items: center;
+  justify-content: space-between;
+
+  &_show-orders{
+    button{
+      color: white;
+      padding: 5px;
+      border: none;
+      outline: none;
+      margin: 0 10px;
+      font-size: 14px;
+      cursor: pointer;
+      background: gold;
+      border-radius: 5px;
+      transition: 0.3s ease-in-out;
+
+      &:hover{
+        background: rgba(255, 215, 0, 0.66);
+      }
+    }
+  }
 
   &_control-tools{
-    width: 100%;
     display: flex;
-    justify-content: flex-end;
     align-items: center;
     height: 80px;
 

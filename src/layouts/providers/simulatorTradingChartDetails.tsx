@@ -76,11 +76,11 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
     const [currentCryptoData, setCurrentCryptoData] = useState<HistoryItem>(defaultData)
 
     //Market
-    const [marketOrders, setMarketOrders] = useState<OrderITF[]>([defaultOrder])
+    const [marketOrders, setMarketOrders] = useState<OrderITF[] | []>([])
     const [marketOrdersMarks, setMarketOrdersMarks] = useState<OrderMarkITF[] | []>([])
 
     //Limit Order
-    const [limitOrders, setLimitOrders] = useState<OrderITF[]>([defaultOrder])
+    const [limitOrders, setLimitOrders] = useState<OrderITF[] | []>([])
     const [limitOrdersMarks, setLimitOrdersMarks] = useState<OrderMarkITF[] | []>([])
 
     //Stop Limit Order
