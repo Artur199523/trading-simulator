@@ -15,7 +15,7 @@ import {OrderITF, ProcessT} from "layouts/providers/type";
 
 const LimitOrder: React.FC = () => {
     const {balanceUSDT, balanceTradeableCrypto, setBalanceUSDT, setBalanceTradeableCrypto} = useSimulatorPlayerInfoContext()
-    const {currentCryptoData, setLimitOrders, setLimitOrdersMarks, limitOrders, limitOrdersMarks} = useSimulatorTradingChartDetailsContext()
+    const {currentCryptoData, setLimitOrders, setLimitOrdersMarks} = useSimulatorTradingChartDetailsContext()
     const {cryptoType} = useSimulatorOptionsContext()
     const {process} = useSimulatorTradingContext()
 
@@ -27,16 +27,18 @@ const LimitOrder: React.FC = () => {
     const currentBalance = process === "buy" ? balanceUSDT : balanceTradeableCrypto
 
     useEffect(() => {
-        setPriceUSDT("")
+        setPriceUSDT(currentCryptoData.close)
         setQuantityCrypto("")
         setPercent(0)
         setTotalPrice("")
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [process]);
 
     useEffect(() => {
         if (!priceUSDT) {
             setPriceUSDT(Number(currentCryptoData?.close))
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentCryptoData]);
 
     const priceUSDTHandle = (e: string) => {
@@ -49,26 +51,56 @@ const LimitOrder: React.FC = () => {
     }
 
     const totalUSDTHandle = (price: string) => {
+        let calculatedPercent: number = 0
         const quantityPrice = divide(price, priceUSDT).toString()
 
-        setPercent(0)
+        if (process === "sell") {
+            if (balanceTradeableCrypto) calculatedPercent = Number(divide(multiply(quantityPrice, 100), balanceTradeableCrypto).toFixed(1))
+        } else {
+            if (balanceUSDT) calculatedPercent = Number(divide(multiply(price, 100), currentBalance).toFixed(1))
+        }
+
         setTotalPrice(price)
-        setQuantityCrypto(quantityPrice)
+        setQuantityCrypto(Number(quantityPrice) === 0 ? "" : quantityPrice)
+        setPercent(calculatedPercent > 100 ? 100 : calculatedPercent)
     }
 
     const rangeHandle = (percent: number) => {
         const calculatedPrice = divide(multiply(currentBalance, percent), 100)
-        const currentPrice = calculatedPrice === 0 ? "" : calculatedPrice.toString()
+
+        const currentPrice = calculatedPrice.toString()
+        const totalPrice = multiply(calculatedPrice, priceUSDT).toString()
+        const quantityCrypto = divide(currentPrice, priceUSDT).toString()
 
         setPercent(percent)
-        setTotalPrice(currentPrice)
-        setQuantityCrypto(divide(currentPrice, priceUSDT).toString())
+
+        if (process === "sell") {
+            setQuantityCrypto(currentPrice.toString())
+            setTotalPrice(totalPrice)
+        } else {
+            setTotalPrice(currentPrice)
+            setQuantityCrypto(quantityCrypto)
+        }
+
+        if (Number(percent) === 0 || Number(currentPrice) === 0 || Number(totalPrice) === 0) {
+            setTotalPrice("")
+            setQuantityCrypto("")
+        }
     }
 
     const quantityHandle = (quantity: string) => {
-        setPercent(0)
+        let calculatedPercent: number = 0
+        const totalPrice = multiply(quantity, priceUSDT)
+
+        if (process === "sell") {
+            if (balanceTradeableCrypto) calculatedPercent = Number(divide(multiply(quantity, 100), balanceTradeableCrypto).toFixed(1))
+        } else {
+            if (balanceUSDT) calculatedPercent = Number(divide(multiply(multiply(quantity, priceUSDT), 100), balanceUSDT).toFixed(1))
+        }
+
         setQuantityCrypto(quantity)
-        setTotalPrice(multiply(quantity, priceUSDT).toString())
+        setPercent(calculatedPercent > 100 ? 100 : calculatedPercent)
+        setTotalPrice(totalPrice === 0 ? "" : totalPrice.toString())
     }
 
     const tradeInLimitOrder = (side: ProcessT) => {
@@ -250,7 +282,10 @@ const LimitOrder: React.FC = () => {
                 placeholder={`Quantity (${cryptoType})`}
                 onChange={(e) => quantityHandle(e.target.value)}
             />
-            <InputRange value={percent} onChange={(e) => rangeHandle(e as any)}/>
+            <InputRange
+                disabled={!priceUSDT || (process === "sell" ? !balanceTradeableCrypto : !balanceUSDT)}
+                value={percent} onChange={(e) => rangeHandle(e as any)}
+            />
             <Input
                 name="totalUSDT"
                 value={totalPrice}

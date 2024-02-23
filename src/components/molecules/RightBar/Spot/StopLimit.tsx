@@ -5,7 +5,7 @@ import {
     useSimulatorTradingContext,
     useSimulatorPlayerInfoContext,
     useStopOrderLimitModalContext,
-    useSimulatorTradingChartDetailsContext
+    useSimulatorTradingChartDetailsContext, useSimulatorToolsContext
 } from "layouts/providers";
 import {divide, ERROR, multiply, showNotification} from "utils";
 
@@ -15,14 +15,15 @@ import TradeButton from "../TradeButton";
 import {ProcessT} from "layouts/providers/type";
 
 const StopLimit: React.FC = () => {
-    const {balanceUSDT, balanceTradeableCrypto} = useSimulatorPlayerInfoContext()
-    const {currentCryptoData, stopLimitOrders} = useSimulatorTradingChartDetailsContext()
     const {setCurrentModal, setDataForModal} = useStopOrderLimitModalContext()
+    const {balanceUSDT, balanceTradeableCrypto} = useSimulatorPlayerInfoContext()
+    const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
     const {cryptoType} = useSimulatorOptionsContext()
     const {process} = useSimulatorTradingContext()
+    const {setIsPlay} = useSimulatorToolsContext()
 
-    const [stopUSDT, setStopUSDT] = useState("")
     const [limitUSDT, setLimitUSDT] = useState<number | string>("")
+    const [stopUSDT, setStopUSDT] = useState("")
     const [quantityCrypto, setQuantityCrypto] = useState("")
     const [totalPrice, setTotalPrice] = useState("")
     const [percent, setPercent] = useState(0)
@@ -68,7 +69,7 @@ const StopLimit: React.FC = () => {
 
     const rangeHandle = (percent: number) => {
         const calculatedPrice = divide(multiply(currentBalance, percent), 100)
-        const currentPrice = calculatedPrice === 0 ? "" : calculatedPrice.toString()
+        const currentPrice = Number(calculatedPrice) === 0 ? "" : calculatedPrice.toString()
         const totalPrice = multiply(calculatedPrice, limitUSDT).toString()
         const quantityCrypto = divide(currentPrice, limitUSDT).toString()
 
@@ -80,6 +81,11 @@ const StopLimit: React.FC = () => {
         } else {
             setTotalPrice(currentPrice)
             setQuantityCrypto(quantityCrypto)
+        }
+
+        if (Number(percent) === 0 || Number(calculatedPrice) === 0 || Number(totalPrice) === 0) {
+            setTotalPrice("")
+            setQuantityCrypto("")
         }
     }
 
@@ -100,6 +106,13 @@ const StopLimit: React.FC = () => {
 
     const tradeInLimitOrder = (side: ProcessT) => {
         const Influence = Number(stopUSDT) > Number(currentCryptoData.close) ? "up" : "down"
+        const percentOfCrypto = currentCryptoData.close * 15 / 100
+
+        if ((Influence === "up" && stopUSDT < limitUSDT && ( Number(stopUSDT) - currentCryptoData.close > percentOfCrypto))
+            || (Influence === "down" && stopUSDT > limitUSDT && ( currentCryptoData.close - Number(stopUSDT) > percentOfCrypto))) {
+            showNotification(ERROR.INSUFFICIENT_INTERVAL, "error", 0)
+            return
+        }
 
         if (side === "buy" && Number(totalPrice) > currentBalance) {
             showNotification(ERROR.INSUFFICIENT, "error", 0)
@@ -130,12 +143,11 @@ const StopLimit: React.FC = () => {
         })
 
         setPercent(0)
+        setIsPlay(false)
         setTotalPrice("")
         setQuantityCrypto("")
         setCurrentModal("order-confirm")
     }
-
-    console.log(stopLimitOrders)
 
     return (
         <div className="spot_stop-limit">
@@ -160,7 +172,11 @@ const StopLimit: React.FC = () => {
                 placeholder={`Quantity (${cryptoType})`}
                 onChange={(e) => quantityHandle(e.target.value)}
             />
-            <InputRange value={percent} onChange={(e) => rangeHandle(e as any)}/>
+            <InputRange
+                disabled={!limitUSDT || (process === "sell" ? !balanceTradeableCrypto : !balanceUSDT)}
+                value={percent}
+                onChange={(e) => rangeHandle(e as any)}
+            />
             <Input
                 name="total"
                 value={totalPrice}

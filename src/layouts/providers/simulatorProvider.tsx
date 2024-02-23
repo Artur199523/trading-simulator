@@ -1,6 +1,6 @@
 import React, {createContext, useContext, useState} from "react"
 import {CryptoTypeT, CurrencyT, CurrentSpeedT, IntervalT, ProcessT, SimulatorContextITF, SimulatorProviderITF, TradingType} from "./type";
-import {HistoryItem} from "../../store/simulator/type";
+import {HistoryItem} from "store/simulator/type";
 
 const SimulatorContext = createContext<SimulatorContextITF>({
     setNext: () => {},

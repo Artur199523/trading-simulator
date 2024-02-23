@@ -1,6 +1,11 @@
-import React from "react";
+import React, {useEffect} from "react";
 
-import {useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext, useStopOrderLimitModalContext} from "layouts/providers";
+import {
+    useSimulatorPlayerInfoContext,
+    useSimulatorToolsContext,
+    useSimulatorTradingChartDetailsContext,
+    useStopOrderLimitModalContext
+} from "layouts/providers";
 import {minus, multiply, showNotification, SUCCESS} from "utils";
 
 import ModalWindow from "components/atoms/ModalWindow";
@@ -11,9 +16,14 @@ import {OrderITF} from "layouts/providers/type";
 import "./style.scss"
 
 const StopLimitOrderConfirm: React.FC = () => {
-    const {setBalanceUSDT, setBalanceTradeableCrypto} = useSimulatorPlayerInfoContext()
     const {dataForModal, setCurrentModal} = useStopOrderLimitModalContext()
+    const {setBalanceUSDT, setBalanceTradeableCrypto} = useSimulatorPlayerInfoContext()
     const {setStopLimitPreOrders} = useSimulatorTradingChartDetailsContext()
+    const {setIsPlay} = useSimulatorToolsContext()
+
+    useEffect(() => {
+        return () => setIsPlay(true)
+    }, []);
 
     const confirmStopOrder = () => {
         const data = {...dataForModal}
@@ -43,6 +53,7 @@ const StopLimitOrderConfirm: React.FC = () => {
         setCurrentModal("")
         showNotification(SUCCESS.CONFIRMATION_ORDER, "success", 0)
     }
+
 
     const influenceText = dataForModal.influence === "down" ? "drops to or below" : "rises to or above"
 

@@ -126,7 +126,15 @@ const Market: React.FC = () => {
     }
 
     const valueHandle = (value: string) => {
-        setPercent(0)
+        let calculatedPercent: number = 0
+
+        if (process === "sell") {
+            if (balanceTradeableCrypto) calculatedPercent = Number(divide(multiply(value, 100), balanceTradeableCrypto).toFixed(1))
+        } else {
+            if (balanceUSDT) calculatedPercent = Number(divide(multiply(value, 100), balanceUSDT).toFixed(1))
+        }
+
+        setPercent(calculatedPercent >= 100 ? 100 : calculatedPercent)
         setValue(value)
     }
 

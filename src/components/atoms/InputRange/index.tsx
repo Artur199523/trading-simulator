@@ -4,7 +4,7 @@ import {InputRangeITF} from "./type";
 
 import "./style.scss"
 
-const InputRange: React.FC<InputRangeITF> = ({onChange,value}) => {
+const InputRange: React.FC<InputRangeITF> = ({onChange,value,disabled}) => {
     return (
         <div className="input-range">
             <input
@@ -13,6 +13,7 @@ const InputRange: React.FC<InputRangeITF> = ({onChange,value}) => {
                 name="vol"
                 min="0"
                 max="100"
+                disabled={disabled}
                 onChange={(e) =>
                     (onChange(e.target.value as any))
                 }
