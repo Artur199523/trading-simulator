@@ -1,0 +1,77 @@
+.checkbox-form-control {
+  display: grid;
+  cursor: pointer;
+  margin-bottom: 10px;
+  grid-template-columns: 2.5em auto;
+
+  &.large {
+    font-size: 16px;
+    font-weight: 400;
+    color: white;
+  }
+
+  &.medium {
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 20px;
+    color: white;
+  }
+
+  input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+    font: inherit;
+    transform: translateY(-0.075em);
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+
+    &:checked::before {
+      transform: scale(1);
+    }
+
+    &::before {
+      content: "";
+      transform: scale(0);
+      transform-origin: bottom left;
+      transition: 120ms transform ease-in-out;
+    }
+
+    &.large {
+      width: 24px;
+      height: 24px;
+
+      &::before {
+        width: 14px;
+        height: 13px;
+        clip-path: polygon(4% 40%, 0 55%, 41% 90%, 103% 16%, 95% 0%, 45% 65%);
+      }
+    }
+
+    &.medium {
+      width: 20px;
+      height: 20px;
+
+      &::before {
+        width: 12px;
+        height: 11px;
+        clip-path: polygon(4% 40%, 0 55%, 41% 90%, 103% 16%, 95% 0%, 45% 65%);
+      }
+    }
+
+    &.gold {
+      border: 1px solid gold;
+      color: white;
+      border-radius:2px ;
+
+      &::before {
+        background-color: white;
+      }
+
+      &:checked {
+        background-color: gold;
+      }
+    }
+  }
+}

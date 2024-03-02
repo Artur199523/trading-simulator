@@ -3,7 +3,7 @@ import React from "react";
 export type StatusT = "error" | ""
 
 export interface InputITF {
-    placeholder:string,
+    placeholder?:string,
     disabled?:boolean,
     name:string,
     type:string,

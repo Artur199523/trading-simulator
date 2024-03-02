@@ -1,0 +1,68 @@
+.futures-modal {
+  &_btns {
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      &:first-child {
+        margin-right: 10px;
+      }
+    }
+  }
+
+  &_head-btns {
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      width: 48%;
+      border: none;
+      color: white;
+      padding: 6px 0;
+      cursor: pointer;
+      font-size: 14px;
+      min-height: 24px;
+      font-weight: 500;
+      border-radius: 3px;
+      background-color: rgb(71, 77, 87);
+
+      &:hover {
+        background-color: rgba(71, 77, 87, 0.69);
+      }
+
+      &.active {
+        border: 1px solid gold;
+      }
+    }
+  }
+
+  &_content {
+    color: white;
+    font-size: 12px;
+    line-height: 16px;
+
+    p {
+      margin: 16px 0;
+    }
+  }
+
+  &_adjust-levrage {
+    span {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 5px;
+      color: rgb(183, 189, 198);
+    }
+
+    input {
+      text-align: center;
+    }
+
+    p {
+      font-size: 12px;
+      line-height: 16px;
+      color: rgb(246, 70, 93);
+      margin: 15px 0;
+    }
+  }
+}

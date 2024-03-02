@@ -5,10 +5,10 @@ import {useSimulatorTradingChartDetailsContext} from "layouts/providers";
 import {useOnClickOutSide} from "hooks";
 
 import {TabContent, TabItem, Table} from "components";
+import {showNotification} from "utils";
 
 import {OrderBlockITF} from "./type";
 import "./style.scss"
-import {showNotification} from "../../../utils";
 
 const headers = [
     {value: "symbol", displayName: "Symbol"},

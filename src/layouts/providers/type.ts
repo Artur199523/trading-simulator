@@ -56,9 +56,15 @@ export interface SimulatorToolsContextITF {
 
 export interface SimulatorTradingContextITF {
     process: ProcessT
+    adjustLeverage: number
+    marginMode: MarginModeT
     tradingType: TradingType
+    processFutures: ProcessFuturesT
     setProcess: (process: ProcessT) => void
+    setMarginMode: (mode: MarginModeT) => void
+    setAdjustLeverage: (amount: number) => void
     setTradingType: (trading: TradingType) => void
+    setProcessFutures: (process: ProcessFuturesT) => void
 }
 
 export interface SimulatorPlayerInfoContextITF {
@@ -141,6 +147,10 @@ export type TradingType = "spot" | "futures"
 
 export type ProcessT = "buy" | "sell" | ""
 
+export type ProcessFuturesT = "buy/long" | "sell/short" | ""
+
+export type MarginModeT = "cross" | "isolated" | ""
+
 export type MarkPositionT = "aboveBar" | "belowBar" | "inBar"
 
 export type MarkShapeT = "circle" | "arrowUp" | "arrowDown" | "triangleUp" | "triangleDown"
@@ -148,3 +158,5 @@ export type MarkShapeT = "circle" | "arrowUp" | "arrowDown" | "triangleUp" | "tr
 export type StopLimitOrderT = "order-confirm" | ""
 
 export type InfluenceT = "up" | "down" | ""
+
+export type FuturesTradingModalsT = "margin-mode" | "adjust-leverage" | ""

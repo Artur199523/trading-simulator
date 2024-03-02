@@ -1,0 +1,81 @@
+.futures {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &_tabs {
+    display: flex;
+  }
+
+  &_tp-sl {
+    padding: 10px 0 0 0;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+  }
+
+  &_trade-buttons {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      width: 48%;
+      color: white;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 10px 0;
+      font-size: 16px;
+      min-height: 25px;
+      font-weight: 500;
+      background: none;
+      border-radius: 3px;
+      transition: 0.2s ease-in-out;
+
+      &:first-child {
+        background-color: rgb(14, 203, 129);
+
+        &:hover {
+          background-color: rgba(14, 203, 129, 0.64);
+        }
+      }
+
+      &:last-child {
+        background-color: rgb(246, 70, 93);
+
+        &:hover {
+          background-color: rgba(246, 70, 93, 0.65);
+        }
+      }
+    }
+  }
+
+  &_margin-ration {
+    margin-top: 100px;
+
+    h3 {
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    & > div {
+      display: flex;
+      color: white;
+      justify-content: space-between;
+      width: 100%;
+
+      & > span:first-child{
+        font-size: 12px;
+        line-height: 16px;
+        color: rgb(132, 142, 156) !important;
+      }
+
+      & > span:last-child{
+        font-size: 12px;
+        line-height: 16px;
+      }
+    }
+  }
+}

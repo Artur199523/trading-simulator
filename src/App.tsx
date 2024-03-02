@@ -3,6 +3,7 @@ import React from 'react';
 
 import {store} from "./store";
 import {
+    FuturesTradingProvider,
     SimulatorToolsProvider,
     SimulatorTradingProvider,
     SimulatorOptionsProvider,
@@ -10,6 +11,7 @@ import {
     SimulatorTradingChartDetailsProvider
 } from "./layouts/providers";
 
+import {FuturesTradingModals} from "components";
 import Simulator from "./pages/Simulator";
 
 import './App.css';
@@ -22,7 +24,10 @@ function App() {
                     <SimulatorTradingProvider>
                         <SimulatorPLayerInfoProvider>
                             <SimulatorTradingChartDetailsProvider>
-                                <Simulator/>
+                                <FuturesTradingProvider>
+                                    <Simulator/>
+                                    <FuturesTradingModals/>
+                                </FuturesTradingProvider>
                             </SimulatorTradingChartDetailsProvider>
                         </SimulatorPLayerInfoProvider>
                     </SimulatorTradingProvider>

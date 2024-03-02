@@ -4,7 +4,7 @@ import {InputRangeITF} from "./type";
 
 import "./style.scss"
 
-const InputRange: React.FC<InputRangeITF> = ({onChange,value,disabled}) => {
+const InputRange: React.FC<InputRangeITF> = ({onChange,value,disabled,symbol='%'}) => {
     return (
         <div className="input-range">
             <input
@@ -18,7 +18,7 @@ const InputRange: React.FC<InputRangeITF> = ({onChange,value,disabled}) => {
                     (onChange(e.target.value as any))
                 }
                 value={value}/>
-            <span className="input-range_percent">{value}%</span>
+            <span className="input-range_percent">{value}{symbol}</span>
         </div>
     )
 }

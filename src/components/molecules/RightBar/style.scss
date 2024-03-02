@@ -5,7 +5,7 @@
   background-color: #00121f;
   height: calc(100vh - 160px);
 
-  &_trading-btn {
+  &_spot-trading-btn {
     display: flex;
     background: rgba(128, 128, 128, 0.31);
     margin-bottom: 15px;
@@ -31,6 +31,28 @@
         width: 55%;
         background: red;
         border-radius: 25px 10px 10px 25px;
+      }
+    }
+  }
+
+  &_futures-trading-btn{
+    display: flex;
+    margin-bottom: 15px;
+    justify-content: space-between;
+
+    button {
+      width: 48%;
+      color: white;
+      height: 24px;
+      border: none;
+      outline: none;
+      font-size: 12px;
+      cursor: pointer;
+      transition: 0.2s ease-in-out;
+      background-color: rgb(71, 77, 87);
+
+      &:hover{
+        background-color: rgba(71, 77, 87, 0.71);
       }
     }
   }
