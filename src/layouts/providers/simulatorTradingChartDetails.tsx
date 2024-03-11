@@ -47,6 +47,7 @@ const defaultOrderMark: OrderMarkITF = {
 }
 
 const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartDetailsContextITF>({
+    cancelledOrders:[],
     stopLimitOrders: [],
     limitOrders: [defaultOrder],
     marketOrders: [defaultOrder],
@@ -64,6 +65,8 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     setLimitOrdersMarks: () => {
     },
     setMarketOrdersMarks: () => {
+    },
+    setCancelledOrders: () => {
     },
     setCurrentCryptoData: () => {
     },
@@ -88,10 +91,14 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
     const [stopLimitPreOrders, setStopLimitPreOrders] = useState<StopOrderITF[] | []>([])
     const [stopLimitOrdersMarks, setStopLimitOrdersMarks] = useState<OrderMarkITF[] | []>([])
 
+    //Cancelled Orders
+    const [cancelledOrders,setCancelledOrders] = useState([])
+
     return (
         <SimulatorTradingChartDetailsContext.Provider value={{
             limitOrders,
             marketOrders,
+            cancelledOrders,
             stopLimitOrders,
             limitOrdersMarks,
             currentCryptoData,
@@ -100,6 +107,7 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
             stopLimitOrdersMarks,
             setLimitOrders,
             setMarketOrders,
+            setCancelledOrders,
             setStopLimitOrders,
             setLimitOrdersMarks,
             setCurrentCryptoData,

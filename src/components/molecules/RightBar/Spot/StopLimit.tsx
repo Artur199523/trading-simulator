@@ -137,7 +137,7 @@ const StopLimit: React.FC = () => {
             order_id: null,
             date: null,
             influence: Influence,
-            total: totalPrice,
+            total: 0,
             fee: 0.00001,
             isActive: false,
         })

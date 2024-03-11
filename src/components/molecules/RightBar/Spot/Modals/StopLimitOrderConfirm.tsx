@@ -18,7 +18,7 @@ import "./style.scss"
 const StopLimitOrderConfirm: React.FC = () => {
     const {dataForModal, setCurrentModal} = useStopOrderLimitModalContext()
     const {setBalanceUSDT, setBalanceTradeableCrypto} = useSimulatorPlayerInfoContext()
-    const {setStopLimitPreOrders} = useSimulatorTradingChartDetailsContext()
+    const {setStopLimitOrders} = useSimulatorTradingChartDetailsContext()
     const {setIsPlay} = useSimulatorToolsContext()
 
     useEffect(() => {
@@ -27,24 +27,19 @@ const StopLimitOrderConfirm: React.FC = () => {
 
     const confirmStopOrder = () => {
         const data = {...dataForModal}
-        const {side, limit_price, quantity, influence, stop_price} = dataForModal
+        const {side, limit_price, quantity} = dataForModal
 
         delete dataForModal.fee
-        delete dataForModal.total
 
         if (side === "Buy") {
-            if ((influence === "up" && stop_price >= limit_price) || (influence === "down" && stop_price <= limit_price)) {
-                setBalanceUSDT(prev => minus(prev, multiply(quantity, stop_price)))
-            } else {
-                setBalanceUSDT(prev => minus(prev, multiply(quantity, limit_price)))
-            }
+            setBalanceUSDT(prev => minus(prev, multiply(quantity, limit_price)))
         }
 
         if (side === "Sell") {
             setBalanceTradeableCrypto(prev => minus(prev, quantity))
         }
 
-        setStopLimitPreOrders((prev: OrderITF[]) => {
+        setStopLimitOrders((prev: OrderITF[]) => {
             let orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
 
             return [...prev, {...data, order_id: orderId, date: new Date()}]

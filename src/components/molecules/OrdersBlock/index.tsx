@@ -1,14 +1,15 @@
 import classNames from "classnames";
 import React, {useRef, useState} from "react";
 
-import {useSimulatorTradingChartDetailsContext} from "layouts/providers";
+import {useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext} from "layouts/providers";
 import {useOnClickOutSide} from "hooks";
 
 import {TabContent, TabItem, Table} from "components";
-import {showNotification} from "utils";
+import {multiply, plus, showNotification} from "utils";
 
 import {OrderBlockITF} from "./type";
 import "./style.scss"
+import {OrderITF, StopOrderITF} from "../../../layouts/providers/type";
 
 const headers = [
     {value: "symbol", displayName: "Symbol"},
@@ -17,12 +18,25 @@ const headers = [
     {value: "quantity", displayName: "Quantity"},
     {value: "limit_price", displayName: "Limit Price"},
     {value: "stop_price", displayName: "Stop Price"},
+    {value: "last", displayName: "Last"},
+    {value: "total",displayName: "Total"},
     {value: "status", displayName: "Status"},
     {value: "order_id", displayName: "Order id"},
 ]
 
 const OrdersBlock: React.FC<OrderBlockITF> = ({isOpen, setIsOpen}) => {
-    const {marketOrders, limitOrders, stopLimitOrders} = useSimulatorTradingChartDetailsContext()
+    const {
+        limitOrders,
+        marketOrders,
+        setLimitOrders,
+        stopLimitOrders,
+        stopLimitPreOrders,
+        setCancelledOrders,
+        setStopLimitOrders,
+        setStopLimitPreOrders
+    } = useSimulatorTradingChartDetailsContext()
+
+    const {setBalanceUSDT, setBalanceTradeableCrypto} = useSimulatorPlayerInfoContext()
 
     const [activeTab, setActiveTab] = useState("all")
 
@@ -31,20 +45,55 @@ const OrdersBlock: React.FC<OrderBlockITF> = ({isOpen, setIsOpen}) => {
 
     const workingMarketData = marketOrders.filter(order => order.status === "Working")
     const filledMarketData = marketOrders.filter(order => order.status === "Filled")
-    const cancelledMarketData = marketOrders.filter(order => order.status === "Cancelled")
 
     const workingLimitData = limitOrders.filter(order => order.status === "Working")
     const filledLimitData = limitOrders.filter(order => order.status === "Filled")
     const cancelledLimitData = limitOrders.filter(order => order.status === "Cancelled")
 
     const workingStopData = stopLimitOrders.filter(order => order.status === "Working")
+    const workingStopPredData = stopLimitPreOrders.filter(order => !order.isActive && order.status === "Working")
     const filledStopData = stopLimitOrders.filter(order => order.status === "Filled")
     const cancelledStopData = stopLimitOrders.filter(order => order.status === "Cancelled")
 
     useOnClickOutSide(ordersBlockRef, setIsOpen)
 
-    const comingSoonRemoveOrder = () => {
-        showNotification("Coming Soon", "info", 0)
+    const comingSoonRemoveOrder = (removedOrder: OrderITF | StopOrderITF | any) => {
+        const {type, order_id, limit_price, quantity, side} = removedOrder
+
+        switch (type) {
+            case "Limit":
+                showNotification(`Order ST${order_id} cancelled (${side}:Limit)`, "warning", 0)
+
+                setLimitOrders(prev => prev.map(order => {
+                    if (order_id === order.order_id) {
+                        order.status = "Cancelled"
+                    }
+                    return order
+                }))
+
+                if (removedOrder.side === "Buy") {
+                    setBalanceUSDT(prev => plus(prev, multiply(quantity, limit_price)))
+                } else {
+                    setBalanceTradeableCrypto(prev => plus(prev, quantity))
+                }
+                break
+            case "Stop":
+                showNotification(`Order ST${order_id} cancelled (${side}:Stop-Limit)`, "warning", 0)
+
+                setStopLimitOrders(prev => prev.map(order => {
+                    if (order_id === order.order_id) {
+                        order.status = "Cancelled"
+                    }
+                    return order
+                }))
+
+                if (removedOrder.side === "Buy") {
+                    setBalanceUSDT(prev => plus(prev, multiply(quantity, limit_price)))
+                } else {
+                    setBalanceTradeableCrypto(prev => plus(prev, quantity))
+                }
+                break
+        }
     }
 
     return (
@@ -62,29 +111,27 @@ const OrdersBlock: React.FC<OrderBlockITF> = ({isOpen, setIsOpen}) => {
                 <div className="orders-block_content_tabs-content">
                     <TabContent id="all" activeTab={activeTab}>
                         <Table
-                            buttonCallBack={(order) => comingSoonRemoveOrder()}
+                            buttonCallBack={(order) => comingSoonRemoveOrder(order)}
                             headers={headers}
-                            data={[...marketOrders, ...limitOrders, ...stopLimitOrders]}
+                            data={[...marketOrders, ...limitOrders,...filledStopData, ...workingStopData, ...cancelledStopData]}
                         />
                     </TabContent>
                     <TabContent id="working" activeTab={activeTab}>
                         <Table
-                            buttonCallBack={(order) => comingSoonRemoveOrder()}
+                            buttonCallBack={(order) => comingSoonRemoveOrder(order)}
                             headers={headers}
-                            data={[...workingLimitData, ...workingMarketData, ...workingStopData]}/>
+                            data={[...workingLimitData, ...workingMarketData, ...workingStopData, ...workingStopPredData]}/>
                     </TabContent>
                     <TabContent id="filled" activeTab={activeTab}>
                         <Table
-                            buttonCallBack={(order) => comingSoonRemoveOrder()}
                             headers={headers}
                             data={[...filledMarketData, ...filledLimitData, ...filledStopData]}
                         />
                     </TabContent>
                     <TabContent id="cancelled" activeTab={activeTab}>
                         <Table
-                            buttonCallBack={(order) => comingSoonRemoveOrder()}
                             headers={headers}
-                            data={[...cancelledMarketData, ...cancelledLimitData, ...cancelledStopData]}
+                            data={[...cancelledLimitData, ...cancelledStopData]}
                         />
                     </TabContent>
                 </div>

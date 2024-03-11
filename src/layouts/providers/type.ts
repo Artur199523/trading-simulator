@@ -75,6 +75,7 @@ export interface SimulatorPlayerInfoContextITF {
 }
 
 export interface SimulatorTradingChartDetailsContextITF {
+    cancelledOrders:any
     limitOrders: OrderITF[]
     marketOrders: OrderITF[]
     currentCryptoData: HistoryItem
@@ -82,6 +83,7 @@ export interface SimulatorTradingChartDetailsContextITF {
     limitOrdersMarks: OrderMarkITF[]
     marketOrdersMarks: OrderMarkITF[]
     stopLimitPreOrders: StopOrderITF[]
+    setCancelledOrders: any,
     stopLimitOrdersMarks: OrderMarkITF[]
     setCurrentCryptoData: (data: HistoryItem) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
@@ -104,7 +106,7 @@ export interface OrderITF {
     type: TypeT;
     limit_price: number;
     order_id: number;
-    status: string
+    status: StatusT
 }
 
 export interface StopOrderITF extends OrderITF {
@@ -133,7 +135,7 @@ export type SideT = "Buy" | "Sell" | ""
 
 export type TypeT = "Market" | "Limit" | "Stop" | ""
 
-export type StatusT = "Filled" | "Working" | "Canceled"
+export type StatusT = "Filled" | "Working" | "Cancelled" | "Disabled" | ""
 
 export type IntervalT = "histominute"
 
