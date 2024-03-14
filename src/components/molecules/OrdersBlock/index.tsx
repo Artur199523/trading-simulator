@@ -2,14 +2,15 @@ import classNames from "classnames";
 import React, {useRef, useState} from "react";
 
 import {useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext} from "layouts/providers";
+
 import {useOnClickOutSide} from "hooks";
 
 import {TabContent, TabItem, Table} from "components";
 import {multiply, plus, showNotification} from "utils";
 
+import {OrderITF, StopOrderITF} from "layouts/providers/type";
 import {OrderBlockITF} from "./type";
 import "./style.scss"
-import {OrderITF, StopOrderITF} from "../../../layouts/providers/type";
 
 const headers = [
     {value: "symbol", displayName: "Symbol"},
@@ -31,9 +32,7 @@ const OrdersBlock: React.FC<OrderBlockITF> = ({isOpen, setIsOpen}) => {
         setLimitOrders,
         stopLimitOrders,
         stopLimitPreOrders,
-        setCancelledOrders,
         setStopLimitOrders,
-        setStopLimitPreOrders
     } = useSimulatorTradingChartDetailsContext()
 
     const {setBalanceUSDT, setBalanceTradeableCrypto} = useSimulatorPlayerInfoContext()
