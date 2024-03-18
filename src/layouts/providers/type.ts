@@ -5,33 +5,6 @@ export interface SimulatorProviderITF {
     children: React.ReactNode
 }
 
-export interface SimulatorContextITF {
-    next: boolean
-    isPlay: boolean,
-    isStart: boolean,
-    process: ProcessT,
-    USDTBalance: number,
-    currency: CurrencyT,
-    interval: IntervalT,
-    cryptoType: CryptoTypeT,
-    tradingType: TradingType,
-    currentCryptoData: HistoryItem | {},
-    currentSpeed: CurrentSpeedT,
-    currentCryptoBalance: number,
-    setNext: (isNext: boolean) => void,
-    setUSDTBalance: (USDT: number) => void,
-    setIsPlay: (isPlay: boolean) => void,
-    setIsStart: (isStart: boolean) => void,
-    setProcess: (process: ProcessT) => void,
-    setInterval: (interval: IntervalT) => void,
-    setCurrency: (currency: CurrencyT) => void,
-    setCryptoType: (crypto: CryptoTypeT) => void,
-    setCurrentCryptoData: (data: HistoryItem) => void,
-    setTradingType: (trading: TradingType) => void,
-    setCurrentSpeed: (speed: CurrentSpeedT) => void,
-    setCurrentCryptoBalance: (crypto: number) => void
-}
-
 export interface SimulatorOptionsContextITF {
     date: number,
     currency: CurrencyT,
@@ -59,12 +32,18 @@ export interface SimulatorTradingContextITF {
     adjustLeverage: number
     marginMode: MarginModeT
     tradingType: TradingType
-    processFutures: ProcessFuturesT
+    totalDepositWithLeverage: number
+    processFutures: PositionFuturesT
+    orderPlacementPreference: string,
+    currentHedgingModePositionType: HedgingModeTypeT
     setProcess: (process: ProcessT) => void
     setMarginMode: (mode: MarginModeT) => void
     setAdjustLeverage: (amount: number) => void
     setTradingType: (trading: TradingType) => void
-    setProcessFutures: (process: ProcessFuturesT) => void
+    setTotalDepositWithLeverage: (deposit: number) => void
+    setProcessFutures: (position: PositionFuturesT) => void
+    setOrderPlacementPreference: (preference:string) => void
+    setCurrentHedgingModePositionType: (type: HedgingModeTypeT) => void
 }
 
 export interface SimulatorPlayerInfoContextITF {
@@ -75,7 +54,6 @@ export interface SimulatorPlayerInfoContextITF {
 }
 
 export interface SimulatorTradingChartDetailsContextITF {
-    cancelledOrders:any
     limitOrders: OrderITF[]
     marketOrders: OrderITF[]
     currentCryptoData: HistoryItem
@@ -83,7 +61,6 @@ export interface SimulatorTradingChartDetailsContextITF {
     limitOrdersMarks: OrderMarkITF[]
     marketOrdersMarks: OrderMarkITF[]
     stopLimitPreOrders: StopOrderITF[]
-    setCancelledOrders: any,
     stopLimitOrdersMarks: OrderMarkITF[]
     setCurrentCryptoData: (data: HistoryItem) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
@@ -149,7 +126,7 @@ export type TradingType = "spot" | "futures"
 
 export type ProcessT = "buy" | "sell" | ""
 
-export type ProcessFuturesT = "buy/long" | "sell/short" | ""
+export type PositionFuturesT = "long" | "short"
 
 export type MarginModeT = "cross" | "isolated" | ""
 
@@ -161,4 +138,6 @@ export type StopLimitOrderT = "order-confirm" | ""
 
 export type InfluenceT = "up" | "down" | ""
 
-export type FuturesTradingModalsT = "margin-mode" | "adjust-leverage" | ""
+export type FuturesTradingModalsT = "margin-mode" | "adjust-leverage" | "order-placement-preferences" | "TP/SL" | ""
+
+export type HedgingModeTypeT = "Open" | "Close"

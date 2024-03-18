@@ -1,47 +1,45 @@
 import React, {memo, useState} from "react";
 
+import {useFuturesTradingModalContext} from "layouts/providers";
+
 import {Input, InputRange} from "components";
 import TradeButtons from "./TradeButtons";
 import TPSL from "./TPSL";
 
-import {ProcessFuturesT} from "layouts/providers/type";
+import {StartTradeInitialOptions} from "./type";
 
 const Market: React.FC = () => {
-    const [percentInput, setPercentInput] = useState("")
+    const [orderValue, setOrderValue] = useState("")
     const [percentRange, setPercentRange] = useState(0)
-    const [takeProfit, setTakeProfit] = useState<string>("")
-    const [stopLoss, setStoppLoss] = useState<string>("")
 
-    const percentInputHandle = (percent: string) => {
-        setPercentInput(percent)
+    const {setCurrentModal} = useFuturesTradingModalContext()
+
+    const orderValueHandle = (percent: string) => {
+        setOrderValue(percent)
     }
 
     const percentRangeHandle = (percent: number) => {
         setPercentRange(percent)
     }
 
-    const startTrade = (process: ProcessFuturesT) => {
+    const startTrade = (process: StartTradeInitialOptions) => {
         console.log(process)
     }
 
     return (
         <div className="futures_market">
             <Input
-                name="percent"
+                name="quantity"
                 type="number"
-                value={percentInput}
-                placeholder="Size (%)"
-                onChange={(e) => percentInputHandle(e.target.value)}
+                value={orderValue}
+                placeholder="USDT"
+                labelText="Order by Value"
+                labelClickCallback={() => setCurrentModal("order-placement-preferences")}
+                onChange={(e) => orderValueHandle(e.target.value)}
             />
 
             <InputRange value={percentRange} onChange={(e) => percentRangeHandle(e as any)}/>
-
-            <TPSL
-                takeProfit={takeProfit}
-                stopLoss={stopLoss}
-                setTakeProfit={setTakeProfit}
-                setStopLoss={setStoppLoss}
-            />
+            <TPSL orderValue={orderValue}/>
             <TradeButtons onClick={startTrade}/>
         </div>
     )

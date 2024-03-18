@@ -1,13 +1,15 @@
-import {Dispatch, SetStateAction} from "react";
-import {ProcessFuturesT} from "../../../../layouts/providers/type";
-
-export interface TPSLITF {
-    takeProfit: string,
-    stopLoss: string,
-    setTakeProfit: Dispatch<SetStateAction<string>>,
-    setStopLoss: Dispatch<SetStateAction<string>>
-}
+import {HedgingModeTypeT, PositionFuturesT} from "layouts/providers/type";
 
 export interface TradeButtonsITF {
-    onClick: (process: ProcessFuturesT) => void
+    onClick: (process: StartTradeInitialOptions) => void
+}
+
+export interface StartTradeInitialOptions {
+    hedgingType: HedgingModeTypeT
+    position: PositionFuturesT
+}
+
+export interface HeaderItemITF {
+    label: string
+    value: string | number
 }

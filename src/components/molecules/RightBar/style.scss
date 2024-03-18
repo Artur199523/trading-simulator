@@ -35,25 +35,43 @@
     }
   }
 
-  &_futures-trading-btn{
-    display: flex;
-    margin-bottom: 15px;
-    justify-content: space-between;
+  &_futures{
+    &_trading-btn{
+      display: flex;
+      margin-bottom: 15px;
+      justify-content: space-between;
 
-    button {
-      width: 48%;
-      color: white;
-      height: 24px;
-      border: none;
-      outline: none;
-      font-size: 12px;
-      cursor: pointer;
-      transition: 0.2s ease-in-out;
-      background-color: rgb(71, 77, 87);
+      button {
+        width: 48%;
+        color: white;
+        height: 24px;
+        border: none;
+        outline: none;
+        font-size: 12px;
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+        background-color: rgb(71, 77, 87);
 
-      &:hover{
-        background-color: rgba(71, 77, 87, 0.71);
+        &:hover{
+          background-color: rgba(71, 77, 87, 0.71);
+        }
       }
+    }
+
+    &_hedging-mode-tabs{
+      display: flex;
+      margin-bottom: 10px;
+
+      .tab_item {
+        width: 50%;
+        text-align: center;
+        border: 1px solid gray;
+
+        &.active{
+          border: 1px solid gold;
+        }
+      }
+
     }
   }
 

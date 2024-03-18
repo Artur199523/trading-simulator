@@ -5,4 +5,6 @@ export interface InputRangeITF {
     onChange:(e:React.ChangeEvent<HTMLInputElement>) => void
     disabled?:boolean
     symbol?:string
+    min?:number
+    max?:number
 }

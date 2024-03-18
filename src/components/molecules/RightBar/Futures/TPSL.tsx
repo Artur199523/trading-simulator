@@ -1,31 +1,25 @@
-import React, {memo, useState} from "react";
-import {Input, CheckBox} from "components";
-import {TPSLITF} from "./type";
+import React, {memo} from "react";
 
-const TPSL: React.FC<TPSLITF> = ({takeProfit, setTakeProfit, stopLoss, setStopLoss}) => {
-    const [checked, setChecked] = useState(false)
+import {useFuturesTradingModalContext} from "layouts/providers";
+import {showNotification} from "utils";
+
+import {CheckBox} from "components";
+
+const TPSL: React.FC<{ orderValue: string }> = ({orderValue}) => {
+    const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext()
+
+    const checkBoxClick = () => {
+        if (Number(orderValue) < 10) {
+            showNotification("Order value less then need for trade", "error", 0)
+        } else {
+            setCurrentModal("TP/SL")
+            setDataForModal({orderValue})
+        }
+    }
+
     return (
         <div className="futures_tp-sl">
-            <CheckBox extent="medium" checked={checked} name="TP/LS" onChange={() => setChecked(!checked)}>TP/LS</CheckBox>
-            {
-                checked &&
-                <React.Fragment>
-                    <Input
-                        name="take_profit"
-                        type="number"
-                        value={takeProfit}
-                        placeholder="Take Profit (%)"
-                        onChange={(e) => setTakeProfit(e.target.value)}
-                    />
-                    <Input
-                        name="stop_los"
-                        type="number"
-                        value={stopLoss}
-                        placeholder="Stop Loss (%)"
-                        onChange={(e) => setStopLoss(e.target.value)}
-                    />
-                </React.Fragment>
-            }
+            <CheckBox extent="medium" checked={false} name="TP/LS" onChange={() => checkBoxClick()}>Take Profit / Stop Loss</CheckBox>
         </div>
     )
 }

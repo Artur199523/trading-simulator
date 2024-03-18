@@ -1,3 +1,31 @@
+.input-block {
+  &.clickable {
+    label{
+      cursor: pointer;
+      transition: 0.2s ease-in-out;
+
+      &:hover {
+        color: gold;
+      }
+    }
+  }
+
+  label {
+    color: #adb1b8;
+    font-size: 12px;
+    margin-bottom: 3px;
+
+    span {
+      font-size: 12px !important;
+      font-weight: 800;
+      transform: rotate(180deg);
+      display: inline-block;
+
+
+    }
+  }
+}
+
 .input {
   width: 100%;
   color: white;
@@ -5,8 +33,8 @@
   outline: none;
   padding: 0 15px;
   font-size: 16px;
-  margin-bottom:15px;
-  border-radius: 10px;
+  margin-bottom: 15px;
+  border-radius: 3px;
   border: 1px solid gray;
   transition: 0.2s ease-in-out;
   background: rgba(128, 128, 128, 0.18);
@@ -18,24 +46,24 @@
     }
   }
 
-  &:not(:disabled):hover{
+  &:not(:disabled):hover {
     border: 1px solid gold;
   }
 
-  &:focus{
+  &:focus {
     border: 1px solid gold;
   }
 
-  &.error{
+  &.error {
     border: 1px solid red;
   }
 
-  &:disabled{
+  &:disabled {
     background: rgb(71, 77, 87);
     color: gray;
   }
 
-  &::placeholder{
+  &::placeholder {
     font-size: 14px;
   }
 }

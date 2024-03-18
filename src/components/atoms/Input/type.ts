@@ -10,4 +10,6 @@ export interface InputITF {
     value:string | number,
     onChange:(e:React.ChangeEvent<HTMLInputElement>)=>void
     status?:StatusT
+    labelText?: string
+    labelClickCallback?: () => void
 }

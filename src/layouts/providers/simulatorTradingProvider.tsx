@@ -3,7 +3,8 @@ import {
     ProcessT,
     MarginModeT,
     TradingType,
-    ProcessFuturesT,
+    PositionFuturesT,
+    HedgingModeTypeT,
     SimulatorProviderITF,
     SimulatorTradingContextITF,
 } from "./type";
@@ -13,12 +14,18 @@ const SimulatorTradingContext = createContext<SimulatorTradingContextITF>({
     adjustLeverage: 1,
     tradingType:"spot",
     marginMode: "cross",
-    processFutures: "buy/long",
+    processFutures: "long",
+    totalDepositWithLeverage:0,
+    orderPlacementPreference: "USDT",
+    currentHedgingModePositionType: "Open",
     setProcess:()=> {},
     setTradingType:()=> {},
     setMarginMode:() => {},
     setAdjustLeverage:()=>{},
-    setProcessFutures:() =>{}
+    setProcessFutures:() =>{},
+    setOrderPlacementPreference: ()=>{},
+    setTotalDepositWithLeverage: () => {},
+    setCurrentHedgingModePositionType:() => {}
 })
 export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({children}) => {
     const [tradingType, setTradingType] = useState<TradingType>("spot")
@@ -27,7 +34,11 @@ export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({childr
     const [process,setProcess] = useState<ProcessT>("buy")
 
     // FUTURES
-    const [processFutures,setProcessFutures] = useState<ProcessFuturesT>("buy/long")
+    const [currentHedgingModePositionType, setCurrentHedgingModePositionType] = useState<HedgingModeTypeT>("Open")
+    const [processFutures,setProcessFutures] = useState<PositionFuturesT>("long")
+
+    const [orderPlacementPreference,setOrderPlacementPreference] = useState<string>("USDT")
+    const [totalDepositWithLeverage,setTotalDepositWithLeverage ] = useState<number>(0)
     const [marginMode,setMarginMode] = useState<MarginModeT>("cross")
     const [adjustLeverage,setAdjustLeverage] = useState<number>(1)
 
@@ -38,11 +49,17 @@ export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({childr
             tradingType,
             adjustLeverage,
             processFutures,
+            orderPlacementPreference,
+            totalDepositWithLeverage,
+            currentHedgingModePositionType,
             setProcess,
             setMarginMode,
             setTradingType,
             setAdjustLeverage,
-            setProcessFutures
+            setProcessFutures,
+            setOrderPlacementPreference,
+            setTotalDepositWithLeverage,
+            setCurrentHedgingModePositionType
         }}>
             {children}
         </SimulatorTradingContext.Provider>

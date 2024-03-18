@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 
-import {useFuturesTradingModalContext, useSimulatorTradingContext} from "layouts/providers";
+import {useFuturesTradingModalContext, useSimulatorPlayerInfoContext, useSimulatorTradingContext} from "layouts/providers";
 
 import {Button, Input, InputRange, ModalWindow} from "components";
 
@@ -9,12 +9,16 @@ import "./style.scss"
 const AdjustLeverage: React.FC = () => {
     const [leverageInput, setLeverageInput] = useState("1")
     const [leverageRange, setLeverageRange] = useState(1)
+
     const {setCurrentModal} = useFuturesTradingModalContext()
-    const {setAdjustLeverage} = useSimulatorTradingContext()
+    const {setAdjustLeverage,setTotalDepositWithLeverage} = useSimulatorTradingContext()
+    const {balanceUSDT} = useSimulatorPlayerInfoContext()
 
     const confirmLeverage = () => {
         setAdjustLeverage(leverageRange)
         setCurrentModal("")
+
+        setTotalDepositWithLeverage(balanceUSDT * Number(leverageInput))
     }
 
     const leverageInputHandle = (amount: string) => {

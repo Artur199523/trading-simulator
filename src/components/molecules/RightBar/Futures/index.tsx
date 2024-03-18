@@ -22,7 +22,6 @@ const Futures: React.FC = () => {
                     <TabItem activeTab={activeTab} id="market" setActiveTab={setActiveTab}>Market</TabItem>
                     <TabItem activeTab={activeTab} id="stop-limit" setActiveTab={setActiveTab}>Stop-limit</TabItem>
                 </div>
-                <Balance/>
                 <TabContent id="limit" activeTab={activeTab}><FuturesLimitOrder/></TabContent>
                 <TabContent id="market" activeTab={activeTab}><FuturesMarket/></TabContent>
                 <TabContent id="stop-limit" activeTab={activeTab}><FuturesStopLimit/></TabContent>

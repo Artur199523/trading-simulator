@@ -4,7 +4,7 @@ import {Input, InputRange} from "components";
 import TradeButtons from "./TradeButtons";
 import TPSL from "./TPSL";
 
-import {ProcessFuturesT} from "layouts/providers/type";
+import {StartTradeInitialOptions} from "./type";
 
 const StopLimit: React.FC = () => {
     const [stopPrice,setStopPrice] = useState("")
@@ -29,7 +29,7 @@ const StopLimit: React.FC = () => {
         setPercentRange(percent)
     }
 
-    const startTrade = (process: ProcessFuturesT) => {
+    const startTrade = (process: StartTradeInitialOptions) => {
         console.log(process)
     }
 
@@ -58,12 +58,7 @@ const StopLimit: React.FC = () => {
             />
             <InputRange value={percentRange} onChange={(e) => percentRangeHandle(e as any)}/>
 
-            <TPSL
-                takeProfit={takeProfit}
-                stopLoss={stopLoss}
-                setTakeProfit={setTakeProfit}
-                setStopLoss={setStoppLoss}
-            />
+            {/*<TPSL/>*/}
             <TradeButtons onClick={startTrade}/>
         </div>
     )
