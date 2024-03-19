@@ -126,7 +126,7 @@
       display: flex;
       margin: 20px 0;
 
-      &.long {
+      &.Long {
         button:first-child {
           background-color: rgb(14, 203, 129) !important;
 
@@ -136,7 +136,7 @@
         }
       }
 
-      &.short {
+      &.Short {
         button:last-child {
           background-color: rgb(246, 70, 93) !important;
 
@@ -163,14 +163,53 @@
 
     &_which_order {
       display: flex;
-      justify-content: flex-end;
-      margin-bottom: 20px;
+      justify-content: space-between;
 
-      span{
+      span {
+        color: #adb1b8;
+        font-size: 16px;
+      }
+
+      span:last-child {
         color: white;
         display: block;
         font-size: 16px;
         font-weight: 700;
+      }
+    }
+
+    &_trigger-controller {
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(113, 117, 122, 0.34);
+
+      &_inputs {
+        display: flex;
+        height: 35px;
+
+        & > div:first-child {
+          margin-right: 5px;
+          width: 60%;
+        }
+
+        & > div:last-child {
+          width: 40%;
+        }
+      }
+
+      &_info {
+        color: rgba(255, 0, 0, 0.57);
+        margin-top: 3px;
+        font-size: 12px;
+      }
+
+      &_calculated-info {
+        margin-top: 10px;
+        padding: 12px;
+        font-size: 12px;
+        line-height: 16px;
+        border-radius: 5px;
+        color: rgba(255, 255, 255, 0.4);
+        background-color: rgba(113, 117, 122, 0.34);
       }
     }
   }

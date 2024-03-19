@@ -4,8 +4,8 @@ import {InputITF} from "./type";
 import "./style.scss"
 import classNames from "classnames";
 
-const Input: React.FC<InputITF> = ({placeholder, disabled, onChange, name, labelText, labelClickCallback, type, status, value}) => {
-    const inputStyle = classNames("input-block",{"clickable":labelClickCallback})
+const Input: React.FC<InputITF> = ({placeholder, disabled, onChange, name, labelText, labelClickCallback, type, status, value, rightText}) => {
+    const inputStyle = classNames("input-block", {"clickable": labelClickCallback}, {"padding-more": rightText})
 
     return (
         <div className={inputStyle}>
@@ -19,6 +19,7 @@ const Input: React.FC<InputITF> = ({placeholder, disabled, onChange, name, label
                 type={type}
                 value={value}
             />
+            {rightText && <span className="input-block_right-text">{rightText}</span>}
         </div>
     )
 }

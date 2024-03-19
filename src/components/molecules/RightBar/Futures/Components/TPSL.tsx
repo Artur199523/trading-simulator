@@ -3,7 +3,7 @@ import React, {memo} from "react";
 import {useFuturesTradingModalContext} from "layouts/providers";
 import {showNotification} from "utils";
 
-import {CheckBox} from "components";
+import {CheckBox} from "components/index";
 
 const TPSL: React.FC<{ orderValue: string }> = ({orderValue}) => {
     const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext()

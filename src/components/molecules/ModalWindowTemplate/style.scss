@@ -1,0 +1,10 @@
+.modal-btns {
+  display: flex;
+  justify-content: space-between;
+
+  button {
+    &:first-child {
+      margin-right: 10px;
+    }
+  }
+}

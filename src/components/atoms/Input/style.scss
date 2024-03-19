@@ -1,12 +1,20 @@
 .input-block {
+  position: relative;
+
   &.clickable {
-    label{
+    label {
       cursor: pointer;
       transition: 0.2s ease-in-out;
 
       &:hover {
         color: gold;
       }
+    }
+  }
+
+  &.padding-more {
+    input {
+      padding-right: 30px !important;
     }
   }
 
@@ -20,9 +28,15 @@
       font-weight: 800;
       transform: rotate(180deg);
       display: inline-block;
-
-
     }
+  }
+
+  &_right-text {
+    top: 8px;
+    right: 5px;
+    color: white;
+    font-size: 12px;
+    position: absolute;
   }
 }
 

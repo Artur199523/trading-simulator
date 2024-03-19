@@ -12,4 +12,5 @@ export interface InputITF {
     status?:StatusT
     labelText?: string
     labelClickCallback?: () => void
+    rightText?:string
 }

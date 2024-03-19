@@ -2,8 +2,8 @@ import React from "react";
 
 import {useSimulatorTradingContext} from "layouts/providers";
 
-import {TradeButtonsITF} from "./type";
-import "./style.scss"
+import {TradeButtonsITF} from "../type";
+import "../style.scss"
 
 const TradeButtons: React.FC<TradeButtonsITF> = ({onClick}) => {
     const {currentHedgingModePositionType} = useSimulatorTradingContext()

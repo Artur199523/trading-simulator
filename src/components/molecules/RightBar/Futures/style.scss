@@ -67,15 +67,64 @@
       justify-content: space-between;
       width: 100%;
 
-      & > span:first-child{
+      & > span:first-child {
         font-size: 12px;
         line-height: 16px;
         color: rgb(132, 142, 156) !important;
       }
 
-      & > span:last-child{
+      & > span:last-child {
         font-size: 12px;
         line-height: 16px;
+      }
+    }
+  }
+
+  &_triggers {
+    max-width: 220px;
+    margin-bottom: 5px;
+
+    &_text {
+      color: #adb1b8;
+      font-size: 14px;
+      cursor: pointer;
+
+      span {
+        transform: rotate(180deg);
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 700;
+      }
+    }
+
+    &_modal-triggers {
+      padding: 15px 0 30px;
+
+      &_check-item {
+        min-height: 65px;
+        margin-bottom: 15px;
+
+        &_checkbox {
+          .checkbox-form-control {
+            font-size: 14px;
+            font-weight: 600;
+          }
+        }
+
+        p {
+          color: #adb1b8;
+          font-size: 12px;
+          padding-left: 35px;
+        }
+      }
+
+      &_note {
+        color: #71757a;
+        font-size: 12px;
+
+        span {
+          color: red;
+        }
       }
     }
   }

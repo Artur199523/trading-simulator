@@ -3,8 +3,8 @@ import React, {memo, useState} from "react";
 import {useFuturesTradingModalContext} from "layouts/providers";
 
 import {Input, InputRange} from "components";
-import TradeButtons from "./TradeButtons";
-import TPSL from "./TPSL";
+import TradeButtons from "./Components/TradeButtons";
+import TPSL from "./Components/TPSL";
 
 import {StartTradeInitialOptions} from "./type";
 
