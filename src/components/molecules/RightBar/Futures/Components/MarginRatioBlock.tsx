@@ -1,15 +1,18 @@
 import React,{memo} from "react";
+import {useSimulatorPlayerInfoContext} from "layouts/providers";
 const MarginRatioBlock: React.FC = () => {
+    const {balanceUSDT} = useSimulatorPlayerInfoContext()
+
     return (
         <div className="futures_margin-ration">
-            <h3>Margin Ratio</h3>
-            <div>
-                <span>Maintenance Margin</span>
-                <span>0.0000 USDT</span>
-            </div>
+            <h3>Unified Trading Account</h3>
             <div>
                 <span>Margin Balance</span>
-                <span>0.0000 USDT</span>
+                <span>{balanceUSDT.toFixed(2)} USDT</span>
+            </div>
+            <div>
+                <span>Available Balance</span>
+                <span>{balanceUSDT.toFixed(2)} USDT</span>
             </div>
         </div>
     )

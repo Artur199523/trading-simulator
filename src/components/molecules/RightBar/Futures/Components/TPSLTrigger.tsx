@@ -1,18 +1,18 @@
 import React, {useState} from "react";
 
-import {TRIGGERS} from "utils";
+import {TRIGGERS, TRIGGERS_TEXT} from "utils";
 
 import {CheckBox, ModalWindowTemplate} from "components";
 
-import {TPSLTriggerITF} from "../type";
+import {TPSLTriggerIsCheckedITF, TPSLTriggerITF} from "../type";
 
 import "../style.scss"
 
 const TPSLTrigger: React.FC<TPSLTriggerITF> = ({type, currentTrigger, setCurrentTrigger}) => {
-    const [isShow, setIsShow] = useState(false)
     const [checkedTrigger, setCheckedTrigger] = useState<TRIGGERS>(currentTrigger)
+    const [isShow, setIsShow] = useState(false)
 
-    const [isChecked, setIsChecked] = useState({roi: true, change: false, pl: false});
+    const [isChecked, setIsChecked] = useState<TPSLTriggerIsCheckedITF>({roi: false, change: true, pl: false});
 
     const confirm = () => {
         setIsShow(false)
@@ -23,31 +23,31 @@ const TPSLTrigger: React.FC<TPSLTriggerITF> = ({type, currentTrigger, setCurrent
         const name = event.target.name
 
         switch (name) {
-            case "roi":
+            case TRIGGERS.ROI:
                 setIsChecked({roi: true, change: false, pl: false})
-                setCheckedTrigger(TRIGGERS.ROI)
+                setCheckedTrigger(name)
                 break
-            case "change":
+            case TRIGGERS.CHANGE:
                 setIsChecked({roi: false, change: true, pl: false})
-                setCheckedTrigger(TRIGGERS.CHANGE)
+                setCheckedTrigger(name)
                 break
-            case "pl":
+            case TRIGGERS.PL:
                 setIsChecked({roi: false, change: false, pl: true})
-                setCheckedTrigger(TRIGGERS.PL)
+                setCheckedTrigger(name)
                 break
         }
     };
 
     return (
         <div className="futures_triggers">
-            <div onClick={() => setIsShow(true)} className="futures_triggers_text">{type}-Trigger by {currentTrigger}<span>^</span></div>
+            <div onClick={() => setIsShow(true)} className="futures_triggers_text">{type}-Trigger by {TRIGGERS_TEXT[currentTrigger]}<span>^</span></div>
             <ModalWindowTemplate confirmCallback={confirm} cancelCallback={() => setIsShow(false)} show={isShow} title="TP/SL Settings">
                 <div className="futures_triggers_modal-triggers">
                     <div className="futures_triggers_modal-triggers_check-item">
                         <div className="futures_triggers_modal-triggers_check-item_checkbox">
                             <CheckBox
-                                name="roi"
                                 extent="medium"
+                                name={TRIGGERS.ROI}
                                 checked={isChecked.roi}
                                 onChange={(event) => handleChange(event)}
                             >
@@ -60,8 +60,8 @@ const TPSLTrigger: React.FC<TPSLTriggerITF> = ({type, currentTrigger, setCurrent
                     <div className="futures_triggers_modal-triggers_check-item">
                         <div className="futures_triggers_modal-triggers_check-item_checkbox">
                             <CheckBox
-                                name="change"
                                 extent="medium"
+                                name={TRIGGERS.CHANGE}
                                 checked={isChecked.change}
                                 onChange={(event) => handleChange(event)}
                             >
@@ -73,8 +73,8 @@ const TPSLTrigger: React.FC<TPSLTriggerITF> = ({type, currentTrigger, setCurrent
                     <div className="futures_triggers_modal-triggers_check-item">
                         <div className="futures_triggers_modal-triggers_check-item_checkbox">
                             <CheckBox
-                                name="pl"
                                 extent="medium"
+                                name={TRIGGERS.PL}
                                 checked={isChecked.pl}
                                 onChange={(event) => handleChange(event)}
                             >

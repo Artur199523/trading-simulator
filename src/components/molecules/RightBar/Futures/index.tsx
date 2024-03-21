@@ -26,9 +26,7 @@ const Futures: React.FC = () => {
                 <TabContent id="market" activeTab={activeTab}><FuturesMarket/></TabContent>
                 <TabContent id="stop-limit" activeTab={activeTab}><FuturesStopLimit/></TabContent>
             </div>
-            <div>
-                <MarginRatioBlock/>
-            </div>
+            <MarginRatioBlock/>
         </div>
     )
 }
