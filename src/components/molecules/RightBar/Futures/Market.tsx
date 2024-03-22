@@ -2,8 +2,8 @@ import React, {memo, useState} from "react";
 
 import {useFuturesTradingModalContext} from "layouts/providers";
 
-import {Input, InputRange} from "components";
 import TradeButtons from "./Components/TradeButtons";
+import {Input, InputRangeSlider} from "components";
 import TPSL from "./Components/TPSL";
 
 import {StartTradeInitialOptions} from "./type";
@@ -31,14 +31,19 @@ const Market: React.FC = () => {
             <Input
                 name="quantity"
                 type="number"
+                rightText="USDT"
                 value={orderValue}
-                placeholder="USDT"
                 labelText="Order by Value"
                 labelClickCallback={() => setCurrentModal("order-placement-preferences")}
                 onChange={(e) => orderValueHandle(e.target.value)}
             />
-
-            <InputRange value={percentRange} onChange={(e) => percentRangeHandle(e as any)}/>
+            <InputRangeSlider
+                max={100}
+                division={4}
+                name="percent"
+                value={percentRange}
+                onChange={(event) => percentRangeHandle(event.target.value as any)}
+            />
             <TPSL orderValue={orderValue}/>
             <TradeButtons onClick={startTrade}/>
         </div>

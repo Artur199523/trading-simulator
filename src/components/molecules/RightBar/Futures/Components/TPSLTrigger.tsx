@@ -12,7 +12,7 @@ const TPSLTrigger: React.FC<TPSLTriggerITF> = ({type, currentTrigger, setCurrent
     const [checkedTrigger, setCheckedTrigger] = useState<TRIGGERS>(currentTrigger)
     const [isShow, setIsShow] = useState(false)
 
-    const [isChecked, setIsChecked] = useState<TPSLTriggerIsCheckedITF>({roi: false, change: true, pl: false});
+    const [isChecked, setIsChecked] = useState<TPSLTriggerIsCheckedITF>({roi: true, change: false, pl: false});
 
     const confirm = () => {
         setIsShow(false)

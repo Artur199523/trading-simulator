@@ -1,9 +1,10 @@
-import React  from "react";
+import React from "react";
 
 export interface RangeSliderITF {
-    name: string
     max: number
+    name: string
     value: number
-    sliderMarksType?: string
-    onChange: (e:React.ChangeEvent<HTMLInputElement>) => void
+    symbol?: string
+    division?: number
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }

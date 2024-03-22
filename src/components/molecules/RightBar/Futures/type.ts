@@ -1,6 +1,5 @@
 import {HedgingModeTypeT, PositionFuturesT} from "layouts/providers/type";
-import {Dispatch, SetStateAction} from "react";
-import {TRIGGERS, TRIGGERS_TEXT} from "utils";
+import {TRIGGERS} from "utils";
 
 export interface TradeButtonsITF {
     onClick: (process: StartTradeInitialOptions) => void
@@ -48,11 +47,12 @@ export interface SettingsFieldsITF {
 export interface InputOptionsITF {
     placeholder: string
     rightText: string,
-    sliderRangeType?: string
+    sliderOneRange?: { max: number, division: number },
+    sliderTwoRange?: { max: number, division: number }
 }
 
 export interface TPSLTriggerIsCheckedITF {
-    roi:boolean
+    roi: boolean
     change: boolean
     pl: boolean
 }

@@ -1,5 +1,8 @@
 .input-block {
-  position: relative;
+
+  & > div {
+    position: relative;
+  }
 
   &.clickable {
     label {

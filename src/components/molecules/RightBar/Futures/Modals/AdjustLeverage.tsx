@@ -2,7 +2,7 @@ import React, {useState} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorPlayerInfoContext, useSimulatorTradingContext} from "layouts/providers";
 
-import {Button, Input, InputRange, ModalWindow} from "components";
+import {Button, Input, InputRangeSlider, ModalWindow} from "components";
 
 import "./style.scss"
 
@@ -43,12 +43,15 @@ const AdjustLeverage: React.FC = () => {
                     name="price"
                     type="number"
                     value={leverageInput}
-                    onChange={(e) => leverageInputHandle(e.target.value)}
+                    onChange={(event) => leverageInputHandle(event.target.value)}
                 />
-                <InputRange
-                    value={leverageRange}
-                    onChange={(e) => leverageRangeHandle(e as any)}
+                <InputRangeSlider
+                    max={100}
                     symbol="X"
+                    division={5}
+                    name="leverage"
+                    value={leverageRange}
+                    onChange={(event) => leverageRangeHandle(event.target.value as any)}
                 />
                 <p>Selecting higher leverage such as [10x] increases your liquidation risk. Always manage your risk levels. See our help article for more
                     information.</p>
