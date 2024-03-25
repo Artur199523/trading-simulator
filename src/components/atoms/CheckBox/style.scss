@@ -1,20 +1,22 @@
 .checkbox-form-control {
+  color: white;
   display: grid;
   cursor: pointer;
-  margin-bottom: 10px;
+  font-weight: 400;
   grid-template-columns: 2.5em auto;
 
   &.large {
     font-size: 16px;
-    font-weight: 400;
-    color: white;
   }
 
   &.medium {
     font-size: 10px;
-    font-weight: 400;
     line-height: 20px;
-    color: white;
+  }
+
+  &.small {
+    font-size: 10px;
+    line-height: 15px;
   }
 
   input[type="checkbox"] {
@@ -56,6 +58,17 @@
       &::before {
         width: 12px;
         height: 11px;
+        clip-path: polygon(4% 40%, 0 55%, 41% 90%, 103% 16%, 95% 0%, 45% 65%);
+      }
+    }
+
+    &.small{
+      width: 15px;
+      height: 15px;
+
+      &::before {
+        width: 10px;
+        height: 9px;
         clip-path: polygon(4% 40%, 0 55%, 41% 90%, 103% 16%, 95% 0%, 45% 65%);
       }
     }

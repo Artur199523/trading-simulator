@@ -1,5 +1,5 @@
 import {HedgingModeTypeT, PositionFuturesT} from "layouts/providers/type";
-import {TRIGGERS} from "utils";
+import {TRADE_POSITION, TRIGGERS} from "utils";
 
 export interface TradeButtonsITF {
     onClick: (process: StartTradeInitialOptions) => void
@@ -55,4 +55,10 @@ export interface TPSLTriggerIsCheckedITF {
     roi: boolean
     change: boolean
     pl: boolean
+}
+
+export interface TPSLInterface {
+    orderValue: string
+    confirmed: boolean
+    position: TRADE_POSITION
 }

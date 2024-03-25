@@ -1,6 +1,6 @@
 import React, {memo, useEffect, useState} from "react";
 
-import {useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
+import {useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
 
 import {Input, InputRange} from "components";
 import TradeButtons from "./Components/TradeButtons";
@@ -17,7 +17,7 @@ const LimitOrder: React.FC = () => {
     const [stopLoss, setStopLoss] = useState<string>("")
 
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
-    const {totalDepositWithLeverage} = useSimulatorTradingContext()
+    const {totalDepositWithLeverage} = useSimulatorPlayerInfoContext()
 
     useEffect(() => {
         if (currentCryptoData.close && !priceUSDT) setPriceUSDT(currentCryptoData.close.toString())

@@ -9,9 +9,27 @@
   }
 
   &_tp-sl {
-    padding: 10px 0 0 0;
+    padding: 10px 0 ;
     border-top: 1px solid gray;
     border-bottom: 1px solid gray;
+
+    &_position-mark {
+      font-size: 10px;
+      padding: 2px 4px;
+      line-height: 14px;
+      border-radius: 4px;
+      margin-left: 5px;
+
+      &.Long {
+        color: #20b26c;
+        background-color: rgba(32, 178, 108, 0.16);
+      }
+
+      &.Short {
+        color: #ef454a;
+        background-color: rgba(239, 69, 74, 0.16);;
+      }
+    }
   }
 
   &_trade-buttons {

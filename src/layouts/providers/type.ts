@@ -32,15 +32,13 @@ export interface SimulatorTradingContextITF {
     adjustLeverage: number
     marginMode: MarginModeT
     tradingType: TradingType
-    totalDepositWithLeverage: number
     processFutures: PositionFuturesT
     orderPlacementPreference: string,
-    currentHedgingModePositionType: HedgingModeTypeT
     setProcess: (process: ProcessT) => void
     setMarginMode: (mode: MarginModeT) => void
     setAdjustLeverage: (amount: number) => void
     setTradingType: (trading: TradingType) => void
-    setTotalDepositWithLeverage: (deposit: number) => void
+    currentHedgingModePositionType: HedgingModeTypeT
     setProcessFutures: (position: PositionFuturesT) => void
     setOrderPlacementPreference: (preference:string) => void
     setCurrentHedgingModePositionType: (type: HedgingModeTypeT) => void
@@ -49,7 +47,9 @@ export interface SimulatorTradingContextITF {
 export interface SimulatorPlayerInfoContextITF {
     balanceUSDT: number
     balanceTradeableCrypto: number
+    totalDepositWithLeverage: number
     setBalanceUSDT: (balance: (prev: number) => number) => void
+    setTotalDepositWithLeverage:(deposit: number) => void
     setBalanceTradeableCrypto: (balance: (prev: number) => number) => void
 }
 

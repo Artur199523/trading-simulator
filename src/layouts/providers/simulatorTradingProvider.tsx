@@ -15,7 +15,6 @@ const SimulatorTradingContext = createContext<SimulatorTradingContextITF>({
     tradingType:"spot",
     marginMode: "cross",
     processFutures: "long",
-    totalDepositWithLeverage:0,
     orderPlacementPreference: "USDT",
     currentHedgingModePositionType: "Open",
     setProcess:()=> {},
@@ -24,7 +23,6 @@ const SimulatorTradingContext = createContext<SimulatorTradingContextITF>({
     setAdjustLeverage:()=>{},
     setProcessFutures:() =>{},
     setOrderPlacementPreference: ()=>{},
-    setTotalDepositWithLeverage: () => {},
     setCurrentHedgingModePositionType:() => {}
 })
 export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({children}) => {
@@ -38,7 +36,6 @@ export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({childr
     const [processFutures,setProcessFutures] = useState<PositionFuturesT>("long")
 
     const [orderPlacementPreference,setOrderPlacementPreference] = useState<string>("USDT")
-    const [totalDepositWithLeverage,setTotalDepositWithLeverage ] = useState<number>(0)
     const [marginMode,setMarginMode] = useState<MarginModeT>("cross")
     const [adjustLeverage,setAdjustLeverage] = useState<number>(1)
 
@@ -50,7 +47,6 @@ export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({childr
             adjustLeverage,
             processFutures,
             orderPlacementPreference,
-            totalDepositWithLeverage,
             currentHedgingModePositionType,
             setProcess,
             setMarginMode,
@@ -58,7 +54,6 @@ export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({childr
             setAdjustLeverage,
             setProcessFutures,
             setOrderPlacementPreference,
-            setTotalDepositWithLeverage,
             setCurrentHedgingModePositionType
         }}>
             {children}
