@@ -25,23 +25,32 @@ export interface SettingsFieldsITF {
     Long: {
         current_profit_trigger: TRIGGERS
         current_stop_trigger: TRIGGERS
-        profit_trigger_price: string,
-        profit_trigger_profit: string,
-        profit_percent: number,
-        stop_trigger_price: string,
-        stop_trigger_stop: string,
+        profit_trigger_price: string
+        profit_trigger_profit: string
+        profit_percent: number
+        profit_validation: SettingsFieldsValidationITF
+        stop_trigger_price: string
+        stop_trigger_stop: string
         stop_percent: number
+        stop_validation: SettingsFieldsValidationITF
     },
     Short: {
         current_profit_trigger: TRIGGERS
         current_stop_trigger: TRIGGERS
-        profit_trigger_price: string,
-        profit_trigger_profit: string,
-        profit_percent: number,
-        stop_trigger_price: string,
-        stop_trigger_stop: string,
+        profit_trigger_price: string
+        profit_trigger_profit: string
+        profit_percent: number
+        profit_validation: SettingsFieldsValidationITF
+        stop_trigger_price: string
+        stop_trigger_stop: string
         stop_percent: number
+        stop_validation: SettingsFieldsValidationITF
     }
+}
+
+export interface SettingsFieldsValidationITF {
+    issue: boolean
+    message: string
 }
 
 export interface InputOptionsITF {

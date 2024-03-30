@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
 import {ORDER_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
@@ -17,9 +17,11 @@ const settingsFields: SettingsFieldsITF = {
         profit_trigger_price: "",
         profit_trigger_profit: "",
         profit_percent: 0,
+        profit_validation: {issue: false, message: "The Take Profit price must be higher than the order price"},
         stop_trigger_price: "",
         stop_trigger_stop: "",
-        stop_percent: 0
+        stop_percent: 0,
+        stop_validation: {issue: false, message: "The Stop Loss price must be lower than the order price"}
     },
     Short: {
         current_profit_trigger: TRIGGERS.ROI,
@@ -27,9 +29,11 @@ const settingsFields: SettingsFieldsITF = {
         profit_trigger_price: "",
         profit_trigger_profit: "",
         profit_percent: 0,
+        profit_validation: {issue: false, message: "The Take Profit price must be lower than the order price"},
         stop_trigger_price: "",
         stop_trigger_stop: "",
-        stop_percent: 0
+        stop_percent: 0,
+        stop_validation: {issue: false, message: "The Stop Loss price must be higher than the order price"}
     }
 }
 
@@ -45,34 +49,10 @@ const TPSL: React.FC = () => {
 
     const [isShowProfitInputsInfo, setIsShowProfitInputsInfo] = useState(false)
     const [isShowStopInputsInfo, setIsShowStopInputsInfo] = useState(false)
-    const [isSetCurrentPrice, setIsSetCurrentPrice] = useState(false)
 
     const [fieldsValue, setFieldsValue] = useState(settingsFieldsCopy)
 
     const currentPrice = currentCryptoData.close
-
-    useEffect(() => {
-        if (!isSetCurrentPrice) {
-            setIsSetCurrentPrice(true)
-
-            setFieldsValue((prev: SettingsFieldsITF) => {
-                return {
-                    ...prev,
-                    Long: {
-                        ...prev.Long,
-                        profit_trigger_price: currentPrice,
-                        stop_trigger_price: currentPrice,
-                    },
-                    Short: {
-                        ...prev.Short,
-                        profit_trigger_price: currentPrice,
-                        stop_trigger_price: currentPrice
-                    }
-                }
-            })
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     const inputOptions = (trigger: TRIGGERS): InputOptionsITF => {
         switch (trigger) {
@@ -114,6 +94,20 @@ const TPSL: React.FC = () => {
             return (currentPrice * percent / 100).toFixed(2)
         }
 
+        const calculateProfitPriceByTrigger = (value: number) => {
+            return Number(((((((value - currentPrice) * 100) / currentPrice) * adjustLeverage) * (orderValue / adjustLeverage)) / 100).toFixed(2))
+        }
+
+        const calculateTriggerPriceByProfit = (value: number) => {
+            const calculatedPrice = Number(((value * currentPrice * adjustLeverage) / (orderValue * adjustLeverage) + currentPrice).toFixed(2))
+
+            if (activeTradeType === TRADE_POSITION.LONG) {
+                return calculatedPrice
+            } else {
+                return Number((currentPrice - (calculatedPrice - currentPrice)).toFixed(2))
+            }
+        }
+
         const inputPriceChecking = (value: number, type: ORDER_TYPE) => {
             if (activeTradeType === TRADE_POSITION.LONG) {
                 if (type === ORDER_TYPE.PROFIT) {
@@ -126,6 +120,29 @@ const TPSL: React.FC = () => {
                     setIsShowProfitInputsInfo(!(Number(value) < currentPrice))
                 } else {
                     setIsShowStopInputsInfo(!(Number(value) > currentPrice))
+                }
+            }
+        }
+
+        const inputValidation = (value: number | string, type: ORDER_TYPE) => {
+            const currentValue = Number(value)
+
+            if (!currentValue) {
+                path[`${type}_validation`] = {...path[`${type}_validation`], issue: false}
+                return
+            }
+
+            if (activeTradeType === TRADE_POSITION.LONG) {
+                if (type === ORDER_TYPE.PROFIT) {
+                    path.profit_validation = {...path.profit_validation, issue: !(currentValue > currentPrice)}
+                } else {
+                    path.stop_validation = {...path.stop_validation, issue: !(currentValue < currentPrice)}
+                }
+            } else {
+                if (type === ORDER_TYPE.PROFIT) {
+                    path.profit_validation = {...path.profit_validation, issue: !(currentValue < currentPrice)}
+                } else {
+                    path.stop_validation = {...path.stop_validation, issue: !(currentValue > currentPrice)}
                 }
             }
         }
@@ -163,6 +180,15 @@ const TPSL: React.FC = () => {
                         inputPriceChecking(Number(value), ORDER_TYPE.PROFIT)
                         break
                     case TRIGGERS.PL:
+                        const calculatedProfitPriceByTrigger = value ? calculateProfitPriceByTrigger(Number(value)) : ""
+
+                        if (activeTradeType === TRADE_POSITION.LONG) {
+                            path.profit_trigger_profit = Number(value) < 0 ? " " : calculatedProfitPriceByTrigger
+                        } else {
+                            path.profit_trigger_profit = value ? Number(value) < currentPrice ? Math.abs(calculatedProfitPriceByTrigger as number) : -calculatedProfitPriceByTrigger : ""
+                        }
+
+                        inputValidation(value, ORDER_TYPE.PROFIT)
                         break
                 }
                 break
@@ -187,9 +213,19 @@ const TPSL: React.FC = () => {
                             path.profit_trigger_price = calculatedTotalPrice.toFixed(1)
                             path.profit_percent = Number(value) < 0 ? Math.abs(Number(value)) : 0
                         }
+
                         inputPriceChecking(calculatedTotalPrice, ORDER_TYPE.PROFIT)
                         break
                     case TRIGGERS.PL:
+                        const calculatedTriggerPriceByProfit = value ? calculateTriggerPriceByProfit(Number(value)) : ""
+
+                        if (activeTradeType === TRADE_POSITION.LONG) {
+                            path.profit_trigger_price = Number(value) > 0 ? calculatedTriggerPriceByProfit : calculatedTriggerPriceByProfit > 0 ? calculatedTriggerPriceByProfit : ""
+                        } else {
+                            path.profit_trigger_price = Number(value) > 0 && calculatedTriggerPriceByProfit > 0 ? calculatedTriggerPriceByProfit : Number(value) < 0 ? calculatedTriggerPriceByProfit : ""
+                        }
+
+                        inputValidation(calculatedTriggerPriceByProfit as number, ORDER_TYPE.PROFIT)
                         break
                 }
                 break
@@ -217,8 +253,6 @@ const TPSL: React.FC = () => {
 
                             inputPriceChecking(Number(currentPrice) - Number(calculatedTriggerPriceByPercent), ORDER_TYPE.PROFIT)
                         }
-                        break
-                    case TRIGGERS.PL:
                         break
                 }
                 break
@@ -251,6 +285,15 @@ const TPSL: React.FC = () => {
                         inputPriceChecking(Number(value), ORDER_TYPE.STOP)
                         break
                     case TRIGGERS.PL:
+                        const calculatedProfitPriceByTrigger = value ? calculateProfitPriceByTrigger(Number(value)) : ""
+
+                        if (activeTradeType === TRADE_POSITION.LONG) {
+                            path.stop_trigger_stop = Number(value) > 0 ? calculatedProfitPriceByTrigger : ""
+                        } else {
+                            path.stop_trigger_stop = Number(value) < currentPrice ? Number(value) > 0 ? Math.abs(calculatedProfitPriceByTrigger as number) : "" : -calculatedProfitPriceByTrigger
+                        }
+
+                        inputValidation(value, ORDER_TYPE.STOP)
                         break
                 }
                 break
@@ -279,6 +322,15 @@ const TPSL: React.FC = () => {
                         inputPriceChecking(calculatedTotalPrice, ORDER_TYPE.STOP)
                         break
                     case TRIGGERS.PL:
+                        const calculatedProfitPriceByTrigger = value ? calculateTriggerPriceByProfit(Number(value)) : ""
+
+                        if (activeTradeType === TRADE_POSITION.LONG) {
+                            path.stop_trigger_price = calculatedProfitPriceByTrigger
+                        } else {
+                            path.stop_trigger_price = value ? Math.abs(calculatedProfitPriceByTrigger as number) : calculatedProfitPriceByTrigger ? -calculatedProfitPriceByTrigger : ""
+                        }
+
+                        inputValidation(calculatedProfitPriceByTrigger as number, ORDER_TYPE.STOP)
                         break
                 }
                 break
@@ -310,21 +362,24 @@ const TPSL: React.FC = () => {
                             inputPriceChecking(Number(currentPrice) + Number(calculatedTriggerPriceByPercent), ORDER_TYPE.STOP)
                         }
                         break
-                    case TRIGGERS.PL:
-                        break
                 }
         }
 
         setFieldsValue(fieldsValueCopy)
     }
 
-    const triggerHandle = (trigger: TRIGGERS, name: string) => {
+    const triggerHandle = (trigger: TRIGGERS, name: string, type: ORDER_TYPE) => {
         setFieldsValue((prev: SettingsFieldsITF) => {
             return {
                 ...prev,
                 [activeTradeType]: {
                     ...prev[activeTradeType],
-                    [name]: trigger
+                    [name]: trigger,
+                    [`${type}_trigger_price`]: "",
+                    [`${type}_trigger_profit`]: "",
+                    [`${type}_percent`]: 0,
+                    [`${type}_trigger_${type}`]: "",
+                    [`${type}_validation`]: {...prev[activeTradeType][`${type}_validation`], issue: false}
                 }
             }
         })
@@ -347,6 +402,9 @@ const TPSL: React.FC = () => {
         const takeStopPrice = fieldsValue[activeTradeType]["stop_trigger_price"]
         const profit_percent = Number(fieldsValue[activeTradeType]["profit_percent"])
         const stop_percent = Number(fieldsValue[activeTradeType]["stop_percent"])
+
+        const isValidStopTriggerPrice = takeStopPrice > 0
+        const isValidProfitTriggerPrice = takeProfitPrice > 0
 
         switch (trigger) {
             case TRIGGERS.ROI:
@@ -383,17 +441,37 @@ const TPSL: React.FC = () => {
                         (ROI: {-stop_percent * adjustLeverage}%)
                     </div>)
                 }
-                break
+            case TRIGGERS.PL:
+                const stopPrice = fieldsValue[activeTradeType]["stop_trigger_stop"]
+                const profitPrice = fieldsValue[activeTradeType]["profit_trigger_profit"]
+
+                const stopPercentByProfit = Number((((stopPrice * 100) / orderValue) * adjustLeverage).toFixed(2))
+                const profitPercentByTrigger = Number(((((takeProfitPrice - currentPrice) * 100) / currentPrice) * adjustLeverage).toFixed(2))
+
+                const profitTriggerPrice = isValidProfitTriggerPrice ? takeProfitPrice : "--"
+                const profitExpectedType = isValidProfitTriggerPrice && profitPrice > 0 ? "profit" : "loss"
+                const profit = isValidProfitTriggerPrice ? Math.abs(profitPrice) : "--"
+                const profitROI = isValidProfitTriggerPrice ? activeTradeType === TRADE_POSITION.LONG ? profitPercentByTrigger : currentPrice < takeProfitPrice ? -profitPercentByTrigger : Math.abs(profitPercentByTrigger) : "--"
+
+                const stopTriggerPrice = isValidStopTriggerPrice ? takeStopPrice : "--"
+                const stopExpectedType = isValidStopTriggerPrice && stopPrice > 0 ? "profit" : "loss"
+                const loss = isValidStopTriggerPrice ? Math.abs(stopPrice) : "--"
+                const stopROI = isValidStopTriggerPrice ? stopPercentByProfit : "--"
+
+                if (orderType === ORDER_TYPE.PROFIT) {
+                    return (takeProfitPrice &&
+                        <div className="futures-modal_tpls_trigger-controller_calculated-info">
+                            Last Traded Price to {profitTriggerPrice} will trigger market Take Profit order; your expected {profitExpectedType} will
+                            be {profit} USDT (ROI: {profitROI}%)
+                        </div>)
+                } else {
+                    return (takeStopPrice && <div className="futures-modal_tpls_trigger-controller_calculated-info">
+                        Last Traded Price to {stopTriggerPrice} will trigger market Take Profit order; your expected {stopExpectedType} will be {loss} USDT
+                        (ROI: {stopROI}%)
+                    </div>)
+                }
         }
     }
-
-    // const takeProfitPrice = fieldsValue[activeTradeType]["profit_trigger_price"]
-    // const ROI_profit = Number(fieldsValue[activeTradeType]["profit_percent"])
-    // const profit = Number((((orderValue / adjustLeverage) * ROI_profit) / 100).toFixed(2))
-    //
-    // const takeStopPrice = fieldsValue[activeTradeType]["stop_trigger_price"]
-    // const ROI_stop = Number(fieldsValue[activeTradeType]["stop_percent"])
-    // const loss = Number((((orderValue / adjustLeverage) * ROI_stop) / 100).toFixed(2))
 
     return (
         <ModalWindowTemplate show={true} title="Add TP/SL" cancelCallback={() => setCurrentModal("")} confirmCallback={confirmMode}>
@@ -414,7 +492,7 @@ const TPSL: React.FC = () => {
                 <TPSLTrigger
                     type="Take Profit"
                     currentTrigger={currentProfitTrigger}
-                    setCurrentTrigger={(trigger) => triggerHandle(trigger, "current_profit_trigger")}
+                    setCurrentTrigger={(trigger) => triggerHandle(trigger, "current_profit_trigger", ORDER_TYPE.PROFIT)}
                 />
                 <div className="futures-modal_tpls_trigger-controller_inputs">
                     <Input
@@ -439,6 +517,8 @@ const TPSL: React.FC = () => {
                         ? "The Take Profit price must be higher than the order price"
                         : "The Take Profit price must be lower than the order price"}
                 </p>}
+                {fieldsValue[activeTradeType].profit_validation.issue &&
+                    <p className="futures-modal_tpls_trigger-controller_info">{fieldsValue[activeTradeType].profit_validation.message}</p>}
                 {currentProfitTrigger !== TRIGGERS.PL && <InputRangeSlider
                     name="profit_percent"
                     max={profitInputOptions.sliderOneRange.max}
@@ -447,17 +527,12 @@ const TPSL: React.FC = () => {
                     onChange={(event) => inputHandle(event)}
                 />}
                 {calculateAndRenderTPSL(currentProfitTrigger, ORDER_TYPE.PROFIT)}
-                {/*{ROI_profit &&*/}
-                {/*    <div className="futures-modal_tpls_trigger-controller_calculated-info">*/}
-                {/*        Last Traded Price to {takeProfitPrice} will trigger market Take Profit order; your expected {ROI_profit > 0 ? "profit" : "loss"} will*/}
-                {/*        be {Math.abs(profit)} USDT (ROI: {ROI_profit}%)*/}
-                {/*    </div>}*/}
             </div>
             <div className="futures-modal_tpls_trigger-controller">
                 <TPSLTrigger
                     type="Stop Loss"
                     currentTrigger={currentStopTrigger}
-                    setCurrentTrigger={(trigger) => triggerHandle(trigger, "current_stop_trigger")}
+                    setCurrentTrigger={(trigger) => triggerHandle(trigger, "current_stop_trigger", ORDER_TYPE.STOP)}
                 />
                 <div className="futures-modal_tpls_trigger-controller_inputs">
                     <Input
@@ -482,6 +557,8 @@ const TPSL: React.FC = () => {
                         ? "The Stop Loss price must be lower than the order price"
                         : "The Stop Loss price must be higher than the order price"}
                 </p>}
+                {fieldsValue[activeTradeType].stop_validation.issue && <p className="futures-modal_tpls_trigger-controller_info">
+                    {fieldsValue[activeTradeType].stop_validation.message}</p>}
                 {currentStopTrigger !== TRIGGERS.PL && <InputRangeSlider
                     name="stop_percent"
                     max={stopInputOptions.sliderTwoRange.max}
@@ -490,10 +567,6 @@ const TPSL: React.FC = () => {
                     onChange={(event) => inputHandle(event)}
                 />}
                 {calculateAndRenderTPSL(currentStopTrigger, ORDER_TYPE.STOP)}
-                {/*{ROI_stop && <div className="futures-modal_tpls_trigger-controller_calculated-info">*/}
-                {/*    Last Traded Price to {takeStopPrice} will trigger market Stop Loss order; your expected profit will be {Math.abs(loss)} USDT*/}
-                {/*    (ROI: {-ROI_stop}%)*/}
-                {/*</div>}*/}
             </div>
         </ModalWindowTemplate>
     )

@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
 import {TRIGGERS, TRIGGERS_TEXT} from "utils";
 
@@ -12,7 +12,19 @@ const TPSLTrigger: React.FC<TPSLTriggerITF> = ({type, currentTrigger, setCurrent
     const [checkedTrigger, setCheckedTrigger] = useState<TRIGGERS>(currentTrigger)
     const [isShow, setIsShow] = useState(false)
 
-    const [isChecked, setIsChecked] = useState<TPSLTriggerIsCheckedITF>({roi: true, change: false, pl: false});
+    const [isChecked, setIsChecked] = useState<TPSLTriggerIsCheckedITF>({
+        roi: currentTrigger === TRIGGERS.ROI,
+        change: currentTrigger === TRIGGERS.CHANGE,
+        pl: currentTrigger === TRIGGERS.PL
+    });
+
+    useEffect(() => {
+        setIsChecked({
+            roi: currentTrigger === TRIGGERS.ROI,
+            change: currentTrigger === TRIGGERS.CHANGE,
+            pl: currentTrigger === TRIGGERS.PL
+        })
+    }, [currentTrigger]);
 
     const confirm = () => {
         setIsShow(false)
