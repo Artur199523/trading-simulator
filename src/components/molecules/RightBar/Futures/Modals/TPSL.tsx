@@ -47,24 +47,27 @@ const TPSL: React.FC = () => {
 
     const [activeTradeType, setActiveTradeType] = useState<TRADE_POSITION>(TRADE_POSITION.LONG)
 
-    const [isShowProfitInputsInfo, setIsShowProfitInputsInfo] = useState(false)
-    const [isShowStopInputsInfo, setIsShowStopInputsInfo] = useState(false)
-
     const [fieldsValue, setFieldsValue] = useState(settingsFieldsCopy)
 
     const currentPrice = currentCryptoData.close
 
-    const inputOptions = (trigger: TRIGGERS): InputOptionsITF => {
+    const inputOptions = (trigger: TRIGGERS, type?: ORDER_TYPE): InputOptionsITF => {
         switch (trigger) {
             case TRIGGERS.ROI:
                 return {placeholder: "ROI", rightText: "%", sliderOneRange: {max: 150, division: 3}, sliderTwoRange: {max: 75, division: 3}}
             case TRIGGERS.CHANGE:
-                return {placeholder: "Increase", rightText: "%", sliderOneRange: {max: 25, division: 5}, sliderTwoRange: {max: 10, division: 2}}
+                return {
+                    placeholder: activeTradeType === TRADE_POSITION.LONG ? type === ORDER_TYPE.PROFIT ? "Increase" : "Decrease" : type === ORDER_TYPE.PROFIT ? "Decrease" : "Increase",
+                    rightText: "%",
+                    sliderOneRange: {max: 25, division: 5},
+                    sliderTwoRange: {max: 10, division: 2}
+                }
             case TRIGGERS.PL:
-                return {placeholder: "Profit", rightText: "USDT"}
+                return {placeholder: type === ORDER_TYPE.PROFIT ? "Profit" : "Loss", rightText: "USDT"}
         }
     }
 
+    //@TODO need to check all logic
     const inputHandle = (event: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = event.target
         const fieldsValueCopy = {...fieldsValue}
@@ -74,11 +77,11 @@ const TPSL: React.FC = () => {
             return Number((((triggerPrice - currentPrice) / currentPrice) * leverage * 100).toFixed(2));
         }
 
-        const calculateChange = (currentPrice: number, triggerPrice: number): string => {
+        const calculateChange = (currentPrice: number, triggerPrice: number): number => {
             if (triggerPrice < currentPrice) {
-                return (triggerPrice * 100 / currentPrice).toFixed(2)
+                return Number((triggerPrice * 100 / currentPrice).toFixed(2))
             } else {
-                return (((triggerPrice - currentPrice) * 100) / currentPrice).toFixed(2)
+                return Number((((triggerPrice - currentPrice) * 100) / currentPrice).toFixed(2))
             }
         }
 
@@ -90,8 +93,8 @@ const TPSL: React.FC = () => {
             }
         }
 
-        const calculateTriggerPriceByPercent = (currentPrice: number, percent: number): string => {
-            return (currentPrice * percent / 100).toFixed(2)
+        const calculateTriggerPriceByPercent = (currentPrice: number, percent: number): number => {
+            return Number((currentPrice * percent / 100).toFixed(2))
         }
 
         const calculateProfitPriceByTrigger = (value: number) => {
@@ -108,26 +111,10 @@ const TPSL: React.FC = () => {
             }
         }
 
-        const inputPriceChecking = (value: number, type: ORDER_TYPE) => {
-            if (activeTradeType === TRADE_POSITION.LONG) {
-                if (type === ORDER_TYPE.PROFIT) {
-                    setIsShowProfitInputsInfo(!(Number(value) > currentPrice))
-                } else {
-                    setIsShowStopInputsInfo(!(Number(value) < currentPrice))
-                }
-            } else {
-                if (type === ORDER_TYPE.PROFIT) {
-                    setIsShowProfitInputsInfo(!(Number(value) < currentPrice))
-                } else {
-                    setIsShowStopInputsInfo(!(Number(value) > currentPrice))
-                }
-            }
-        }
-
-        const inputValidation = (value: number | string, type: ORDER_TYPE) => {
+        const inputValidation = (value: number | string, type: ORDER_TYPE, isReset = false) => {
             const currentValue = Number(value)
 
-            if (!currentValue) {
+            if (!currentValue || isReset) {
                 path[`${type}_validation`] = {...path[`${type}_validation`], issue: false}
                 return
             }
@@ -148,13 +135,14 @@ const TPSL: React.FC = () => {
         }
 
         path[name] = value
-        //TODO continue to check the MOI inputs
+
+        const valueToNumber = Number(value)
+
         switch (name) {
             case "profit_trigger_price":
                 switch (path.current_profit_trigger) {
                     case TRIGGERS.ROI:
-                        const calculatedROI = calculateROI(currentPrice, Number(value), adjustLeverage)
-                        const valueToNumber = Number(value)
+                        const calculatedROI = calculateROI(currentPrice, valueToNumber, adjustLeverage)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
                             path.profit_trigger_profit = value ? calculatedROI : ""
@@ -167,26 +155,25 @@ const TPSL: React.FC = () => {
                         inputValidation(value, ORDER_TYPE.PROFIT)
                         break
                     case TRIGGERS.CHANGE:
-                        const calculatedChange = value ? calculateChange(currentPrice, Number(value)) : 0
+                        const calculatedChange = calculateChange(currentPrice, valueToNumber)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.profit_trigger_profit = Number(value) < currentPrice ? -(100 - Number(calculatedChange)).toFixed(1) : Number(calculatedChange)
-                            path.profit_percent = Number(value) > currentPrice ? Number(calculatedChange) : 0
+                            path.profit_trigger_profit = valueToNumber < currentPrice ? valueToNumber ? -(100 - calculatedChange).toFixed(2) : "" : calculatedChange
+                            path.profit_percent = valueToNumber > currentPrice ? calculatedChange : 0
                         } else {
-                            console.log(Number(value) < Number(currentPrice))
-                            path.profit_trigger_profit = value && Number(value) < currentPrice ? -(100 - Number(calculatedChange)).toFixed(1) : Number(calculatedChange)
-                            path.profit_percent = Number(value) < currentPrice ? -Number(calculatedChange) : 0
+                            path.profit_trigger_profit = value && valueToNumber < currentPrice ? -(100 - calculatedChange).toFixed(2) : calculatedChange
+                            path.profit_percent = valueToNumber < currentPrice ? -calculatedChange : 0
                         }
 
-                        inputPriceChecking(Number(value), ORDER_TYPE.PROFIT)
+                        inputValidation(valueToNumber, ORDER_TYPE.PROFIT)
                         break
                     case TRIGGERS.PL:
-                        const calculatedProfitPriceByTrigger = value ? calculateProfitPriceByTrigger(Number(value)) : ""
+                        const calculatedProfitPriceByTrigger = calculateProfitPriceByTrigger(valueToNumber)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.profit_trigger_profit = Number(value) < 0 ? " " : calculatedProfitPriceByTrigger
+                            path.profit_trigger_profit = valueToNumber ? calculatedProfitPriceByTrigger : ""
                         } else {
-                            path.profit_trigger_profit = value ? Number(value) < currentPrice ? Math.abs(calculatedProfitPriceByTrigger as number) : -calculatedProfitPriceByTrigger : ""
+                            path.profit_trigger_profit = value ? valueToNumber < currentPrice ? Math.abs(calculatedProfitPriceByTrigger as number) : -calculatedProfitPriceByTrigger : ""
                         }
 
                         inputValidation(value, ORDER_TYPE.PROFIT)
@@ -196,63 +183,67 @@ const TPSL: React.FC = () => {
             case "profit_trigger_profit":
                 switch (path.current_profit_trigger) {
                     case TRIGGERS.ROI:
-                        const calculatedTriggerPrice = value ? calculateTriggerPrice(currentPrice, Number(value), adjustLeverage) : 0
+                        const calculatedTriggerPrice = calculateTriggerPrice(currentPrice, valueToNumber, adjustLeverage)
 
-                        path.profit_trigger_price = value ? calculatedTriggerPrice : ""
-                        path.profit_percent = value ? value : 0
+                        path.profit_trigger_price = valueToNumber ? calculatedTriggerPrice : ""
+                        path.profit_percent = valueToNumber ? value : 0
 
-                        inputValidation(calculatedTriggerPrice, ORDER_TYPE.PROFIT)
+                        inputValidation(calculatedTriggerPrice, ORDER_TYPE.PROFIT, !valueToNumber)
                         break
                     case TRIGGERS.CHANGE:
-                        const calculatedTriggerPriceByPercent = value ? calculateTriggerPriceByPercent(currentPrice, Number(value)) : 0
-                        const calculatedTotalPrice = Number(calculatedTriggerPriceByPercent) + Number(currentPrice)
+                        const calculatedTriggerPriceByPercent = calculateTriggerPriceByPercent(currentPrice, valueToNumber)
+                        const calculatedTotalPrice = Number((calculatedTriggerPriceByPercent + currentPrice).toFixed(2))
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.profit_trigger_price = calculatedTotalPrice.toFixed(1)
-                            path.profit_percent = calculatedTotalPrice > currentPrice ? Number(value) : 0
+                            path.profit_trigger_price = valueToNumber ? calculatedTotalPrice : ""
+                            path.profit_percent = calculatedTotalPrice > currentPrice ? valueToNumber : 0
                         } else {
-                            path.profit_trigger_price = calculatedTotalPrice.toFixed(1)
-                            path.profit_percent = Number(value) < 0 ? Math.abs(Number(value)) : 0
+                            path.profit_trigger_price = valueToNumber ? calculatedTotalPrice : ""
+                            path.profit_percent = valueToNumber < 0 ? calculatedTotalPrice > 0 ? Math.abs(valueToNumber) : 0 : 0
                         }
 
-                        inputPriceChecking(calculatedTotalPrice, ORDER_TYPE.PROFIT)
+                        inputValidation(calculatedTotalPrice, ORDER_TYPE.PROFIT, !valueToNumber)
                         break
                     case TRIGGERS.PL:
-                        const calculatedTriggerPriceByProfit = value ? calculateTriggerPriceByProfit(Number(value)) : ""
+                        const calculatedTriggerPriceByProfit = calculateTriggerPriceByProfit(valueToNumber)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.profit_trigger_price = Number(value) > 0 ? calculatedTriggerPriceByProfit : calculatedTriggerPriceByProfit > 0 ? calculatedTriggerPriceByProfit : ""
+                            path.profit_trigger_price = valueToNumber ? valueToNumber > 0 ? calculatedTriggerPriceByProfit : calculatedTriggerPriceByProfit > 0 ? calculatedTriggerPriceByProfit : 0 : ""
                         } else {
-                            path.profit_trigger_price = Number(value) > 0 && calculatedTriggerPriceByProfit > 0 ? calculatedTriggerPriceByProfit : Number(value) < 0 ? calculatedTriggerPriceByProfit : ""
+                            path.profit_trigger_price = valueToNumber ? valueToNumber > 0 && calculatedTriggerPriceByProfit > 0 ? calculatedTriggerPriceByProfit : valueToNumber < 0 ? calculatedTriggerPriceByProfit : 0 : ""
                         }
 
-                        inputValidation(calculatedTriggerPriceByProfit as number, ORDER_TYPE.PROFIT)
+                        inputValidation(calculatedTriggerPriceByProfit as number, ORDER_TYPE.PROFIT, !valueToNumber)
                         break
                 }
                 break
             case "profit_percent":
                 switch (path.current_profit_trigger) {
                     case TRIGGERS.ROI:
-                        const calculatedTriggerPrice = value ? calculateTriggerPrice(currentPrice, Number(value), adjustLeverage).toFixed(1) : 0
+                        const calculatedTriggerPrice = calculateTriggerPrice(currentPrice, valueToNumber, adjustLeverage)
 
-                        path.profit_trigger_price = calculatedTriggerPrice
-                        path.profit_trigger_profit = value ? value : 0
+                        path.profit_trigger_price = valueToNumber ? calculatedTriggerPrice : ""
+                        path.profit_trigger_profit = valueToNumber ? value : ""
 
-                        inputPriceChecking(Number(calculatedTriggerPrice), ORDER_TYPE.PROFIT)
+                        inputValidation(calculatedTriggerPrice, ORDER_TYPE.PROFIT)
                         break
                     case TRIGGERS.CHANGE:
-                        const calculatedTriggerPriceByPercent = value ? calculateTriggerPriceByPercent(currentPrice, Number(value)) : 0
+                        const calculatedTriggerPriceByPercent = calculateTriggerPriceByPercent(currentPrice, valueToNumber)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.profit_trigger_price = (Number(calculatedTriggerPriceByPercent) + Number(currentPrice)).toFixed(1)
-                            path.profit_trigger_profit = Number(value)
+                            const totalPrice = (calculatedTriggerPriceByPercent + currentPrice).toFixed(2)
 
-                            inputPriceChecking(Number(calculatedTriggerPriceByPercent) + Number(currentPrice), ORDER_TYPE.PROFIT)
+                            path.profit_trigger_price = valueToNumber ? totalPrice : ""
+                            path.profit_trigger_profit = valueToNumber ? valueToNumber : ""
+
+                            inputValidation(totalPrice, ORDER_TYPE.PROFIT, !valueToNumber)
                         } else {
-                            path.profit_trigger_price = (Number(currentPrice) - Number(calculatedTriggerPriceByPercent)).toFixed(1)
-                            path.profit_trigger_profit = -Number(value)
+                            const totalPrice = (currentPrice - calculatedTriggerPriceByPercent).toFixed(2)
 
-                            inputPriceChecking(Number(currentPrice) - Number(calculatedTriggerPriceByPercent), ORDER_TYPE.PROFIT)
+                            path.profit_trigger_price = valueToNumber ? totalPrice : ""
+                            path.profit_trigger_profit = valueToNumber ? -valueToNumber : ""
+
+                            inputValidation(totalPrice, ORDER_TYPE.PROFIT, !valueToNumber)
                         }
                         break
                 }
@@ -261,38 +252,37 @@ const TPSL: React.FC = () => {
                 switch (path.current_stop_trigger) {
                     case TRIGGERS.ROI:
                         const calculatedROI = calculateROI(currentPrice, Number(value), adjustLeverage)
-                        const valueToNumber = Number(value)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.stop_trigger_stop = calculatedROI
+                            path.stop_trigger_stop = valueToNumber ? calculatedROI : ""
                             path.stop_percent = valueToNumber > currentPrice ? 0 : valueToNumber > 0 ? Math.abs(calculatedROI) : 0
                         } else {
-                            path.stop_trigger_stop = -calculatedROI
+                            path.stop_trigger_stop = valueToNumber ? -calculatedROI : ""
                             path.stop_percent = valueToNumber < currentPrice ? 0 : valueToNumber > 0 ? Math.abs(calculatedROI) : 0
                         }
 
                         inputValidation(value, ORDER_TYPE.STOP)
                         break
                     case TRIGGERS.CHANGE:
-                        const calculatedTriggerPriceByPercent = value ? calculateChange(currentPrice, Number(value)) : 0
+                        const calculatedTriggerPriceByPercent = calculateChange(currentPrice, valueToNumber)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.stop_trigger_stop = value && (Number(value) < currentPrice) ? -(100 - Number(calculatedTriggerPriceByPercent)).toFixed(1) : 0
-                            path.stop_percent = Number(value) < currentPrice ? 100 - Number(calculatedTriggerPriceByPercent) : 0
+                            path.stop_trigger_stop = valueToNumber ? -(100 - calculatedTriggerPriceByPercent).toFixed(2) : ""
+                            path.stop_percent = valueToNumber < currentPrice ? 100 - calculatedTriggerPriceByPercent : 0
                         } else {
-                            path.stop_trigger_stop = value && (Number(value) > currentPrice) ? Number(calculatedTriggerPriceByPercent).toFixed(1) : 0
-                            path.stop_percent = Number(value) > currentPrice ? calculatedTriggerPriceByPercent : 0
+                            path.stop_trigger_stop = valueToNumber ? calculatedTriggerPriceByPercent : ""
+                            path.stop_percent = valueToNumber > currentPrice ? calculatedTriggerPriceByPercent : 0
                         }
 
-                        inputPriceChecking(Number(value), ORDER_TYPE.STOP)
+                        inputValidation(valueToNumber, ORDER_TYPE.STOP)
                         break
                     case TRIGGERS.PL:
-                        const calculatedProfitPriceByTrigger = value ? calculateProfitPriceByTrigger(Number(value)) : ""
+                        const calculatedProfitPriceByTrigger = calculateProfitPriceByTrigger(valueToNumber)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.stop_trigger_stop = Number(value) > 0 ? calculatedProfitPriceByTrigger : ""
+                            path.stop_trigger_stop = valueToNumber ? calculatedProfitPriceByTrigger : ""
                         } else {
-                            path.stop_trigger_stop = Number(value) < currentPrice ? Number(value) > 0 ? Math.abs(calculatedProfitPriceByTrigger as number) : "" : -calculatedProfitPriceByTrigger
+                            path.stop_trigger_stop = valueToNumber < currentPrice ? valueToNumber ? Math.abs(calculatedProfitPriceByTrigger as number) : "" : -calculatedProfitPriceByTrigger
                         }
 
                         inputValidation(value, ORDER_TYPE.STOP)
@@ -302,66 +292,72 @@ const TPSL: React.FC = () => {
             case "stop_trigger_stop":
                 switch (path.current_stop_trigger) {
                     case TRIGGERS.ROI:
-                        const calculatedTriggerPrice = value ? calculateTriggerPrice(currentPrice, Number(value), adjustLeverage).toFixed(1) : 0
+                        const calculatedTriggerPrice = calculateTriggerPrice(currentPrice, valueToNumber, adjustLeverage)
 
-                        path.stop_trigger_price = calculatedTriggerPrice
-                        path.stop_percent = Number(value) < 0 ? Math.abs(Number(value)) : 0
+                        path.stop_trigger_price = valueToNumber ? calculatedTriggerPrice : ""
+                        path.stop_percent = valueToNumber < 0 ? Math.abs(valueToNumber) : 0
 
-                        inputPriceChecking(Number(calculatedTriggerPrice), ORDER_TYPE.STOP)
+                        inputValidation(calculatedTriggerPrice, ORDER_TYPE.STOP, !valueToNumber)
                         break
                     case TRIGGERS.CHANGE:
-                        const calculatedTriggerPriceByPercent = value ? calculateTriggerPriceByPercent(currentPrice, Number(value)) : 0
-                        const calculatedTotalPrice = Number(currentPrice) + Number(calculatedTriggerPriceByPercent)
+                        const calculatedTriggerPriceByPercent = calculateTriggerPriceByPercent(currentPrice, valueToNumber)
+                        const calculatedTotalPrice = Number((currentPrice + calculatedTriggerPriceByPercent).toFixed(2))
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.stop_trigger_price = calculatedTotalPrice
-                            path.stop_percent = Number(value) < 0 ? Math.abs(Number(value)) : 0
+                            path.stop_trigger_price = valueToNumber ? calculatedTotalPrice : ""
+                            path.stop_percent = valueToNumber < 0 ? Math.abs(valueToNumber) : 0
                         } else {
-                            path.stop_trigger_price = calculatedTotalPrice
-                            path.stop_percent = Number(value) < 0 ? 0 : Number(value)
+                            path.stop_trigger_price = valueToNumber ? calculatedTotalPrice : ""
+                            path.stop_percent = valueToNumber < 0 ? 0 : valueToNumber
                         }
 
-                        inputPriceChecking(calculatedTotalPrice, ORDER_TYPE.STOP)
+                        inputValidation(calculatedTotalPrice, ORDER_TYPE.STOP, !valueToNumber)
                         break
                     case TRIGGERS.PL:
-                        const calculatedProfitPriceByTrigger = value ? calculateTriggerPriceByProfit(Number(value)) : ""
+                        const calculatedProfitPriceByTrigger = calculateTriggerPriceByProfit(valueToNumber)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.stop_trigger_price = calculatedProfitPriceByTrigger
+                            path.stop_trigger_price = valueToNumber ? calculatedProfitPriceByTrigger : ""
                         } else {
-                            path.stop_trigger_price = value ? Math.abs(calculatedProfitPriceByTrigger as number) : calculatedProfitPriceByTrigger ? -calculatedProfitPriceByTrigger : ""
+                            path.stop_trigger_price = valueToNumber ? Math.abs(calculatedProfitPriceByTrigger as number) : valueToNumber ? calculatedProfitPriceByTrigger ? -calculatedProfitPriceByTrigger : "" : ""
                         }
 
-                        inputValidation(calculatedProfitPriceByTrigger as number, ORDER_TYPE.STOP)
+                        inputValidation(calculatedProfitPriceByTrigger as number, ORDER_TYPE.STOP, !valueToNumber)
                         break
                 }
                 break
             case "stop_percent":
                 switch (path.current_stop_trigger) {
                     case TRIGGERS.ROI:
-                        const calculatedTriggerPrice = value ? calculateTriggerPrice(currentPrice, -Number(value), adjustLeverage).toFixed(1) : 0
+                        const calculatedTriggerPrice = calculateTriggerPrice(currentPrice, -valueToNumber, adjustLeverage)
 
-                        path.stop_trigger_price = calculatedTriggerPrice
-                        path.stop_trigger_stop = value ? -value : 0
+                        path.stop_trigger_price = valueToNumber ? calculatedTriggerPrice : ""
+                        path.stop_trigger_stop = valueToNumber ? -value : ""
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            inputPriceChecking(-Number(calculatedTriggerPrice), ORDER_TYPE.STOP)
+                            inputValidation(-calculatedTriggerPrice, ORDER_TYPE.STOP, !valueToNumber)
                         } else {
-                            inputPriceChecking(Number(calculatedTriggerPrice), ORDER_TYPE.STOP)
+                            inputValidation(calculatedTriggerPrice, ORDER_TYPE.STOP, !valueToNumber)
                         }
 
                         break
                     case TRIGGERS.CHANGE:
-                        const calculatedTriggerPriceByPercent = value ? calculateTriggerPriceByPercent(currentPrice, Number(value)) : 0
+                        const calculatedTriggerPriceByPercent = calculateTriggerPriceByPercent(currentPrice, valueToNumber)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
-                            path.stop_trigger_price = (Number(currentPrice) - Number(calculatedTriggerPriceByPercent)).toFixed(1)
-                            path.stop_trigger_stop = -Number(value)
-                            inputPriceChecking(Number(currentPrice) - Number(calculatedTriggerPriceByPercent), ORDER_TYPE.STOP)
+                            const totalPrice = (currentPrice - calculatedTriggerPriceByPercent).toFixed(2)
+
+                            path.stop_trigger_price = valueToNumber ? totalPrice : ""
+                            path.stop_trigger_stop = valueToNumber ? -valueToNumber : ""
+
+                            inputValidation(totalPrice, ORDER_TYPE.STOP, !valueToNumber)
                         } else {
-                            path.stop_trigger_price = (Number(currentPrice) + Number(calculatedTriggerPriceByPercent)).toFixed(1)
-                            path.stop_trigger_stop = Number(value)
-                            inputPriceChecking(Number(currentPrice) + Number(calculatedTriggerPriceByPercent), ORDER_TYPE.STOP)
+                            const totalPrice = (currentPrice + calculatedTriggerPriceByPercent).toFixed(2)
+
+                            path.stop_trigger_price = valueToNumber ? totalPrice : ""
+                            path.stop_trigger_stop = valueToNumber ? valueToNumber : ""
+
+                            inputValidation(totalPrice, ORDER_TYPE.STOP, !valueToNumber)
                         }
                         break
                 }
@@ -394,11 +390,11 @@ const TPSL: React.FC = () => {
     const currentProfitTrigger: TRIGGERS = fieldsValue[activeTradeType].current_profit_trigger
     const currentStopTrigger: TRIGGERS = fieldsValue[activeTradeType].current_stop_trigger
 
-    const profitInputOptions: InputOptionsITF = inputOptions(currentProfitTrigger)
-    const stopInputOptions: InputOptionsITF = inputOptions(currentStopTrigger)
+    const profitInputOptions: InputOptionsITF = inputOptions(currentProfitTrigger, ORDER_TYPE.PROFIT)
+    const stopInputOptions: InputOptionsITF = inputOptions(currentStopTrigger, ORDER_TYPE.STOP)
     const orderValue = dataForModal.orderValue
 
-    // @TODO need to refactoring
+    // @TODO need to check
     const calculateAndRenderTPSL = (trigger: TRIGGERS, orderType: ORDER_TYPE) => {
         const profitTriggerPrice = fieldsValue[activeTradeType]["profit_trigger_price"]
         const stopTriggerPrice = fieldsValue[activeTradeType]["stop_trigger_price"]
@@ -415,7 +411,7 @@ const TPSL: React.FC = () => {
             case TRIGGERS.ROI:
                 const profitTriggerPrice_ROI = isValidProfitTriggerPrice ? profitTriggerPrice : "--"
                 const profitPercent_ROI = isValidProfitTriggerPrice ? profitPercent : "--"
-                const profitExpectedType_ROI = isValidProfitTriggerPrice && profitPercent > 0 ? "profit" : "loss"
+                const profitExpectedType_ROI = isValidProfitTriggerPrice && profitPercent > 0 ? "profit " : "loss "
                 const profit_ROI = isValidProfitTriggerPrice ? Math.abs(Number((((orderValue / adjustLeverage) * profitPercent) / 100).toFixed(2))) : "--"
 
                 const stopTriggerPrice_ROI = isValidStopTriggerPrice ? stopTriggerPrice : "--"
@@ -436,13 +432,14 @@ const TPSL: React.FC = () => {
                 }
             case TRIGGERS.CHANGE:
                 const profitTriggerPrice_CHANGE = isValidProfitTriggerPrice ? profitTriggerPrice : "--"
-                const profit_ROI_CHANGE = isValidProfitTriggerPrice ? profitPercent * adjustLeverage : "--"
-                const profitExpectedType_CHANGE = isValidProfitTriggerPrice && profitPercent > 0 ? "profit" : "loss"
-                const profit_CHANGE = Math.abs(Number((((orderValue / adjustLeverage) * (profitPercent * adjustLeverage)) / 100).toFixed(2)))
+                const profit_ROI_CHANGE = isValidProfitTriggerPrice ? (profitPercent * adjustLeverage).toFixed(2) : "--"
+                const profitExpectedType_CHANGE = isValidProfitTriggerPrice && profitPercent > 0 ? "profit " : "loss "
+                const profit_CHANGE = isValidProfitTriggerPrice ? Math.abs(Number((((orderValue / adjustLeverage) * (profitPercent * adjustLeverage)) / 100).toFixed(2))) : "--"
 
                 const stopTriggerPrice_CHANGE = isValidStopTriggerPrice ? stopTriggerPrice : "--"
                 const stopROI_CHANGE = isValidStopTriggerPrice ? (-stopPercent * adjustLeverage).toFixed(2) : "--"
-                const loss_CHANGE = Math.abs(Number((((orderValue / adjustLeverage) * (stopPercent * adjustLeverage)) / 100).toFixed(2)))
+                const loss_CHANGE = isValidStopTriggerPrice ? Math.abs(Number((((orderValue / adjustLeverage) * (stopPercent * adjustLeverage)) / 100).toFixed(2))) : "--"
+                const stopExpectedType_CHANGE = isValidStopTriggerPrice && stopTriggerStop > 0 ? "profit " : "loss "
 
                 if (orderType === ORDER_TYPE.PROFIT) {
                     return (profitTriggerPrice &&
@@ -452,8 +449,8 @@ const TPSL: React.FC = () => {
                         </div>)
                 } else {
                     return (stopTriggerPrice && <div className="futures-modal_tpls_trigger-controller_calculated-info">
-                        Last Traded Price to {stopTriggerPrice_CHANGE} will trigger market Stop Loss order; your expected profit will be {loss_CHANGE} USDT
-                        (ROI: {stopROI_CHANGE}%)
+                        Last Traded Price to {stopTriggerPrice_CHANGE} will trigger market Stop Loss order; your expected {stopExpectedType_CHANGE} will
+                        be {loss_CHANGE} USDT (ROI: {stopROI_CHANGE}%)
                     </div>)
                 }
             case TRIGGERS.PL:
@@ -462,13 +459,13 @@ const TPSL: React.FC = () => {
 
                 const profitTriggerPrice_PL = isValidProfitTriggerPrice ? profitTriggerPrice : "--"
                 const profit_PL = isValidProfitTriggerPrice ? Math.abs(profitTriggerProfit) : "--"
-                const profitExpectedType_PL = isValidProfitTriggerPrice && profitTriggerProfit > 0 ? "profit" : "loss"
+                const profitExpectedType_PL = isValidProfitTriggerPrice && profitTriggerProfit > 0 ? "profit " : "loss "
                 const profitROI_PL = isValidProfitTriggerPrice ? activeTradeType === TRADE_POSITION.LONG ? profitPercentByTrigger_PL : currentPrice < profitTriggerPrice ? -profitPercentByTrigger_PL : Math.abs(profitPercentByTrigger_PL) : "--"
 
                 const stopTriggerPrice_PL = isValidStopTriggerPrice ? stopTriggerPrice : "--"
                 const loss_PL = isValidStopTriggerPrice ? Math.abs(stopTriggerStop) : "--"
                 const stopROI_PL = isValidStopTriggerPrice ? stopPercentByProfit_PL : "--"
-                const stopExpectedType_PL = isValidStopTriggerPrice && stopTriggerStop > 0 ? "profit" : "loss"
+                const stopExpectedType_PL = isValidStopTriggerPrice && stopTriggerStop > 0 ? "profit " : "loss "
 
                 if (orderType === ORDER_TYPE.PROFIT) {
                     return (profitTriggerPrice &&
@@ -525,11 +522,6 @@ const TPSL: React.FC = () => {
                         onChange={(event) => inputHandle(event)}
                     />
                 </div>
-                {isShowProfitInputsInfo && <p className="futures-modal_tpls_trigger-controller_info">
-                    {activeTradeType === TRADE_POSITION.LONG
-                        ? "The Take Profit price must be higher than the order price"
-                        : "The Take Profit price must be lower than the order price"}
-                </p>}
                 {fieldsValue[activeTradeType].profit_validation.issue &&
                     <p className="futures-modal_tpls_trigger-controller_info">{fieldsValue[activeTradeType].profit_validation.message}</p>}
                 {currentProfitTrigger !== TRIGGERS.PL && <InputRangeSlider
@@ -565,11 +557,6 @@ const TPSL: React.FC = () => {
                         onChange={(event) => inputHandle(event)}
                     />
                 </div>
-                {isShowStopInputsInfo && <p className="futures-modal_tpls_trigger-controller_info">
-                    {activeTradeType === TRADE_POSITION.LONG
-                        ? "The Stop Loss price must be lower than the order price"
-                        : "The Stop Loss price must be higher than the order price"}
-                </p>}
                 {fieldsValue[activeTradeType].stop_validation.issue && <p className="futures-modal_tpls_trigger-controller_info">
                     {fieldsValue[activeTradeType].stop_validation.message}</p>}
                 {currentStopTrigger !== TRIGGERS.PL && <InputRangeSlider
