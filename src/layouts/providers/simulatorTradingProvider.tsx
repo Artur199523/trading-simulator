@@ -1,18 +1,22 @@
 import React, {createContext, useContext, useState} from "react"
 import {
     ProcessT,
+    PositionITF,
     MarginModeT,
     TradingType,
     PositionFuturesT,
     HedgingModeTypeT,
     SimulatorProviderITF,
-    SimulatorTradingContextITF,
+    SimulatorTradingContextITF, 
 } from "./type";
+import {PositionDataITF} from "../../components/molecules/RightBar/Futures/type";
 
 const SimulatorTradingContext = createContext<SimulatorTradingContextITF>({
     process:"buy",
     adjustLeverage: 1,
     tradingType:"spot",
+    longPositionData:{} as PositionDataITF,
+    shortPositionData:{} as PositionDataITF,
     marginMode: "cross",
     processFutures: "long",
     orderPlacementPreference: "USDT",
@@ -20,9 +24,11 @@ const SimulatorTradingContext = createContext<SimulatorTradingContextITF>({
     setProcess:()=> {},
     setTradingType:()=> {},
     setMarginMode:() => {},
-    setAdjustLeverage:()=>{},
-    setProcessFutures:() =>{},
-    setOrderPlacementPreference: ()=>{},
+    setAdjustLeverage:()=> {},
+    setProcessFutures:() => {},
+    setLongPositionData:()=> {},
+    setShortPositionData:()=> {},
+    setOrderPlacementPreference: ()=> {},
     setCurrentHedgingModePositionType:() => {}
 })
 export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({children}) => {
@@ -38,6 +44,9 @@ export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({childr
     const [orderPlacementPreference,setOrderPlacementPreference] = useState<string>("USDT")
     const [marginMode,setMarginMode] = useState<MarginModeT>("cross")
     const [adjustLeverage,setAdjustLeverage] = useState<number>(1)
+    
+    const [longPositionData,setLongPositionData] = useState<PositionITF | null>(null)
+    const [shortPositionData,setShortPositionData] = useState<PositionITF | null>(null)
 
     return (
         <SimulatorTradingContext.Provider value={{
@@ -46,6 +55,8 @@ export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({childr
             tradingType,
             adjustLeverage,
             processFutures,
+            longPositionData,
+            shortPositionData,
             orderPlacementPreference,
             currentHedgingModePositionType,
             setProcess,
@@ -53,6 +64,8 @@ export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({childr
             setTradingType,
             setAdjustLeverage,
             setProcessFutures,
+            setLongPositionData,
+            setShortPositionData,
             setOrderPlacementPreference,
             setCurrentHedgingModePositionType
         }}>

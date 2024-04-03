@@ -2,23 +2,27 @@ import React, {memo, useEffect, useState} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorPlayerInfoContext, useSimulatorTradingContext} from "layouts/providers";
 
+import OrderValueInfo from "./Components/OrderValueInfo";
 import TradeButtons from "./Components/TradeButtons";
 import {Input, InputRangeSlider} from "components";
 import TPSL from "./Components/TPSL";
 
 import {StartTradeInitialOptions} from "./type";
-import {TRADE_POSITION} from "../../../../utils";
+import {TRADE_POSITION} from "utils";
+import TriggerPrice from "./Components/TriggerPrice";
 
 const Market: React.FC = () => {
     const [orderValue, setOrderValue] = useState("")
     const [percentRange, setPercentRange] = useState(0)
 
     const {setCurrentModal} = useFuturesTradingModalContext()
-    const {adjustLeverage} = useSimulatorTradingContext()
+    const {adjustLeverage, longPositionData, shortPositionData} = useSimulatorTradingContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
 
+    const isTPSL = !!longPositionData || !!shortPositionData
+
     useEffect(() => {
-        percentRangeHandle(percentRange)
+        if (orderValue) percentRangeHandle(percentRange)
     }, [adjustLeverage]);
 
     const orderValueHandle = (percent: string) => {
@@ -52,7 +56,13 @@ const Market: React.FC = () => {
                 value={percentRange}
                 onChange={(event) => percentRangeHandle(event.target.value as any)}
             />
-            <TPSL orderValue={orderValue} confirmed={false} position={TRADE_POSITION.LONG}/>
+            <OrderValueInfo orderValue={Number(orderValue)}/>
+            <TPSL
+                orderValue={orderValue}
+                confirmed={isTPSL}
+                position={!!longPositionData ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT}
+            />
+            {isTPSL && <TriggerPrice/>}
             <TradeButtons onClick={startTrade}/>
         </div>
     )

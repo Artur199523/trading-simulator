@@ -6,9 +6,10 @@ import {ORDER_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
 import {Button, Input, InputRangeSlider, ModalWindowTemplate} from "components";
 import TPSLTrigger from "../Components/TPSLTrigger";
 
-import {HeaderItemITF, InputOptionsITF, SettingsFieldsITF} from "../type";
+import {HeaderItemITF, InputOptionsITF, PositionDataITF, SettingsFieldsITF} from "../type";
 
 import "./style.scss"
+import {interruptionRef} from "../../../../../utils/functions/interruptionRef";
 
 const settingsFields: SettingsFieldsITF = {
     Long: {
@@ -42,7 +43,7 @@ const TPSL: React.FC = () => {
 
     const {setCurrentModal} = useFuturesTradingModalContext()
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
-    const {adjustLeverage} = useSimulatorTradingContext()
+    const {adjustLeverage, setLongPositionData, setShortPositionData} = useSimulatorTradingContext()
     const {dataForModal} = useFuturesTradingModalContext()
 
     const [activeTradeType, setActiveTradeType] = useState<TRADE_POSITION>(TRADE_POSITION.LONG)
@@ -384,6 +385,17 @@ const TPSL: React.FC = () => {
     }
 
     const confirmMode = () => {
+        //@TODO need to add position details checking like if{}
+        const confirmedData: PositionDataITF = fieldsValue[activeTradeType]
+
+        if (activeTradeType === TRADE_POSITION.LONG) {
+            setLongPositionData(confirmedData)
+            setShortPositionData(null)
+        } else {
+            setShortPositionData(confirmedData)
+            setLongPositionData(null)
+        }
+
         setCurrentModal("")
     }
 

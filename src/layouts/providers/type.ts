@@ -1,5 +1,6 @@
 import React from "react";
 import {HistoryItem} from "store/simulator/type";
+import {PositionDataITF} from "../../components/molecules/RightBar/Futures/type";
 
 export interface SimulatorProviderITF {
     children: React.ReactNode
@@ -34,11 +35,15 @@ export interface SimulatorTradingContextITF {
     tradingType: TradingType
     processFutures: PositionFuturesT
     orderPlacementPreference: string,
+    longPositionData: PositionITF,
+    shortPositionData: PositionITF,
     setProcess: (process: ProcessT) => void
     setMarginMode: (mode: MarginModeT) => void
     setAdjustLeverage: (amount: number) => void
     setTradingType: (trading: TradingType) => void
     currentHedgingModePositionType: HedgingModeTypeT
+    setLongPositionData:(position:PositionITF) => void
+    setShortPositionData:(position:PositionITF) => void
     setProcessFutures: (position: PositionFuturesT) => void
     setOrderPlacementPreference: (preference:string) => void
     setCurrentHedgingModePositionType: (type: HedgingModeTypeT) => void
@@ -105,6 +110,8 @@ export interface OrderMarkITF {
 export interface ModalsContextITF {
     children: React.ReactNode
 }
+
+export interface PositionITF extends PositionDataITF{}
 
 export type SymbolT = "ETH" | "BTC" | ""
 
