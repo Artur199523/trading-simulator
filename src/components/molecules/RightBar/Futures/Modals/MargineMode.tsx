@@ -1,29 +1,33 @@
 import React, {useState} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorOptionsContext, useSimulatorTradingContext} from "layouts/providers";
+import {MARGIN_MODE, MODALS} from "utils";
 
-import {ModalWindow, Button} from "components";
-
-import {MarginModeT} from "layouts/providers/type";
+import {Button, ModalWindow} from "components";
 
 import "./style.scss"
+import classNames from "classnames";
 
 const MarginMode: React.FC = () => {
     const {cryptoType} = useSimulatorOptionsContext()
-    const {setCurrentModal} = useFuturesTradingModalContext()
     const {marginMode, setMarginMode} = useSimulatorTradingContext()
-    const [currentMode, setCurrenMode] = useState<MarginModeT>(marginMode)
+    const {setCurrentModal} = useFuturesTradingModalContext()
+
+    const [currentMode, setCurrenMode] = useState<MARGIN_MODE>(marginMode)
 
     const confirmMode = () => {
         setMarginMode(currentMode)
-        setCurrentModal("")
+        setCurrentModal(MODALS.CLOSE)
     }
+
+    const crossStyle = classNames({"active":currentMode === MARGIN_MODE.CROSS})
+    const isolatedStyle = classNames({"active":currentMode === MARGIN_MODE.ISOLATED})
 
     return (
         <ModalWindow show={true} title={`${cryptoType}USDT Perpetual Margin Mode`}>
             <div className="futures-modal_head-btns">
-                <button className={currentMode === "cross" ? "active" : ""} onClick={() => setCurrenMode("cross")}>Cross</button>
-                <button className={currentMode === "isolated" ? "active" : ""} onClick={() => setCurrenMode("isolated")}>Isolated</button>
+                <button className={crossStyle} onClick={() => setCurrenMode(MARGIN_MODE.CROSS)}>Cross</button>
+                <button className={isolatedStyle} onClick={() => setCurrenMode(MARGIN_MODE.ISOLATED)}>Isolated</button>
             </div>
             <div className="futures-modal_content">
                 <p>· Switching the margin mode will only apply it to the selected contract.</p>
@@ -33,7 +37,7 @@ const MarginMode: React.FC = () => {
                     a position reached 100%, the position will be liquidated. Margin can be added or removed to positions using this mode.</p>
             </div>
             <div className="futures-modal_btns">
-                <Button onClick={() => setCurrentModal("")}>Cancel</Button>
+                <Button onClick={() => setCurrentModal(MODALS.CLOSE)}>Cancel</Button>
                 <Button onClick={confirmMode} view="two">Confirm</Button>
             </div>
         </ModalWindow>

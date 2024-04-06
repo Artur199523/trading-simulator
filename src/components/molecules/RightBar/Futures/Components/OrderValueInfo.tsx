@@ -2,12 +2,14 @@ import React from "react"
 import {OrderValueITF} from "../type";
 import {useSimulatorOptionsContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
 
-const OrderValueInfo: React.FC<OrderValueITF> = ({orderValue}) => {
+const OrderValueInfo: React.FC<OrderValueITF> = ({orderValue,orderPrice}) => {
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
     const {adjustLeverage} = useSimulatorTradingContext()
     const {cryptoType} = useSimulatorOptionsContext()
 
-    const orderValueQuantity = orderValue ? (orderValue / currentCryptoData.close).toFixed(2) : "--"
+    const orderCurrentPrice = orderPrice ?? currentCryptoData.close
+
+    const orderValueQuantity = orderValue ? (orderValue / orderCurrentPrice).toFixed(2) : "--"
     const orderValueCost = orderValue ? (orderValue / adjustLeverage).toFixed(2) : "--"
 
     return (

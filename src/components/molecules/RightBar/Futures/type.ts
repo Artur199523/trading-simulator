@@ -1,5 +1,6 @@
-import {HedgingModeTypeT, PositionFuturesT} from "layouts/providers/type";
+import {HedgingModeTypeT} from "layouts/providers/type";
 import {TRADE_POSITION, TRIGGERS} from "utils";
+import {ReactNode} from "react";
 
 export interface TradeButtonsITF {
     onClick: (process: StartTradeInitialOptions) => void
@@ -7,7 +8,7 @@ export interface TradeButtonsITF {
 
 export interface StartTradeInitialOptions {
     hedgingType: HedgingModeTypeT
-    position: PositionFuturesT
+    position: TRADE_POSITION
 }
 
 export interface HeaderItemITF {
@@ -24,6 +25,11 @@ export interface TPSLTriggerITF {
 export interface SettingsFieldsITF {
     Long: PositionDataITF
     Short: PositionDataITF
+}
+
+export interface SettingsFieldsMarketITF {
+    order_value_usdt: string,
+    order_value_percent: number
 }
 
 export interface PositionDataITF {
@@ -59,10 +65,22 @@ export interface TPSLTriggerIsCheckedITF {
 
 export interface TPSLInterface {
     orderValue: string
+    orderPrice?: string
     confirmed: boolean
     position: TRADE_POSITION
 }
 
-export interface OrderValueITF{
+export interface OrderValueITF {
     orderValue: number
+    orderPrice?: number
+}
+
+export interface ConfirmPositionFiledItemITF {
+    name: string
+    value: string | number | ReactNode
+}
+
+export interface ItemTPSLITF {
+    valueOne: string
+    valueTwo: string
 }

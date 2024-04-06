@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorOptionsContext, useSimulatorTradingContext} from "layouts/providers";
-import {showNotification} from "utils";
+import {MODALS, showNotification} from "utils";
 
 import {Button, CheckBox, ModalWindow} from "components";
 
@@ -28,7 +28,7 @@ const OrderPlacementPreferences: React.FC = () => {
             showNotification("Not available", "info", 0)
         } else {
             setOrderPlacementPreference("USDT")
-            setCurrentModal("")
+            setCurrentModal(MODALS.CLOSE)
         }
     }
 
@@ -56,7 +56,7 @@ const OrderPlacementPreferences: React.FC = () => {
                         your order placement may fail.</p>
                 </div>
                 <div className="futures-modal_btns">
-                    <Button onClick={() => setCurrentModal("")}>Cancel</Button>
+                    <Button onClick={() => setCurrentModal(MODALS.CLOSE)}>Cancel</Button>
                     <Button onClick={confirmPreference} view="two">Confirm</Button>
                 </div>
             </div>

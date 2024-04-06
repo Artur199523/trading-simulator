@@ -1,11 +1,12 @@
 import React, {memo} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorTradingContext} from "layouts/providers";
-
-import {TabContent, Spot, Futures, TabItem} from "components";
-
-import "./style.scss"
 import classNames from "classnames";
+import {HEDGING, MODALS} from "utils";
+
+import {Futures, Spot, TabContent, TabItem} from "components";
+
+import "./style.scss";
 
 const RightBar: React.FC = () => {
     const {process, setProcess, tradingType, marginMode, adjustLeverage} = useSimulatorTradingContext()
@@ -25,12 +26,12 @@ const RightBar: React.FC = () => {
             </TabContent>
             <TabContent id="futures" activeTab={tradingType}>
                 <div className="right-bar_futures_hedging-mode-tabs">
-                    <TabItem activeTab={currentHedgingModePositionType} id="Open" setActiveTab={setCurrentHedgingModePositionType}>Open</TabItem>
-                    <TabItem activeTab={currentHedgingModePositionType} id="Close" setActiveTab={setCurrentHedgingModePositionType}>Close</TabItem>
+                    <TabItem activeTab={currentHedgingModePositionType} id={HEDGING.OPEN} setActiveTab={setCurrentHedgingModePositionType}>Open</TabItem>
+                    <TabItem activeTab={currentHedgingModePositionType} id={HEDGING.CLOSE} setActiveTab={setCurrentHedgingModePositionType}>Close</TabItem>
                 </div>
                 <div className="right-bar_futures_trading-btn">
-                    <button onClick={() => setCurrentModal("margin-mode")}>{marginMode}</button>
-                    <button onClick={() => setCurrentModal("adjust-leverage")}>{adjustLeverage}x</button>
+                    <button onClick={() => setCurrentModal(MODALS.MARGIN_MODE)}>{marginMode}</button>
+                    <button onClick={() => setCurrentModal(MODALS.ADJUST_LEVERAGE)}>{adjustLeverage}x</button>
                 </div>
                 <Futures/>
             </TabContent>

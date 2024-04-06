@@ -213,4 +213,49 @@
       }
     }
   }
+
+  &_risk-alert {
+    padding: 16px 0 36px;
+
+    p {
+      color: #adb1b8;
+      font-size: 14px;
+      font-weight: 22;
+    }
+  }
+
+  &_confirm-position {
+    margin-top: 10px;
+
+    &_filed-item {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+
+      & > div:first-child {
+        color: #adb1b8;
+        font-size: 14px;
+        margin-bottom: 15px;
+      }
+
+      & > div:last-child {
+        color: white;
+        font-size: 14px;
+      }
+
+      &_tp-sl {
+        & > span:first-child {
+          color:#20b26c;
+        }
+
+        & > span:last-child {
+          color: #ef454a;
+        }
+      }
+    }
+
+    &_tp-sl {
+      margin: 15px 0;
+    }
+  }
 }

@@ -1,9 +1,13 @@
 import React from "react";
+
 import {useFuturesTradingModalContext} from "layouts/providers";
+import {MODALS} from "utils";
 
 import OrderPlacementPreferences from "./OrderPlacementPreferences";
+import ConfirmPosition from "./ConfirmPosition";
 import AdjustLeverage from "./AdjustLeverage";
 import MarginMode from "./MargineMode";
+import RiskAlert from "./RiskAlert";
 import TPSL from "./TPSL";
 
 const FuturesTradingModals = () => {
@@ -13,14 +17,18 @@ const FuturesTradingModals = () => {
         <React.Fragment>
             {
                 {
-                    "margin-mode":
+                    [MODALS.TP_SL]:
+                        <TPSL/>,
+                    [MODALS.RISK_ALERT]:
+                        <RiskAlert/>,
+                    [MODALS.MARGIN_MODE]:
                         <MarginMode/>,
-                    "adjust-leverage":
+                    [MODALS.ADJUST_LEVERAGE]:
                         <AdjustLeverage/>,
-                    "order-placement-preferences":
+                    [MODALS.CONFIRM_POSITION]:
+                        <ConfirmPosition/>,
+                    [MODALS.ORDER_PLACEMENT_PREFERENCES]:
                         <OrderPlacementPreferences/>,
-                    "TP/SL":
-                        <TPSL/>
                 }[currentModal]
             }
         </React.Fragment>

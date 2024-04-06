@@ -1,6 +1,9 @@
 import React from "react";
+
+import {HEDGING, MARGIN_MODE} from "utils";
+
 import {HistoryItem} from "store/simulator/type";
-import {PositionDataITF} from "../../components/molecules/RightBar/Futures/type";
+import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 
 export interface SimulatorProviderITF {
     children: React.ReactNode
@@ -31,22 +34,22 @@ export interface SimulatorToolsContextITF {
 export interface SimulatorTradingContextITF {
     process: ProcessT
     adjustLeverage: number
-    marginMode: MarginModeT
+    marginMode: MARGIN_MODE
     tradingType: TradingType
     processFutures: PositionFuturesT
     orderPlacementPreference: string,
     longPositionData: PositionITF,
     shortPositionData: PositionITF,
     setProcess: (process: ProcessT) => void
-    setMarginMode: (mode: MarginModeT) => void
+    setMarginMode: (mode: MARGIN_MODE) => void
     setAdjustLeverage: (amount: number) => void
     setTradingType: (trading: TradingType) => void
-    currentHedgingModePositionType: HedgingModeTypeT
-    setLongPositionData:(position:PositionITF) => void
-    setShortPositionData:(position:PositionITF) => void
+    currentHedgingModePositionType: HEDGING
+    setLongPositionData: (position: PositionITF) => void
+    setShortPositionData: (position: PositionITF) => void
     setProcessFutures: (position: PositionFuturesT) => void
-    setOrderPlacementPreference: (preference:string) => void
-    setCurrentHedgingModePositionType: (type: HedgingModeTypeT) => void
+    setOrderPlacementPreference: (preference: string) => void
+    setCurrentHedgingModePositionType: (type: HEDGING) => void
 }
 
 export interface SimulatorPlayerInfoContextITF {
@@ -54,7 +57,7 @@ export interface SimulatorPlayerInfoContextITF {
     balanceTradeableCrypto: number
     totalDepositWithLeverage: number
     setBalanceUSDT: (balance: (prev: number) => number) => void
-    setTotalDepositWithLeverage:(deposit: number) => void
+    setTotalDepositWithLeverage: (deposit: number) => void
     setBalanceTradeableCrypto: (balance: (prev: number) => number) => void
 }
 
@@ -111,7 +114,8 @@ export interface ModalsContextITF {
     children: React.ReactNode
 }
 
-export interface PositionITF extends PositionDataITF{}
+export interface PositionITF extends PositionDataITF {
+}
 
 export type SymbolT = "ETH" | "BTC" | ""
 
@@ -145,6 +149,4 @@ export type StopLimitOrderT = "order-confirm" | ""
 
 export type InfluenceT = "up" | "down" | ""
 
-export type FuturesTradingModalsT = "margin-mode" | "adjust-leverage" | "order-placement-preferences" | "TP/SL" | ""
-
-export type HedgingModeTypeT = "Open" | "Close"
+export type HedgingModeTypeT = "open" | "close"

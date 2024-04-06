@@ -1,7 +1,7 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
-import {ORDER_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
+import {MODALS, ORDER_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
 
 import {Button, Input, InputRangeSlider, ModalWindowTemplate} from "components";
 import TPSLTrigger from "../Components/TPSLTrigger";
@@ -39,11 +39,11 @@ const settingsFields: SettingsFieldsITF = {
 }
 
 const TPSL: React.FC = () => {
-    const settingsFieldsCopy = JSON.parse(JSON.stringify(settingsFields))
+    const settingsFieldsCopy = interruptionRef(settingsFields)
 
     const {setCurrentModal} = useFuturesTradingModalContext()
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
-    const {adjustLeverage, setLongPositionData, setShortPositionData} = useSimulatorTradingContext()
+    const {adjustLeverage, setLongPositionData, setShortPositionData, longPositionData, shortPositionData} = useSimulatorTradingContext()
     const {dataForModal} = useFuturesTradingModalContext()
 
     const [activeTradeType, setActiveTradeType] = useState<TRADE_POSITION>(TRADE_POSITION.LONG)
@@ -51,6 +51,19 @@ const TPSL: React.FC = () => {
     const [fieldsValue, setFieldsValue] = useState(settingsFieldsCopy)
 
     const currentPrice = currentCryptoData.close
+
+    useEffect(() => {
+        if (longPositionData) {
+            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Long: longPositionData}))
+            setActiveTradeType(TRADE_POSITION.LONG)
+        }
+
+        if (shortPositionData) {
+            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: shortPositionData}))
+            setActiveTradeType(TRADE_POSITION.SHORT)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const inputOptions = (trigger: TRIGGERS, type?: ORDER_TYPE): InputOptionsITF => {
         switch (trigger) {
@@ -387,16 +400,23 @@ const TPSL: React.FC = () => {
     const confirmMode = () => {
         //@TODO need to add position details checking like if{}
         const confirmedData: PositionDataITF = fieldsValue[activeTradeType]
+        const triggerProfitPrice = confirmedData.profit_trigger_price
+        const triggerStopPrice = confirmedData.stop_trigger_price
 
-        if (activeTradeType === TRADE_POSITION.LONG) {
-            setLongPositionData(confirmedData)
+        if (!triggerStopPrice && !triggerProfitPrice) {
+            setLongPositionData(null)
             setShortPositionData(null)
         } else {
-            setShortPositionData(confirmedData)
-            setLongPositionData(null)
+            if (activeTradeType === TRADE_POSITION.LONG) {
+                setLongPositionData(confirmedData)
+                setShortPositionData(null)
+            } else {
+                setShortPositionData(confirmedData)
+                setLongPositionData(null)
+            }
         }
 
-        setCurrentModal("")
+        setCurrentModal(MODALS.CLOSE)
     }
 
     const currentProfitTrigger: TRIGGERS = fieldsValue[activeTradeType].current_profit_trigger
@@ -496,7 +516,7 @@ const TPSL: React.FC = () => {
     }
 
     return (
-        <ModalWindowTemplate show={true} title="Add TP/SL" cancelCallback={() => setCurrentModal("")} confirmCallback={confirmMode}>
+        <ModalWindowTemplate show={true} title="Add TP/SL" cancelCallback={() => setCurrentModal(MODALS.CLOSE)} confirmCallback={confirmMode}>
             <div className="futures-modal_tpls_header">
                 <HeaderItem label="Order Price" value="Last Traded Price"/>
                 <HeaderItem label="Qty" value={(dataForModal.orderValue / currentCryptoData.close).toFixed(3)}/>
@@ -508,7 +528,7 @@ const TPSL: React.FC = () => {
             </div>
             <div className="futures-modal_tpls_which_order">
                 <span>Applicable to</span>
-                <span>Current Order</span>
+                <span>Entire position</span>
             </div>
             <div className="futures-modal_tpls_trigger-controller">
                 <TPSLTrigger

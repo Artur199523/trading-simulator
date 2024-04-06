@@ -1,65 +1,119 @@
 import React, {memo, useEffect, useState} from "react";
 
-import {useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
+import {interruptionRef} from "utils/functions/interruptionRef";
+import {MODALS, TRADE_POSITION} from "utils";
+import {
+    useFuturesTradingModalContext,
+    useSimulatorPlayerInfoContext,
+    useSimulatorTradingContext
+} from "layouts/providers";
 
-import {Input, InputRange} from "components";
+import OrderValueInfo from "./Components/OrderValueInfo";
 import TradeButtons from "./Components/TradeButtons";
-import TPSL from "./Components/TPSL";
+import {Input, InputRangeSlider} from "components";
 
 import {StartTradeInitialOptions} from "./type";
-import {multiply} from "../../../../utils";
+import TPSL from "./Components/TPSL";
+import TriggerPrice from "./Components/TriggerPrice";
+
+const settingsFields: any = {
+    order_price_usdt: "",
+    order_value_usdt: "",
+    order_value_percent: 0
+}
 
 const LimitOrder: React.FC = () => {
-    const [priceUSDT, setPriceUSDT] = useState("")
-    const [quantityUSDT, setQuantityUSDT] = useState("")
-    const [percentRange, setPercentRange] = useState(0)
-    const [takeProfit, setTakeProfit] = useState<string>("")
-    const [stopLoss, setStopLoss] = useState<string>("")
+    const fieldsCopy = interruptionRef(settingsFields)
 
-    const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
-    const {totalDepositWithLeverage} = useSimulatorPlayerInfoContext()
+    const [fieldsValue, setFieldsValue] = useState<any>(fieldsCopy)
+
+    const {adjustLeverage, longPositionData, shortPositionData,setShortPositionData,setLongPositionData} = useSimulatorTradingContext()
+    const {balanceUSDT} = useSimulatorPlayerInfoContext()
+    const {setCurrentModal} = useFuturesTradingModalContext()
+
+    const isTPSL = !!longPositionData || !!shortPositionData
 
     useEffect(() => {
-        if (currentCryptoData.close && !priceUSDT) setPriceUSDT(currentCryptoData.close.toString())
-    }, [currentCryptoData.close]);
+        if (fieldsValue.order_value_usdt) {
+            setFieldsValue(interruptionRef(settingsFields))
+            setLongPositionData(null)
+            setShortPositionData(null)
+        }
 
-    const priceUSDTHandle = (price: string) => {
-        setPriceUSDT(price)
-    }
+        return () => {
+            setShortPositionData(null)
+            setLongPositionData(null)
+        }
 
-    const quantityInputHandle = (quantity: string) => {
-        setQuantityUSDT(quantity)
-        setPercentRange(Number((multiply(quantity,100)/totalDepositWithLeverage).toFixed(3)))
-    }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [adjustLeverage]);
 
-    const percentRangeHandle = (percent: number) => {
-        setPercentRange(percent)
-        setQuantityUSDT((multiply(totalDepositWithLeverage,percent)/100).toString())
+    const inputHandle = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+        const {value, name} = event.target
+        const fields = interruptionRef(fieldsValue)
+
+        fields[name] = value
+
+        const valueToNumber = Number(value)
+
+        switch (name) {
+            case "order_value_usdt":
+                const calculatedOrderValuePercent = (valueToNumber * 100) / (adjustLeverage * balanceUSDT)
+
+                fields.order_value_percent = calculatedOrderValuePercent
+                break
+            case "order_value_percent":
+                const calculatedOrderValueUSDT = valueToNumber * (balanceUSDT * adjustLeverage) / 100
+
+                fields.order_value_usdt = calculatedOrderValueUSDT
+                break
+        }
+
+        setFieldsValue(fields)
     }
 
     const startTrade = (process: StartTradeInitialOptions) => {
         console.log(process)
     }
 
+    const orderValue = fieldsValue.order_price_usdt ? fieldsValue.order_value_usdt ? Number(fieldsValue.order_value_usdt) : 0 : 0
+    const orderPrice = fieldsValue.order_price_usdt ? Number(fieldsValue.order_price_usdt) : 0
+
     return (
         <div className="futures_limit-order">
             <Input
-                name="price"
                 type="number"
-                value={priceUSDT}
-                placeholder="Price (USDT)"
-                onChange={(e) => priceUSDTHandle(e.target.value)}
+                rightText="USDT"
+                name="order_price_usdt"
+                labelText="Order Price"
+                value={fieldsValue.order_price_usdt}
+                onChange={(event) => inputHandle(event)}
             />
             <Input
-                name="quantity"
                 type="number"
-                value={quantityUSDT}
-                placeholder="Quantity (USDT)"
-                onChange={(e) => quantityInputHandle(e.target.value)}
+                rightText="USDT"
+                name="order_value_usdt"
+                labelText="Order by Value"
+                value={fieldsValue.order_value_usdt}
+                onChange={(event) => inputHandle(event)}
+                labelClickCallback={() => setCurrentModal(MODALS.ORDER_PLACEMENT_PREFERENCES)}
             />
-            <InputRange value={percentRange} onChange={(e) => percentRangeHandle(e as any)}/>
-
-            {/*<TPSL/>*/}
+            <InputRangeSlider
+                max={100}
+                division={4}
+                name="order_value_percent"
+                value={fieldsValue.order_value_percent}
+                onChange={(event) => inputHandle(event)}
+            />
+            <OrderValueInfo orderValue={orderValue} orderPrice={orderPrice}/>
+            <TPSL
+                confirmed={isTPSL}
+                orderValue={fieldsValue.order_value_usdt}
+                orderPrice={fieldsValue.order_price_usdt}
+                position={!!longPositionData ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT}
+            />
+            {isTPSL && <TriggerPrice/>}
             <TradeButtons onClick={startTrade}/>
         </div>
     )

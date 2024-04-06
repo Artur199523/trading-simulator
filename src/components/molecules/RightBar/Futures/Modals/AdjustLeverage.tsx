@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorPlayerInfoContext, useSimulatorTradingContext} from "layouts/providers";
+import {MODALS} from "utils";
 
 import {Button, Input, InputRangeSlider, ModalWindow} from "components";
 
@@ -18,7 +19,7 @@ const AdjustLeverage: React.FC = () => {
 
     const confirmLeverage = () => {
         setAdjustLeverage(leverageRange)
-        setCurrentModal("")
+        setCurrentModal(MODALS.CLOSE)
 
         setTotalDepositWithLeverage(balanceUSDT * Number(leverageInput))
     }
@@ -58,7 +59,7 @@ const AdjustLeverage: React.FC = () => {
                 <p>Selecting higher leverage such as [10x] increases your liquidation risk. Always manage your risk levels. See our help article for more
                     information.</p>
                 <div className="futures-modal_btns">
-                    <Button onClick={() => setCurrentModal("")}>Cancel</Button>
+                    <Button onClick={() => setCurrentModal(MODALS.CLOSE)}>Cancel</Button>
                     <Button onClick={confirmLeverage} view="two">Confirm</Button>
                 </div>
             </div>

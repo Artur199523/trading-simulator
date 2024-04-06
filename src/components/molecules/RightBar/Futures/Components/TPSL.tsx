@@ -1,19 +1,27 @@
 import React, {memo} from "react";
 
 import {useFuturesTradingModalContext} from "layouts/providers";
-import {showNotification, TRADE_POSITION} from "utils";
+import {MODALS, showNotification, TRADE_POSITION} from "utils";
 
 import {CheckBox} from "components/index";
 import {TPSLInterface} from "../type";
 
-const TPSL: React.FC<TPSLInterface> = ({orderValue, confirmed, position}) => {
+const TPSL: React.FC<TPSLInterface> = ({orderValue, orderPrice, confirmed, position}) => {
     const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext()
 
     const checkBoxClick = () => {
+        if (orderPrice !== undefined) {
+            if (Number(orderPrice) < 10) {
+                showNotification("Order price less then need for trade", "error", 0)
+
+                return
+            }
+        }
+
         if (Number(orderValue) < 10) {
             showNotification("Order value less then need for trade", "error", 0)
         } else {
-            setCurrentModal("TP/SL")
+            setCurrentModal(MODALS.TP_SL)
             setDataForModal({orderValue})
         }
     }

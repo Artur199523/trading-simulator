@@ -1,69 +1,127 @@
 import React, {memo, useEffect, useState} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorPlayerInfoContext, useSimulatorTradingContext} from "layouts/providers";
+import {interruptionRef} from "utils/functions/interruptionRef";
+import {ERROR, HEDGING, MODALS, showNotification, TRADE_POSITION} from "utils";
 
 import OrderValueInfo from "./Components/OrderValueInfo";
 import TradeButtons from "./Components/TradeButtons";
+import TriggerPrice from "./Components/TriggerPrice";
 import {Input, InputRangeSlider} from "components";
 import TPSL from "./Components/TPSL";
 
-import {StartTradeInitialOptions} from "./type";
-import {TRADE_POSITION} from "utils";
-import TriggerPrice from "./Components/TriggerPrice";
+import {SettingsFieldsMarketITF, StartTradeInitialOptions} from "./type";
+
+const settingsFields: SettingsFieldsMarketITF = {
+    order_value_usdt: "",
+    order_value_percent: 0
+}
 
 const Market: React.FC = () => {
-    const [orderValue, setOrderValue] = useState("")
-    const [percentRange, setPercentRange] = useState(0)
+    const fieldsCopy = interruptionRef(settingsFields)
+    const [fieldsValue, setFieldsValue] = useState<SettingsFieldsMarketITF>(fieldsCopy)
 
-    const {setCurrentModal} = useFuturesTradingModalContext()
-    const {adjustLeverage, longPositionData, shortPositionData} = useSimulatorTradingContext()
+    const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext()
+    const {adjustLeverage, longPositionData, shortPositionData, setLongPositionData, setShortPositionData} = useSimulatorTradingContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
 
     const isTPSL = !!longPositionData || !!shortPositionData
 
     useEffect(() => {
-        if (orderValue) percentRangeHandle(percentRange)
+        if (fieldsValue.order_value_usdt) {
+            setFieldsValue(interruptionRef(settingsFields))
+            setLongPositionData(null)
+            setShortPositionData(null)
+        }
+
+        return () => {
+            setShortPositionData(null)
+            setLongPositionData(null)
+        }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [adjustLeverage]);
 
-    const orderValueHandle = (percent: string) => {
-        setOrderValue(percent)
+    const inputHandle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const {value, name} = event.target
+        const fields = interruptionRef(fieldsValue)
+
+        fields[name] = value
+
+        const valueToNumber = Number(value)
+
+        switch (name) {
+            case "order_value_usdt":
+                const calculatedOrderValuePercent = (valueToNumber * 100) / (adjustLeverage * balanceUSDT)
+
+                fields.order_value_percent = calculatedOrderValuePercent
+                break
+            case "order_value_percent":
+                const calculatedOrderValueUSDT = valueToNumber * (balanceUSDT * adjustLeverage) / 100
+
+                fields.order_value_usdt = calculatedOrderValueUSDT
+                break
+        }
+
+        setFieldsValue(fields)
     }
 
-    const percentRangeHandle = (percent: number) => {
-        setOrderValue((percent * (balanceUSDT * adjustLeverage) / 100).toString())
-        setPercentRange(percent)
-    }
+    const startConfirmProcess = (process: StartTradeInitialOptions) => {
+        const currentOrderValue = fieldsValue.order_value_usdt
 
-    const startTrade = (process: StartTradeInitialOptions) => {
-        console.log(process)
+        if (Number(currentOrderValue) < (balanceUSDT * adjustLeverage)) {
+            if (process.hedgingType === HEDGING.OPEN) {
+                if ((longPositionData && process.position === TRADE_POSITION.SHORT) || (shortPositionData && process.position === TRADE_POSITION.SHORT)) {
+                    setCurrentModal(MODALS.RISK_ALERT)
+                } else {
+                    const isTPLS = !!longPositionData || !!shortPositionData
+                    const isCurrentPositionLong = process.position === TRADE_POSITION.LONG
+                    const currentPositionData = isTPLS ? isCurrentPositionLong ? longPositionData : shortPositionData : {}
+
+
+                    const confirmData = interruptionRef({
+                        ...fieldsValue, ...currentPositionData,
+                        trade_type: "Market",
+                        trade_position: isCurrentPositionLong ? "Buy" : "Sell",
+                        time_in_force: "Immediate-Or-Cancel",
+                        is_tp_ls: isTPLS
+                    })
+
+                    setDataForModal(confirmData)
+                    setCurrentModal(MODALS.CONFIRM_POSITION)
+                }
+            }
+        } else {
+            showNotification(ERROR.INSUFFICIENT, "error")
+        }
     }
 
     return (
         <div className="futures_market">
             <Input
-                name="quantity"
                 type="number"
                 rightText="USDT"
-                value={orderValue}
+                name="order_value_usdt"
                 labelText="Order by Value"
-                labelClickCallback={() => setCurrentModal("order-placement-preferences")}
-                onChange={(e) => orderValueHandle(e.target.value)}
+                value={fieldsValue.order_value_usdt}
+                onChange={(event) => inputHandle(event)}
+                labelClickCallback={() => setCurrentModal(MODALS.ORDER_PLACEMENT_PREFERENCES)}
             />
             <InputRangeSlider
                 max={100}
                 division={4}
-                name="percent"
-                value={percentRange}
-                onChange={(event) => percentRangeHandle(event.target.value as any)}
+                name="order_value_percent"
+                value={fieldsValue.order_value_percent}
+                onChange={(event) => inputHandle(event)}
             />
-            <OrderValueInfo orderValue={Number(orderValue)}/>
+            <OrderValueInfo orderValue={Number(fieldsValue.order_value_usdt)}/>
             <TPSL
-                orderValue={orderValue}
                 confirmed={isTPSL}
+                orderValue={fieldsValue.order_value_usdt}
                 position={!!longPositionData ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT}
             />
             {isTPSL && <TriggerPrice/>}
-            <TradeButtons onClick={startTrade}/>
+            <TradeButtons onClick={startConfirmProcess}/>
         </div>
     )
 }
