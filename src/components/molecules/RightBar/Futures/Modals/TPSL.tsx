@@ -1,15 +1,15 @@
 import React, {useEffect, useState} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
-import {MODALS, ORDER_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
+import {MODALS, ORDER_TYPE, TRAD_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
 
 import {Button, Input, InputRangeSlider, ModalWindowTemplate} from "components";
+import {interruptionRef} from "utils/functions/interruptionRef";
 import TPSLTrigger from "../Components/TPSLTrigger";
 
-import {HeaderItemITF, InputOptionsITF, PositionDataITF, SettingsFieldsITF} from "../type";
+import {HeaderItemITF, InputOptionsITF, PositionDataITF, SettingsFieldsITF, TPSLDataForModalITF} from "../type";
 
 import "./style.scss"
-import {interruptionRef} from "../../../../../utils/functions/interruptionRef";
 
 const settingsFields: SettingsFieldsITF = {
     Long: {
@@ -44,13 +44,13 @@ const TPSL: React.FC = () => {
     const {setCurrentModal} = useFuturesTradingModalContext()
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
     const {adjustLeverage, setLongPositionData, setShortPositionData, longPositionData, shortPositionData} = useSimulatorTradingContext()
-    const {dataForModal} = useFuturesTradingModalContext()
+    const {dataForModal} = useFuturesTradingModalContext<TPSLDataForModalITF>()
 
     const [activeTradeType, setActiveTradeType] = useState<TRADE_POSITION>(TRADE_POSITION.LONG)
 
     const [fieldsValue, setFieldsValue] = useState(settingsFieldsCopy)
 
-    const currentPrice = currentCryptoData.close
+    const currentPrice = dataForModal.tradType === TRAD_TYPE.LIMIT ? Number(dataForModal.orderPrice) : currentCryptoData.close
 
     useEffect(() => {
         if (longPositionData) {
@@ -424,7 +424,7 @@ const TPSL: React.FC = () => {
 
     const profitInputOptions: InputOptionsITF = inputOptions(currentProfitTrigger, ORDER_TYPE.PROFIT)
     const stopInputOptions: InputOptionsITF = inputOptions(currentStopTrigger, ORDER_TYPE.STOP)
-    const orderValue = dataForModal.orderValue
+    const orderValue = Number(dataForModal.orderValue)
 
     // @TODO need to check
     const calculateAndRenderTPSL = (trigger: TRIGGERS, orderType: ORDER_TYPE) => {
@@ -519,7 +519,7 @@ const TPSL: React.FC = () => {
         <ModalWindowTemplate show={true} title="Add TP/SL" cancelCallback={() => setCurrentModal(MODALS.CLOSE)} confirmCallback={confirmMode}>
             <div className="futures-modal_tpls_header">
                 <HeaderItem label="Order Price" value="Last Traded Price"/>
-                <HeaderItem label="Qty" value={(dataForModal.orderValue / currentCryptoData.close).toFixed(3)}/>
+                <HeaderItem label="Qty" value={(orderValue / currentCryptoData.close).toFixed(3)}/>
                 <HeaderItem label="Last Traded Price" value={currentCryptoData.close}/>
             </div>
             <div className={`futures-modal_tpls_trade-type ${activeTradeType}`}>

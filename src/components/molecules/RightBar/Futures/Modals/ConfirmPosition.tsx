@@ -13,7 +13,7 @@ import {liquidityCalculation} from "utils/functions/trade/liquidityCalculation";
 
 import {ModalWindowTemplate} from "components";
 
-import {ConfirmPositionFiledItemITF, ItemTPSLITF} from "../type";
+import {ConfirmPositionDataForModalWithTPSLITF, ConfirmPositionFiledItemITF, ItemTPSLITF} from "../type";
 
 import "./style.scss"
 
@@ -21,7 +21,7 @@ const ConfirmPosition: React.FC = () => {
     const {cryptoType} = useSimulatorOptionsContext()
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
     const {adjustLeverage, marginMode} = useSimulatorTradingContext()
-    const {setCurrentModal, dataForModal} = useFuturesTradingModalContext()
+    const {setCurrentModal, dataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
 
     const confirm = () => {

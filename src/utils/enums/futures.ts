@@ -39,3 +39,8 @@ export enum MODALS {
     CONFIRM_POSITION = "confirm-position",
     ORDER_PLACEMENT_PREFERENCES = "order-placement-preferences",
 }
+
+export enum TRAD_TYPE {
+    LIMIT = "limit",
+    MARKET = "market"
+}

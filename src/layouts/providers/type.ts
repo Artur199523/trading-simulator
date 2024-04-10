@@ -1,9 +1,10 @@
 import React from "react";
 
-import {HEDGING, MARGIN_MODE} from "utils";
+import {HEDGING, MARGIN_MODE, MODALS} from "utils";
 
-import {HistoryItem} from "store/simulator/type";
 import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
+import {HistoryItem} from "store/simulator/type";
+import {ModalContextType} from "utils/types";
 
 export interface SimulatorProviderITF {
     children: React.ReactNode
@@ -117,6 +118,13 @@ export interface ModalsContextITF {
 export interface PositionITF extends PositionDataITF {
 }
 
+type ReducedModalContextType<T> = Omit<ModalContextType<T>, 'dataForModal' | 'setDataForModal'>;
+
+export interface EnhancedModalContextType<T> extends ReducedModalContextType<MODALS> {
+    dataForModal: T;
+    setDataForModal: React.Dispatch<React.SetStateAction<T>>;
+}
+
 export type SymbolT = "ETH" | "BTC" | ""
 
 export type SideT = "Buy" | "Sell" | ""
@@ -138,8 +146,6 @@ export type TradingType = "spot" | "futures"
 export type ProcessT = "buy" | "sell" | ""
 
 export type PositionFuturesT = "long" | "short"
-
-export type MarginModeT = "cross" | "isolated" | ""
 
 export type MarkPositionT = "aboveBar" | "belowBar" | "inBar"
 

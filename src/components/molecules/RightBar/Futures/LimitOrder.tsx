@@ -1,22 +1,19 @@
 import React, {memo, useEffect, useState} from "react";
 
+import {useFuturesTradingModalContext, useSimulatorPlayerInfoContext, useSimulatorTradingContext} from "layouts/providers";
 import {interruptionRef} from "utils/functions/interruptionRef";
-import {MODALS, TRADE_POSITION} from "utils";
-import {
-    useFuturesTradingModalContext,
-    useSimulatorPlayerInfoContext,
-    useSimulatorTradingContext
-} from "layouts/providers";
+import {MODALS, TRAD_TYPE, TRADE_POSITION} from "utils";
 
 import OrderValueInfo from "./Components/OrderValueInfo";
 import TradeButtons from "./Components/TradeButtons";
 import {Input, InputRangeSlider} from "components";
 
-import {StartTradeInitialOptions} from "./type";
-import TPSL from "./Components/TPSL";
 import TriggerPrice from "./Components/TriggerPrice";
+import TPSL from "./Components/TPSL";
 
-const settingsFields: any = {
+import {SettingsFieldLimitITF, StartTradeInitialOptions} from "./type";
+
+const settingsFields: SettingsFieldLimitITF = {
     order_price_usdt: "",
     order_value_usdt: "",
     order_value_percent: 0
@@ -27,7 +24,7 @@ const LimitOrder: React.FC = () => {
 
     const [fieldsValue, setFieldsValue] = useState<any>(fieldsCopy)
 
-    const {adjustLeverage, longPositionData, shortPositionData,setShortPositionData,setLongPositionData} = useSimulatorTradingContext()
+    const {adjustLeverage, longPositionData, shortPositionData, setShortPositionData, setLongPositionData} = useSimulatorTradingContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
     const {setCurrentModal} = useFuturesTradingModalContext()
 
@@ -109,6 +106,7 @@ const LimitOrder: React.FC = () => {
             <OrderValueInfo orderValue={orderValue} orderPrice={orderPrice}/>
             <TPSL
                 confirmed={isTPSL}
+                tradType={TRAD_TYPE.LIMIT}
                 orderValue={fieldsValue.order_value_usdt}
                 orderPrice={fieldsValue.order_price_usdt}
                 position={!!longPositionData ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT}

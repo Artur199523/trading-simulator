@@ -1,5 +1,5 @@
 import {HedgingModeTypeT} from "layouts/providers/type";
-import {TRADE_POSITION, TRIGGERS} from "utils";
+import {TRAD_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
 import {ReactNode} from "react";
 
 export interface TradeButtonsITF {
@@ -28,6 +28,12 @@ export interface SettingsFieldsITF {
 }
 
 export interface SettingsFieldsMarketITF {
+    order_value_usdt: string,
+    order_value_percent: number
+}
+
+export interface SettingsFieldLimitITF {
+    order_price_usdt: string,
     order_value_usdt: string,
     order_value_percent: number
 }
@@ -65,8 +71,9 @@ export interface TPSLTriggerIsCheckedITF {
 
 export interface TPSLInterface {
     orderValue: string
-    orderPrice?: string
     confirmed: boolean
+    tradType: TRAD_TYPE
+    orderPrice?: string
     position: TRADE_POSITION
 }
 
@@ -84,4 +91,23 @@ export interface ConfirmPositionFiledItemITF {
 export interface ItemTPSLITF {
     valueOne: string
     valueTwo: string
+}
+
+export interface TPSLDataForModalITF {
+    tradType: TRAD_TYPE,
+    orderPrice: string | undefined,
+    orderValue: string
+}
+
+export interface ConfirmPositionDataForModalWithoutTPSLITF {
+    is_tp_ls: boolean
+    order_value_percent: string
+    order_value_usdt: number
+    time_in_force: string
+    trade_position: TRADE_POSITION
+    trade_position_process: "Buy" | "Sell"
+    trade_type: "Market" | "Limit"
+}
+
+export interface ConfirmPositionDataForModalWithTPSLITF extends ConfirmPositionDataForModalWithoutTPSLITF, PositionDataITF {
 }

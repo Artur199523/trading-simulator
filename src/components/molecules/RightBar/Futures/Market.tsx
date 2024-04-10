@@ -3,10 +3,9 @@ import React, {memo, useEffect, useState} from "react";
 import {
     useFuturesTradingModalContext,
     useSimulatorPlayerInfoContext,
-    useSimulatorTradingChartDetailsContext,
     useSimulatorTradingContext
 } from "layouts/providers";
-import {ERROR, HEDGING, MODALS, showNotification, TRADE_POSITION} from "utils";
+import {ERROR, HEDGING, MODALS, showNotification, TRAD_TYPE, TRADE_POSITION} from "utils";
 import {interruptionRef} from "utils/functions/interruptionRef";
 
 import OrderValueInfo from "./Components/OrderValueInfo";
@@ -15,7 +14,7 @@ import TriggerPrice from "./Components/TriggerPrice";
 import {Input, InputRangeSlider} from "components";
 import TPSL from "./Components/TPSL";
 
-import {SettingsFieldsMarketITF, StartTradeInitialOptions} from "./type";
+import {ConfirmPositionDataForModalWithTPSLITF, SettingsFieldsMarketITF, StartTradeInitialOptions} from "./type";
 
 const settingsFields: SettingsFieldsMarketITF = {
     order_value_usdt: "",
@@ -26,7 +25,7 @@ const Market: React.FC = () => {
     const fieldsCopy = interruptionRef(settingsFields)
     const [fieldsValue, setFieldsValue] = useState<SettingsFieldsMarketITF>(fieldsCopy)
 
-    const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext()
+    const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
     const {adjustLeverage, longPositionData, shortPositionData, setLongPositionData, setShortPositionData} = useSimulatorTradingContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
 
@@ -122,6 +121,7 @@ const Market: React.FC = () => {
             <OrderValueInfo orderValue={Number(fieldsValue.order_value_usdt)}/>
             <TPSL
                 confirmed={isTPSL}
+                tradType={TRAD_TYPE.MARKET}
                 orderValue={fieldsValue.order_value_usdt}
                 position={!!longPositionData ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT}
             />

@@ -3,11 +3,12 @@ import React, {memo} from "react";
 import {useFuturesTradingModalContext} from "layouts/providers";
 import {MODALS, showNotification, TRADE_POSITION} from "utils";
 
-import {CheckBox} from "components/index";
-import {TPSLInterface} from "../type";
+import {CheckBox} from "components";
 
-const TPSL: React.FC<TPSLInterface> = ({orderValue, orderPrice, confirmed, position}) => {
-    const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext()
+import {TPSLDataForModalITF, TPSLInterface} from "../type";
+
+const TPSL: React.FC<TPSLInterface> = ({orderValue, orderPrice, confirmed, position, tradType}) => {
+    const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext<TPSLDataForModalITF>()
 
     const checkBoxClick = () => {
         if (orderPrice !== undefined) {
@@ -22,7 +23,7 @@ const TPSL: React.FC<TPSLInterface> = ({orderValue, orderPrice, confirmed, posit
             showNotification("Order value less then need for trade", "error", 0)
         } else {
             setCurrentModal(MODALS.TP_SL)
-            setDataForModal({orderValue})
+            setDataForModal({orderValue, orderPrice, tradType})
         }
     }
 
