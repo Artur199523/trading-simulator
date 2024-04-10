@@ -1,12 +1,15 @@
+import classNames from "classnames";
 import React from "react";
 
 import {
     useSimulatorOptionsContext,
     useSimulatorTradingContext,
     useFuturesTradingModalContext,
+    useSimulatorPlayerInfoContext,
     useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
 import {MODALS, showNotification} from "utils";
+import {liquidityCalculation} from "utils/functions/trade/liquidityCalculation";
 
 import {ModalWindowTemplate} from "components";
 
@@ -19,23 +22,36 @@ const ConfirmPosition: React.FC = () => {
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
     const {adjustLeverage, marginMode} = useSimulatorTradingContext()
     const {setCurrentModal, dataForModal} = useFuturesTradingModalContext()
+    const {balanceUSDT} = useSimulatorPlayerInfoContext()
 
     const confirm = () => {
-        showNotification("Coming soon","info",0)
+        showNotification("Coming soon", "info", 0)
     }
 
-    const titleColor = dataForModal.trade_position === "Buy" ? "green" : "red"
-    const titleText = `${dataForModal.trade_type} ${dataForModal.trade_position}`
+    const getDisplayOrDash = (value: any) => {
+        return value !== undefined && value !== null && value !== '' ? value : '--';
+    };
+
+    const {trade_position_process, trade_type, order_value_usdt, profit_trigger_price, stop_trigger_price, trade_position} = dataForModal
+    const {close: currentPrice} = currentCryptoData
+
+    const calculatedLiquidity = liquidityCalculation(currentPrice, balanceUSDT, Number(order_value_usdt), trade_position)
+
+    const titleColor = trade_position_process === "Buy" ? "green" : "red"
+    const titleText = `${trade_type} ${trade_position}`
     const title = <span><span style={{color: titleColor}}>{titleText}</span> {cryptoType}USDT</span>
 
-    const quantity = `${(dataForModal.order_value_usdt / currentCryptoData.close).toFixed(2)} ${cryptoType}`
-    const orderCost = `${(dataForModal.order_value_usdt / adjustLeverage).toFixed(2)} USDT`
-    const orderValue = `${dataForModal.order_value_usdt} USDT`
+    const quantity = `${(order_value_usdt / currentCryptoData.close).toFixed(2)} ${cryptoType}`
+    const orderCost = `${(order_value_usdt / adjustLeverage).toFixed(2)} USDT`
+    const orderValue = `${order_value_usdt} USDT`
     const leverageWithMode = `${marginMode} ${adjustLeverage}x`
-    const takeProfitTriggerPrice = dataForModal.profit_trigger_price ? dataForModal.profit_trigger_price : "--"
-    const stopLostTriggerPrice = dataForModal.stop_trigger_price ? dataForModal.stop_trigger_price : "--"
-    const takeProfitOrderPrice = dataForModal.profit_trigger_price ? "Market" : "--"
-    const stopLostOrderPrice = dataForModal.stop_trigger_price ? "Market" : "--"
+    const takeProfitTriggerPrice = getDisplayOrDash(profit_trigger_price)
+    const stopLostTriggerPrice = getDisplayOrDash(stop_trigger_price)
+    const takeProfitOrderPrice = profit_trigger_price ? "Market" : "--"
+    const stopLostOrderPrice = stop_trigger_price ? "Market" : "--"
+    const liquidity = calculatedLiquidity ? `${Number(calculatedLiquidity.toFixed(2))} USDT` : "--"
+
+    const liquidityStyle = classNames({'brand-color': calculatedLiquidity > 0})
 
     return (
         <ModalWindowTemplate show={true} title={title} confirmCallback={confirm} cancelCallback={() => setCurrentModal(MODALS.CLOSE)}>
@@ -44,7 +60,7 @@ const ConfirmPosition: React.FC = () => {
                 <ConfirmPositionFiledItem name="Qty" value={quantity}/>
                 <ConfirmPositionFiledItem name="Order Cost" value={orderCost}/>
                 <ConfirmPositionFiledItem name="Order Value" value={orderValue}/>
-                <ConfirmPositionFiledItem name="Esitmated Liq. Price" value="--"/>
+                <ConfirmPositionFiledItem className={liquidityStyle} name="Esitmated Liq. Price" value={liquidity}/>
                 <ConfirmPositionFiledItem name="Levevage" value={leverageWithMode}/>
                 <ConfirmPositionFiledItem name="Time" value="Immediate-Or-Cancel"/>
 
@@ -59,8 +75,8 @@ const ConfirmPosition: React.FC = () => {
 
 export default ConfirmPosition
 
-const ConfirmPositionFiledItem: React.FC<ConfirmPositionFiledItemITF> = ({name, value}) => (
-    <div className="futures-modal_confirm-position_filed-item">
+const ConfirmPositionFiledItem: React.FC<ConfirmPositionFiledItemITF> = ({name, value, className = ""}) => (
+    <div className={`futures-modal_confirm-position_filed-item ${className}`}>
         <div>{name}</div>
         <div>{value}</div>
     </div>

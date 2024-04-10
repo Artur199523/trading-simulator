@@ -245,11 +245,17 @@
 
       &_tp-sl {
         & > span:first-child {
-          color:#20b26c;
+          color: #20b26c;
         }
 
         & > span:last-child {
           color: #ef454a;
+        }
+      }
+
+      &.brand-color {
+        & > div:last-child{
+          color: goldenrod;
         }
       }
     }

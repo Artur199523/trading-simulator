@@ -78,6 +78,7 @@ export interface OrderValueITF {
 export interface ConfirmPositionFiledItemITF {
     name: string
     value: string | number | ReactNode
+    className?: string
 }
 
 export interface ItemTPSLITF {

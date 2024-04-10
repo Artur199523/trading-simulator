@@ -36,15 +36,15 @@ export interface SimulatorTradingContextITF {
     adjustLeverage: number
     marginMode: MARGIN_MODE
     tradingType: TradingType
-    processFutures: PositionFuturesT
-    orderPlacementPreference: string,
     longPositionData: PositionITF,
     shortPositionData: PositionITF,
+    processFutures: PositionFuturesT
+    orderPlacementPreference: string,
+    currentHedgingModePositionType: HEDGING
     setProcess: (process: ProcessT) => void
     setMarginMode: (mode: MARGIN_MODE) => void
     setAdjustLeverage: (amount: number) => void
     setTradingType: (trading: TradingType) => void
-    currentHedgingModePositionType: HEDGING
     setLongPositionData: (position: PositionITF) => void
     setShortPositionData: (position: PositionITF) => void
     setProcessFutures: (position: PositionFuturesT) => void

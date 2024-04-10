@@ -1,8 +1,13 @@
 import React, {memo, useEffect, useState} from "react";
 
-import {useFuturesTradingModalContext, useSimulatorPlayerInfoContext, useSimulatorTradingContext} from "layouts/providers";
-import {interruptionRef} from "utils/functions/interruptionRef";
+import {
+    useFuturesTradingModalContext,
+    useSimulatorPlayerInfoContext,
+    useSimulatorTradingChartDetailsContext,
+    useSimulatorTradingContext
+} from "layouts/providers";
 import {ERROR, HEDGING, MODALS, showNotification, TRADE_POSITION} from "utils";
+import {interruptionRef} from "utils/functions/interruptionRef";
 
 import OrderValueInfo from "./Components/OrderValueInfo";
 import TradeButtons from "./Components/TradeButtons";
@@ -78,11 +83,11 @@ const Market: React.FC = () => {
                     const isCurrentPositionLong = process.position === TRADE_POSITION.LONG
                     const currentPositionData = isTPLS ? isCurrentPositionLong ? longPositionData : shortPositionData : {}
 
-
                     const confirmData = interruptionRef({
                         ...fieldsValue, ...currentPositionData,
                         trade_type: "Market",
-                        trade_position: isCurrentPositionLong ? "Buy" : "Sell",
+                        trade_position_process: isCurrentPositionLong ? "Buy" : "Sell",
+                        trade_position: process.position,
                         time_in_force: "Immediate-Or-Cancel",
                         is_tp_ls: isTPLS
                     })
