@@ -1,6 +1,6 @@
 import React from "react";
 
-import {TopBar, BottomBar, RightBar, Chart, ToastGlobalContainer} from "components"
+import {TopBar, RightBar, Chart, ToastGlobalContainer, BottomOrdersBar} from "components"
 
 import "./style.scss";
 
@@ -9,10 +9,12 @@ const Simulator: React.FC = () => {
         <div className="simulator">
             <TopBar/>
             <div className="simulator_container">
-                <Chart/>
+                <div className="simulator_container_chart-block">
+                    <Chart/>
+                    <BottomOrdersBar/>
+                </div>
                 <RightBar/>
             </div>
-            <BottomBar/>
             <ToastGlobalContainer/>
         </div>
     )

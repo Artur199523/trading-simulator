@@ -1,4 +1,7 @@
+@import "scss/color";
+
 .chart {
-  width: calc(100% - 300px);
-  height: calc(100vh - 160px);
+  width: 100%;
+  height: calc(100vh - 250px);
+  border-bottom: 2px solid $main-opacity-05;
 }

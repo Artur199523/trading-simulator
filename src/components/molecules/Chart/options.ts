@@ -29,7 +29,7 @@ export const chartOptions = (chartRef:any) => {
             borderColor: "gray",
         },
         width: chartRef.clientWidth,
-        height: window.innerHeight - 160,
+        height: window.innerHeight - 250,
     }
 }
 

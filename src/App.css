@@ -6,4 +6,8 @@ body{
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+  /*For Firefox*/
+  scrollbar-width: thin;
+  scrollbar-color:  #f7a600 rgba(247, 166, 0, 0.5);
 }

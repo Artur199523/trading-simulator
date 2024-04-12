@@ -44,3 +44,29 @@ export enum TRAD_TYPE {
     LIMIT = "limit",
     MARKET = "market"
 }
+
+export enum POSITION_HEADERS {
+    IM = "im",
+    MM = "mm",
+    TP_SL = "tp_sl",
+    VALUE = "value",
+    QUANTITY = "quantity",
+    CLOSE_BY = "close_by",
+    CONTRACTS = "contracts",
+    MMR_CLOSE = "mmr_close",
+    MARK_PRICE = "mark_price",
+    ENTRY_PRICE = "entry_price",
+    REALIZED_PL = "realized_pl",
+    UNREALIZED_PL = "unrealized_pl",
+    TRAILING_STOP = "trailing_stop",
+    LIQUIDITY_PRICE = "liquidity_price",
+    REVERSE_POSITION = "reverse_position"
+}
+
+export enum ORDER_ACTIVE_TAB {
+    PL = "pl",
+    POSITION = "position",
+    CURRENT_ORDERS = "current_orders",
+    ORDER_HISTORY = "order_history",
+    TRADE_HISTORY = "trade_history",
+}

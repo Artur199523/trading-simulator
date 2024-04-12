@@ -1,15 +1,17 @@
+@import "scss/color";
+
 .right-bar {
-  padding: 5px 10px;
   width: 300px;
+  padding: 5px 10px;
   border-left: 1px solid;
   background-color: #00121f;
-  height: calc(100vh - 160px);
+  border-left: 2px solid $main-opacity-05;
 
   &_spot-trading-btn {
     display: flex;
-    background: rgba(128, 128, 128, 0.31);
-    margin-bottom: 15px;
     border-radius: 5px;
+    margin-bottom: 15px;
+    background: rgba(128, 128, 128, 0.31);
 
     button {
       width: 45%;
@@ -68,10 +70,9 @@
         border: 1px solid gray;
 
         &.active{
-          border: 1px solid gold;
+          border: 1px solid $main;
         }
       }
-
     }
   }
 
@@ -92,12 +93,12 @@
     border: none;
     outline: none;
     font-size: 16px;
-    border-radius: 5px;
     cursor: pointer;
+    border-radius: 5px;
 
     &.active-buy{
-      background-color: lightseagreen;
       transition: 0.3s ease-in-out;
+      background-color: lightseagreen;
 
       &:hover{
         background-color: rgba(32, 178, 170, 0.61);
