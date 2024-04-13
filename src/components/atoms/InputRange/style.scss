@@ -1,3 +1,5 @@
+@import "scss/color";
+
 .input-range{
   display: flex;
   align-items: center;
@@ -19,7 +21,7 @@
     animate: 0.2s;
     cursor: pointer;
 
-    background: gold;
+    background: $main;
     border-radius: 23px;
     border: 0px solid #B8B8B8;
   }

@@ -1,15 +1,17 @@
+@import "scss/color";
+
 .radio-input {
   appearance: none;
   width: 18px;
   height: 18px;
   border-radius: 50%; // This makes the element circular
   cursor: pointer;
-  border: 1px solid gold;
+  border: 1px solid $main;
   background: white; // Set a background color, else transparent by default
 
   &:checked {
-    border-color: gold;
-    background: gold; // Change inner color when checked
+    border-color: $main;
+    background: $main; // Change inner color when checked
   }
 
   &:not(:checked) {

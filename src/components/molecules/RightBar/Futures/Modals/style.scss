@@ -1,3 +1,5 @@
+@import "scss/color";
+
 .futures-modal {
   &_btns {
     display: flex;
@@ -31,7 +33,7 @@
       }
 
       &.active {
-        border: 1px solid gold;
+        border: 1px solid $main;
       }
     }
   }
@@ -128,20 +130,20 @@
 
       &.Long {
         button:first-child {
-          background-color: rgb(14, 203, 129) !important;
+          background-color: $long !important;
 
           &:hover {
-            background-color: rgba(14, 203, 129, 0.64) !important;
+            background-color: $long-hover !important;
           }
         }
       }
 
       &.Short {
         button:last-child {
-          background-color: rgb(246, 70, 93) !important;
+          background-color: $short !important;
 
           &:hover {
-            background-color: rgba(246, 70, 93, 0.65) !important;
+            background-color: $short-hover !important;
           }
         }
       }
@@ -255,7 +257,7 @@
 
       &.brand-color {
         & > div:last-child{
-          color: goldenrod;
+          color: $main;
         }
       }
     }

@@ -20,7 +20,7 @@ const RangeSlider: React.FC<RangeSliderITF> = ({onChange, value, max, name, divi
                 className="slider"
                 onChange={(event) => onChange(event)}
                 style={{
-                    background: `linear-gradient(90deg, gold ${percentage}%, rgb(255, 255, 255, 0.5) ${percentage}%)`
+                    background: `linear-gradient(90deg, rgba(247, 166, 0, 1) ${percentage}%, rgb(255, 255, 255, 0.5) ${percentage}%)`
                 }}
             />
             {division &&
