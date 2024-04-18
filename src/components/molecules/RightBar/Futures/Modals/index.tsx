@@ -6,6 +6,7 @@ import {MODALS} from "utils";
 import OrderPlacementPreferences from "./OrderPlacementPreferences";
 import ConfirmPosition from "./ConfirmPosition";
 import AdjustLeverage from "./AdjustLeverage";
+import PositionMode from "./PositionMode";
 import MarginMode from "./MargineMode";
 import RiskAlert from "./RiskAlert";
 import TPSL from "./TPSL";
@@ -23,6 +24,8 @@ const FuturesTradingModals = () => {
                         <RiskAlert/>,
                     [MODALS.MARGIN_MODE]:
                         <MarginMode/>,
+                    [MODALS.POSITION_MODE]:
+                        <PositionMode/>,
                     [MODALS.ADJUST_LEVERAGE]:
                         <AdjustLeverage/>,
                     [MODALS.CONFIRM_POSITION]:

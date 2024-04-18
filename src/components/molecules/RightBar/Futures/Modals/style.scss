@@ -68,7 +68,12 @@
     }
   }
 
-  &_order_placement_preferences {
+  &_order_placement_preferences, &_position-mode {
+
+    & > div:first-child {
+      margin-top: 20px;
+    }
+
     &_check-item {
       margin-bottom: 20px;
 
@@ -85,9 +90,12 @@
       }
 
       p {
-        color: #71757a;
+        color: #adb1b8;
         font-size: 12px;
+        font-weight: 600;
         line-height: 16px;
+        margin-left: 35px;
+        margin-top: 5px;
       }
     }
 
@@ -98,9 +106,9 @@
       }
 
       p {
+        color: #71757a;
         font-size: 12px;
         line-height: 16px;
-        color: white;
         margin: 5px 0 15px;
       }
     }
@@ -256,7 +264,7 @@
       }
 
       &.brand-color {
-        & > div:last-child{
+        & > div:last-child {
           color: $main;
         }
       }
@@ -265,5 +273,9 @@
     &_tp-sl {
       margin: 15px 0;
     }
+  }
+
+  &_position-mode {
+
   }
 }

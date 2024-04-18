@@ -35,9 +35,15 @@ export enum MODALS {
     TP_SL = "TP/SL",
     RISK_ALERT = "risk-alert",
     MARGIN_MODE = "margin-mode",
+    POSITION_MODE = "position-mode",
     ADJUST_LEVERAGE = "adjust-leverage",
     CONFIRM_POSITION = "confirm-position",
     ORDER_PLACEMENT_PREFERENCES = "order-placement-preferences",
+}
+
+export enum POSITION_MODE {
+    HEDGE = "hedge",
+    ONE_WAY = "one_way"
 }
 
 export enum TRAD_TYPE {

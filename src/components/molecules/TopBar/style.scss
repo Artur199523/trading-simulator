@@ -7,27 +7,42 @@
   padding: 0 10px;
   align-items: center;
   background-color: #00121f;
+  justify-content: space-between;
   border-bottom: 1px solid #282c34;
   border-bottom: 2px solid $main-opacity-05;
 
-  button {
-    border: none;
-    color: white;
-    margin: 0 5px;
-    outline: none;
-    cursor: pointer;
-    padding: 0 30px;
-    font-size: 16px;
-    background: none;
-    font-weight: 500;
-    transition: 0.1s ease-in-out;
+  &_trading-types {
+    button {
+      color: white;
+      margin: 0 5px;
+      padding: 0 30px;
+      font-size: 16px;
+      font-weight: 500;
+      transition: 0.1s ease-in-out;
 
-    &:hover {
-      color: $main;
+      &:hover {
+        color: $main;
+      }
+
+      &.active {
+        color: $main;
+      }
     }
+  }
 
-    &.active {
-      color: $main;
+  &_settings {
+    button {
+      color: white;
+      transition: 0.2s ease-in-out;
+
+      &:hover{
+        color: $main;
+      }
+
+      svg{
+        width: 25px;
+        height: 22px;
+      }
     }
   }
 }

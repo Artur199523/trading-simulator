@@ -3,6 +3,7 @@ import React from 'react';
 
 import {store} from "./store";
 import {
+    HiddenBlocksProvider,
     FuturesTradingProvider,
     SimulatorToolsProvider,
     SimulatorTradingProvider,
@@ -11,7 +12,7 @@ import {
     SimulatorTradingChartDetailsProvider
 } from "./layouts/providers";
 
-import {FuturesTradingModals} from "components";
+import {FuturesTradingModals, HiddenBlocks} from "components";
 import Simulator from "./pages/Simulator";
 
 import './App.css';
@@ -25,8 +26,11 @@ function App() {
                         <SimulatorPLayerInfoProvider>
                             <SimulatorTradingChartDetailsProvider>
                                 <FuturesTradingProvider>
-                                    <Simulator/>
-                                    <FuturesTradingModals/>
+                                    <HiddenBlocksProvider>
+                                        <Simulator/>
+                                        <FuturesTradingModals/>
+                                        <HiddenBlocks/>
+                                    </HiddenBlocksProvider>
                                 </FuturesTradingProvider>
                             </SimulatorTradingChartDetailsProvider>
                         </SimulatorPLayerInfoProvider>

@@ -1,0 +1,143 @@
+@import "src/scss/color";
+
+.hidden-block {
+  &.block-open {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 10, 17, 0.44);
+    z-index: 9;
+  }
+
+  &_settings {
+    top: 0;
+    right: 0;
+    z-index: 10;
+    height: 100vh;
+    position: fixed;
+    min-width: 360px;
+    padding: 40px 15px;
+    transform: translateX(100%);
+    background: $background-main;
+    transition: transform 0.3s ease-in-out;
+    border-left: 2px solid $main-opacity-05;
+
+    h5 {
+      font-size: 16px;
+      color: $text-main;
+    }
+
+    &_head {
+      display: flex;
+      align-items: center;
+      padding-bottom: 20px;
+      justify-content: space-between;
+
+      h4 {
+        font-size: 20px;
+        font-weight: 400;
+        color: $text-main;
+      }
+
+      button {
+        color: $text-secondary;
+        transition: 0.2s ease-in-out;
+
+        &:hover {
+          color: $main;
+        }
+      }
+    }
+
+    &_margin {
+      padding: 15px 0;
+
+      &_margin-mode {
+        @extend .mode-style
+      }
+    }
+
+    &_trades {
+      padding: 15px 0;
+      border-top: 1px solid $main-opacity-05;
+
+      &_position-mode {
+        margin-top: 30px !important;
+        @extend .mode-style
+      }
+
+      &_risk-limits {
+        &_head {
+          margin-top: 30px !important;
+          @extend .mode-style;
+        }
+
+
+        &_block {
+          width: 100%;
+          height: 60px;
+          margin-top: 10px;
+          border-radius: 5px;
+          background: #25282c;
+        }
+
+        &.open-risk-block {
+          button {
+            transform: rotate(-180deg);
+          }
+        }
+      }
+    }
+
+    &.settings-open {
+      transform: translateX(0);
+    }
+  }
+
+  &_margin-mode {
+    top: 0;
+    right: 0;
+    width: 70%;
+    z-index: 11;
+    height: 100vh;
+    position: fixed;
+    transform: translateX(100%);
+    background: $background-main;
+    transition: transform 0.3s ease-in-out;
+    border-left: 2px solid $main-opacity-05;
+
+    &.margin-mode-open{
+      transform: translateX(0);
+    }
+  }
+
+  .mode-style {
+    display: flex;
+    margin-top: 15px;
+    justify-content: space-between;
+
+    span {
+      display: block;
+      font-size: 14px;
+      line-height: 16px;
+      font-weight: 500;
+      color: $text-secondary;
+    }
+
+    button {
+      display: flex;
+      font-size: 14px;
+      font-weight: 400;
+      color: $text-main;
+      line-height: 16px;
+      align-items: center;
+      transition: 0.2s ease-in-out;
+
+      &:hover {
+        color: $main;
+      }
+    }
+  }
+}

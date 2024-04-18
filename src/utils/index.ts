@@ -1,4 +1,5 @@
 export * from "./functions"
+export * from "./enums/global"
 export * from "./enums/futures"
 export * from "./const/futures"
 export * from "./messages/error"

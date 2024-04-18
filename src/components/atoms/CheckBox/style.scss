@@ -12,7 +12,8 @@
   }
 
   &.medium {
-    font-size: 10px;
+    font-size: 14px;
+    font-weight: 600;
     line-height: 20px;
   }
 
@@ -54,12 +55,12 @@
     }
 
     &.medium {
-      width: 20px;
-      height: 20px;
+      width: 17px;
+      height: 17px;
 
       &::before {
-        width: 12px;
-        height: 11px;
+        width: 9px;
+        height: 8px;
         clip-path: polygon(4% 40%, 0 55%, 41% 90%, 103% 16%, 95% 0%, 45% 65%);
       }
     }

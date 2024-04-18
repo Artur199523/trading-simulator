@@ -1,16 +1,12 @@
 import React, {useRef} from "react"
 import * as ReactDOM from "react-dom"
 
-import {useFixPagePosition} from "hooks"
-
 import {ModalWindowITF} from "./type"
 
 import "./style.scss"
 
 const ModalWindow: React.FC<ModalWindowITF> = ({show, title, children}) => {
     const modalRef = useRef(null)
-
-    useFixPagePosition(show)
 
     return (
         <React.Fragment>

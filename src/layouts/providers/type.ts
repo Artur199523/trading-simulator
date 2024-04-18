@@ -1,6 +1,6 @@
 import React from "react";
 
-import {HEDGING, MARGIN_MODE, MODALS} from "utils";
+import {HEDGING, HIDDEN_BLOCKS, MARGIN_MODE, MODALS, POSITION_MODE} from "utils";
 
 import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 import {HistoryItem} from "store/simulator/type";
@@ -37,14 +37,16 @@ export interface SimulatorTradingContextITF {
     adjustLeverage: number
     marginMode: MARGIN_MODE
     tradingType: TradingType
-    longPositionData: PositionITF,
-    shortPositionData: PositionITF,
+    positionMode: POSITION_MODE
+    longPositionData: PositionITF
+    shortPositionData: PositionITF
     processFutures: PositionFuturesT
-    orderPlacementPreference: string,
+    orderPlacementPreference: string
     currentHedgingModePositionType: HEDGING
     setProcess: (process: ProcessT) => void
     setMarginMode: (mode: MARGIN_MODE) => void
     setAdjustLeverage: (amount: number) => void
+    setPositionMode: (mode: POSITION_MODE) => void
     setTradingType: (trading: TradingType) => void
     setLongPositionData: (position: PositionITF) => void
     setShortPositionData: (position: PositionITF) => void
@@ -123,6 +125,11 @@ type ReducedModalContextType<T> = Omit<ModalContextType<T>, 'dataForModal' | 'se
 export interface EnhancedModalContextType<T> extends ReducedModalContextType<MODALS> {
     dataForModal: T;
     setDataForModal: React.Dispatch<React.SetStateAction<T>>;
+}
+
+export interface EnhancedHiddenBlockContextType {
+    hiddenBlock: HIDDEN_BLOCKS
+    setHiddenBlock: React.Dispatch<React.SetStateAction<HIDDEN_BLOCKS>>
 }
 
 export type SymbolT = "ETH" | "BTC" | ""

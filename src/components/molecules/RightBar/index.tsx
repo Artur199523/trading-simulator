@@ -2,7 +2,7 @@ import React, {memo} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorTradingContext} from "layouts/providers";
 import classNames from "classnames";
-import {HEDGING, MODALS} from "utils";
+import {HEDGING, MODALS, POSITION_MODE} from "utils";
 
 import {Futures, Spot, TabContent, TabItem} from "components";
 
@@ -10,7 +10,7 @@ import "./style.scss";
 
 const RightBar: React.FC = () => {
     const {process, setProcess, tradingType, marginMode, adjustLeverage} = useSimulatorTradingContext()
-    const {currentHedgingModePositionType, setCurrentHedgingModePositionType} = useSimulatorTradingContext()
+    const {currentHedgingModePositionType, setCurrentHedgingModePositionType, positionMode} = useSimulatorTradingContext()
     const {setCurrentModal} = useFuturesTradingModalContext()
     const buyBtnStyle = classNames({"active-buy": process === "buy"})
     const sellBtnStyle = classNames({"active-sell": process === "sell"})
@@ -25,10 +25,10 @@ const RightBar: React.FC = () => {
                 <Spot/>
             </TabContent>
             <TabContent id="futures" activeTab={tradingType}>
-                <div className="right-bar_futures_hedging-mode-tabs">
+                {positionMode === POSITION_MODE.HEDGE && <div className="right-bar_futures_hedging-mode-tabs">
                     <TabItem activeTab={currentHedgingModePositionType} id={HEDGING.OPEN} setActiveTab={setCurrentHedgingModePositionType}>Open</TabItem>
                     <TabItem activeTab={currentHedgingModePositionType} id={HEDGING.CLOSE} setActiveTab={setCurrentHedgingModePositionType}>Close</TabItem>
-                </div>
+                </div>}
                 <div className="right-bar_futures_trading-btn">
                     <button onClick={() => setCurrentModal(MODALS.MARGIN_MODE)}>{marginMode}</button>
                     <button onClick={() => setCurrentModal(MODALS.ADJUST_LEVERAGE)}>{adjustLeverage}x</button>
