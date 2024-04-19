@@ -9,7 +9,7 @@ const SimulatorTradingContext = createContext<SimulatorTradingContextITF>({
     process:"buy",
     adjustLeverage: 1,
     tradingType:"spot",
-    positionMode: POSITION_MODE.HEDGE,
+    positionMode: POSITION_MODE.ONE_WAY,
     longPositionData:{} as PositionDataITF,
     shortPositionData:{} as PositionDataITF,
     marginMode: MARGIN_MODE.CROSS,
@@ -38,7 +38,7 @@ export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({childr
     const [processFutures,setProcessFutures] = useState<PositionFuturesT>("long")
 
     const [orderPlacementPreference,setOrderPlacementPreference] = useState<string>("USDT")
-    const [positionMode,setPositionMode] = useState<POSITION_MODE>(POSITION_MODE.HEDGE)
+    const [positionMode,setPositionMode] = useState<POSITION_MODE>(POSITION_MODE.ONE_WAY)
     const [marginMode,setMarginMode] = useState<MARGIN_MODE>(MARGIN_MODE.CROSS)
     const [adjustLeverage,setAdjustLeverage] = useState<number>(1)
 

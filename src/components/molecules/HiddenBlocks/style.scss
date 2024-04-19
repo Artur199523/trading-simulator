@@ -99,17 +99,139 @@
   &_margin-mode {
     top: 0;
     right: 0;
-    width: 70%;
     z-index: 11;
+    width: 1135px;
     height: 100vh;
     position: fixed;
+    padding: 0 30px;
     transform: translateX(100%);
     background: $background-main;
     transition: transform 0.3s ease-in-out;
     border-left: 2px solid $main-opacity-05;
 
-    &.margin-mode-open{
+    &.margin-mode-open {
       transform: translateX(0);
+    }
+
+    &_head {
+      height: 85px;
+      display: flex;
+      align-items: center;
+
+      button {
+        display: flex;
+        font-size: 18px;
+        font-weight: 600;
+        color: $text-main;
+        align-items: center;
+        transition: 0.2s ease-in-out;
+
+        span {
+          display: block;
+          margin-bottom: 8px;
+          transform: rotate(-180deg);
+        }
+
+        &:hover {
+          color: $main;
+        }
+      }
+    }
+
+    &_items {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    &_item {
+      width: 340px;
+      padding: 25px;
+      border-radius: 8px;
+      background: #25282c;
+      border: 1px solid #25282c;
+      transition: 0.2s ease-in-out;
+
+      &:hover {
+        border: 1px solid $main;
+      }
+
+      h3 {
+        font-size: 20px;
+        line-height: 28px;
+        text-align: center;
+        color: $text-main;
+      }
+
+      h4 {
+        height: 18px;
+        font-size: 12px;
+        line-height: 18px;
+        color: $text-main;
+        text-align: center;
+        margin-bottom: 4px;
+      }
+
+      &_section-block {
+        min-height: 520px;
+
+        section {
+          width: 100%;
+          display: flex;
+          margin-top: 25px;
+          min-height: 95px;
+
+          h5 {
+            width: 35%;
+            color: #adb1b8;
+            font-size: 14px;
+          }
+
+          ol {
+            width: 65%;
+
+            li {
+              font-size: 12px;
+              color: $text-main;
+              line-height: 18px;
+              margin-bottom: 10px;
+            }
+          }
+        }
+      }
+
+      &_btn-block {
+        button:last-child {
+          width: 100%;
+          color: #adb1b8;
+          font-size: 12px;
+          margin-top: 15px;
+          transition: 0.2s ease-in-out;
+
+          &:hover {
+            color: $main;
+          }
+
+          svg {
+            margin-bottom: -5px;
+          }
+        }
+      }
+
+      &_using-block {
+        color: #adb1b8;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 40px;
+        text-align: center;
+      }
+
+      &.active {
+        border: 1px solid $main;
+
+        h3, h4 {
+          color: $main !important;
+        }
+      }
     }
   }
 

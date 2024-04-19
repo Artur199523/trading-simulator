@@ -27,7 +27,8 @@ export enum HEDGING {
 
 export enum MARGIN_MODE {
     CROSS = "Cross",
-    ISOLATED = "Isolated"
+    ISOLATED = "Isolated",
+    PORTFOLIO = "Portfolio"
 }
 
 export enum MODALS {

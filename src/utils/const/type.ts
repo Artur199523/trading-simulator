@@ -6,3 +6,8 @@ export interface PositionHeaderITF {
     isHoverInfo: boolean
     info: string
 }
+
+export interface MarginModeDataITF {
+    section_name: string,
+    list: string[]
+}
