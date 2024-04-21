@@ -33,23 +33,21 @@ export interface SimulatorToolsContextITF {
 }
 
 export interface SimulatorTradingContextITF {
+    riskLimit: number
     process: ProcessT
     adjustLeverage: number
     marginMode: MARGIN_MODE
     tradingType: TradingType
     positionMode: POSITION_MODE
-    longPositionData: PositionITF
-    shortPositionData: PositionITF
     processFutures: PositionFuturesT
     orderPlacementPreference: string
     currentHedgingModePositionType: HEDGING
+    setRiskLimit: (limit: number) => void
     setProcess: (process: ProcessT) => void
     setMarginMode: (mode: MARGIN_MODE) => void
     setAdjustLeverage: (amount: number) => void
     setPositionMode: (mode: POSITION_MODE) => void
     setTradingType: (trading: TradingType) => void
-    setLongPositionData: (position: PositionITF) => void
-    setShortPositionData: (position: PositionITF) => void
     setProcessFutures: (position: PositionFuturesT) => void
     setOrderPlacementPreference: (preference: string) => void
     setCurrentHedgingModePositionType: (type: HEDGING) => void
@@ -67,13 +65,19 @@ export interface SimulatorPlayerInfoContextITF {
 export interface SimulatorTradingChartDetailsContextITF {
     limitOrders: OrderITF[]
     marketOrders: OrderITF[]
+    longPositionData: PositionITF
+    shortPositionData: PositionITF
     currentCryptoData: HistoryItem
     stopLimitOrders: StopOrderITF[]
     limitOrdersMarks: OrderMarkITF[]
     marketOrdersMarks: OrderMarkITF[]
     stopLimitPreOrders: StopOrderITF[]
     stopLimitOrdersMarks: OrderMarkITF[]
+    confirmedLongPositionData: any,
+    confirmedShortPositionData: any,
     setCurrentCryptoData: (data: HistoryItem) => void
+    setLongPositionData: (position: PositionITF) => void
+    setShortPositionData: (position: PositionITF) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
     setMarketOrders: (order: (prev: OrderITF[]) => OrderITF[]) => void
     setLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
@@ -81,6 +85,8 @@ export interface SimulatorTradingChartDetailsContextITF {
     setMarketOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setStopLimitPreOrders: (order: (prev: StopOrderITF[]) => StopOrderITF[]) => void
     setStopLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
+    setConfirmedLongPositionData: (position: any) => void,
+    setConfirmedShortPositionData: (position: any) => void,
 }
 
 export interface OrderITF {

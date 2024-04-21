@@ -41,10 +41,11 @@ const settingsFields: SettingsFieldsITF = {
 const TPSL: React.FC = () => {
     const settingsFieldsCopy = interruptionRef(settingsFields)
 
-    const {setCurrentModal} = useFuturesTradingModalContext()
+    const {adjustLeverage} = useSimulatorTradingContext()
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
-    const {adjustLeverage, setLongPositionData, setShortPositionData, longPositionData, shortPositionData} = useSimulatorTradingContext()
+    const {setCurrentModal} = useFuturesTradingModalContext()
     const {dataForModal} = useFuturesTradingModalContext<TPSLDataForModalITF>()
+    const {setLongPositionData, setShortPositionData, longPositionData, shortPositionData} = useSimulatorTradingChartDetailsContext()
 
     const [activeTradeType, setActiveTradeType] = useState<TRADE_POSITION>(TRADE_POSITION.LONG)
 

@@ -1,6 +1,11 @@
 import React, {memo, useEffect, useState} from "react";
 
-import {useFuturesTradingModalContext, useSimulatorPlayerInfoContext, useSimulatorTradingContext} from "layouts/providers";
+import {
+    useSimulatorTradingContext,
+    useSimulatorPlayerInfoContext,
+    useFuturesTradingModalContext,
+    useSimulatorTradingChartDetailsContext
+} from "layouts/providers";
 import {interruptionRef} from "utils/functions/interruptionRef";
 import {MODALS, TRAD_TYPE, TRADE_POSITION} from "utils";
 
@@ -24,9 +29,10 @@ const LimitOrder: React.FC = () => {
 
     const [fieldsValue, setFieldsValue] = useState<any>(fieldsCopy)
 
-    const {adjustLeverage, longPositionData, shortPositionData, setShortPositionData, setLongPositionData} = useSimulatorTradingContext()
+    const {adjustLeverage} = useSimulatorTradingContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
     const {setCurrentModal} = useFuturesTradingModalContext()
+    const {longPositionData, shortPositionData, setShortPositionData, setLongPositionData} = useSimulatorTradingChartDetailsContext()
 
     const isTPSL = !!longPositionData || !!shortPositionData
 

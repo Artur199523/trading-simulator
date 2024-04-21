@@ -2,28 +2,25 @@ import React, {createContext, useContext, useState} from "react"
 
 import {HEDGING, MARGIN_MODE, POSITION_MODE} from "utils";
 
-import {PositionFuturesT, PositionITF, ProcessT, SimulatorProviderITF, SimulatorTradingContextITF, TradingType,} from "./type";
-import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
+import {PositionFuturesT, ProcessT, SimulatorProviderITF, SimulatorTradingContextITF, TradingType,} from "./type";
 
 const SimulatorTradingContext = createContext<SimulatorTradingContextITF>({
     process:"buy",
     adjustLeverage: 1,
+    riskLimit: 900000,
     tradingType:"spot",
     positionMode: POSITION_MODE.ONE_WAY,
-    longPositionData:{} as PositionDataITF,
-    shortPositionData:{} as PositionDataITF,
     marginMode: MARGIN_MODE.CROSS,
     processFutures: "long",
     orderPlacementPreference: "USDT",
     currentHedgingModePositionType: HEDGING.OPEN,
     setProcess:()=> {},
+    setRiskLimit: () => {},
     setTradingType:()=> {},
     setMarginMode:() => {},
     setPositionMode: () => {},
     setAdjustLeverage:()=> {},
     setProcessFutures:() => {},
-    setLongPositionData:()=> {},
-    setShortPositionData:()=> {},
     setOrderPlacementPreference: ()=> {},
     setCurrentHedgingModePositionType:() => {}
 })
@@ -41,30 +38,26 @@ export const SimulatorTradingProvider: React.FC<SimulatorProviderITF> = ({childr
     const [positionMode,setPositionMode] = useState<POSITION_MODE>(POSITION_MODE.ONE_WAY)
     const [marginMode,setMarginMode] = useState<MARGIN_MODE>(MARGIN_MODE.CROSS)
     const [adjustLeverage,setAdjustLeverage] = useState<number>(1)
-
-    const [longPositionData,setLongPositionData] = useState<PositionITF | null>(null)
-    const [shortPositionData,setShortPositionData] = useState<PositionITF | null>(null)
+    const [riskLimit,setRiskLimit] = useState<number>(900000)
 
     return (
         <SimulatorTradingContext.Provider value={{
             process,
+            riskLimit,
             marginMode,
             tradingType,
             positionMode,
             adjustLeverage,
             processFutures,
-            longPositionData,
-            shortPositionData,
             orderPlacementPreference,
             currentHedgingModePositionType,
             setProcess,
+            setRiskLimit,
             setMarginMode,
             setTradingType,
             setPositionMode,
             setAdjustLeverage,
             setProcessFutures,
-            setLongPositionData,
-            setShortPositionData,
             setOrderPlacementPreference,
             setCurrentHedgingModePositionType
         }}>

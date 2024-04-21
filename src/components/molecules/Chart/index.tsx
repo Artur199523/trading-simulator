@@ -2,13 +2,14 @@ import React, {useEffect, useRef, useState, memo} from "react";
 import {createChart} from "lightweight-charts";
 
 import {useSimulatorOptionsContext, useSimulatorPlayerInfoContext, useSimulatorToolsContext, useSimulatorTradingChartDetailsContext} from "layouts/providers";
+import {multiply, plus, showNotification, calculateProfitPriceByTrigger, calculationChange} from "utils";
 import {candleStickOptions, chartOptions, histogramApplyOptions, histogramOptions} from "./options";
 import {getCryptoTradingHistory} from "store/simulator/actions";
-import {minus, multiply, plus, showNotification} from "utils";
 import {useAppDispatch, useAppSelector} from "store";
 
+import UnrealizedItem from "../RightBar/Futures/Components/UnrealizedItem";
+
 import {HistoryItem, TradingVolumeITF} from "store/simulator/type";
-import {StopOrderITF} from "layouts/providers/type";
 
 import "./style.scss"
 
@@ -19,14 +20,16 @@ const Chart: React.FC = () => {
     const {isPlay, next, currentSpeed, setNext} = useSimulatorToolsContext()
     const {setBalanceTradeableCrypto, setBalanceUSDT} = useSimulatorPlayerInfoContext()
     const {
+        confirmedShortPositionData,
+        confirmedLongPositionData,
         stopLimitOrdersMarks,
-        stopLimitPreOrders,
         currentCryptoData,
         marketOrdersMarks,
         limitOrdersMarks,
         stopLimitOrders,
-        marketOrders,
         limitOrders,
+        setConfirmedLongPositionData,
+        setConfirmedShortPositionData,
         setStopLimitOrdersMarks,
         setStopLimitPreOrders,
         setCurrentCryptoData,
@@ -171,6 +174,7 @@ const Chart: React.FC = () => {
     }, [marketOrdersMarks, limitOrdersMarks, stopLimitOrdersMarks]);
 
     useEffect(() => {
+        //===============SPOT===============================
         const WORKING_STATUS = "Working";
         const FILLED_STATUS = "Filled";
 
@@ -237,7 +241,7 @@ const Chart: React.FC = () => {
                         status
                     } = order
 
-                    if (influence === "up" && side === "Buy" && status === WORKING_STATUS  && currentPrice > stop_price && stop_price < limit_price) {
+                    if (influence === "up" && side === "Buy" && status === WORKING_STATUS && currentPrice > stop_price && stop_price < limit_price) {
                         const price = currentPrice < limit_price ? currentPrice : limit_price
                         const depositPriceForTrading = quantity * limit_price
                         const tradedPrice = quantity * price
@@ -249,19 +253,19 @@ const Chart: React.FC = () => {
                         setStopLimitOrdersMarks(prev => [...prev, {
                             time: Number(currentCryptoData.time),
                             position: "aboveBar",
-                            color:  "green",
-                            shape:  "arrowUp",
+                            color: "green",
+                            shape: "arrowUp",
                             size: 1.5,
                             id: `stop_limit_${order_id}`,
                             text: `BUY @ ${tradedPrice.toFixed(2)}`,
                         }])
 
                         setBalanceUSDT(prev => prev + differencePriceAfterTrading)
-                        setBalanceTradeableCrypto(prev=>prev + quantity)
+                        setBalanceTradeableCrypto(prev => prev + quantity)
                         showNotification(`Order ST${order_id} executed (${side}:Stop-Limit)`, "info", 0)
                     }
 
-                    if(influence === "down" && side === "Sell" && status === WORKING_STATUS && currentPrice < stop_price && stop_price > limit_price){
+                    if (influence === "down" && side === "Sell" && status === WORKING_STATUS && currentPrice < stop_price && stop_price > limit_price) {
                         const price = currentPrice > limit_price ? currentPrice : limit_price
                         const tradedPrice = quantity * price
 
@@ -271,14 +275,14 @@ const Chart: React.FC = () => {
                         setStopLimitOrdersMarks(prev => [...prev, {
                             time: Number(currentCryptoData.time),
                             position: "belowBar",
-                            color:  "red",
-                            shape:  "arrowDown",
+                            color: "red",
+                            shape: "arrowDown",
                             size: 1.5,
                             id: `stop_limit_${order_id}`,
                             text: `SELL @ ${tradedPrice.toFixed(2)}`,
                         }])
 
-                        setBalanceUSDT(prev=>prev + tradedPrice)
+                        setBalanceUSDT(prev => prev + tradedPrice)
                         showNotification(`Order ST${order_id} executed (${side}:Stop-Limit)`, "info", 0)
                     }
                     return order
@@ -286,12 +290,55 @@ const Chart: React.FC = () => {
             })
         }
 
-        setLimitOrders(prev => prev.map(order=>({...order,last: currentCryptoData.close})))
-        setMarketOrders(prev => prev.map(order=>({...order,last:currentCryptoData.close})))
-        setStopLimitOrders(prev => prev.map(order=>({...order,last:currentCryptoData.close})))
-        setStopLimitPreOrders(prev => prev.map(order=>({...order,last:currentCryptoData.close})))
+        setLimitOrders(prev => prev.map(order => ({...order, last: currentCryptoData.close})))
+        setMarketOrders(prev => prev.map(order => ({...order, last: currentCryptoData.close})))
+        setStopLimitOrders(prev => prev.map(order => ({...order, last: currentCryptoData.close})))
+        setStopLimitPreOrders(prev => prev.map(order => ({...order, last: currentCryptoData.close})))
+
+        //========================FUTURES====================
+        trackChangesOfPositions()
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentCryptoData?.close]);
+
+    const trackChangesOfPositions = () => {
+        if (confirmedLongPositionData) {
+            setConfirmedLongPositionData(prev => {
+                    const {entry_price, leverage, value} = prev
+                    const profit = calculateProfitPriceByTrigger(currentCryptoData.close, entry_price, leverage, value)
+                    const percent = calculationChange(entry_price, currentCryptoData.close)
+
+                    return {
+                        ...prev,
+                        percent,
+                        profit,
+                        mark_price: currentCryptoData.close,
+                        unrealized_pl: <UnrealizedItem profit={profit} percent={percent} isIncrease={entry_price < currentCryptoData.close}/>
+                    }
+                }
+            )
+        }
+
+        if (confirmedShortPositionData) {
+            setConfirmedShortPositionData(prev => {
+                const {entry_price, leverage, value} = prev
+                const profit = calculateProfitPriceByTrigger(currentCryptoData.close, entry_price, leverage, value)
+                const percent = calculationChange(entry_price, currentCryptoData.close)
+
+                return {
+                    ...prev,
+                    percent: percent ? -percent : +percent,
+                    profit: profit ? -profit : +profit,
+                    mark_price: currentCryptoData.close,
+                    unrealized_pl: <UnrealizedItem
+                        profit={profit ? -profit : +profit}
+                        percent={percent ? -percent : +percent}
+                        isIncrease={entry_price > currentCryptoData.close}
+                    />
+                }
+            })
+        }
+    }
 
     return (
         <div className="chart">

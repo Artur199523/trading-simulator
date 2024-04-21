@@ -18,7 +18,7 @@ const Settings: React.FC<SettingsITF> = ({className}) => {
     const {cryptoType} = useSimulatorOptionsContext()
     const {setHiddenBlock} = useHiddenBlocksContext()
     const {setCurrentModal} = useFuturesTradingModalContext()
-    const {positionMode, marginMode} = useSimulatorTradingContext()
+    const {positionMode, marginMode, riskLimit} = useSimulatorTradingContext()
 
     const [isOpenRiskLimitBlock, setIsOpenRiskLimitBlock] = useState(false)
 
@@ -53,8 +53,12 @@ const Settings: React.FC<SettingsITF> = ({className}) => {
                         <span>Risk Limits</span>
                         <button onClick={() => setIsOpenRiskLimitBlock(!isOpenRiskLimitBlock)}><ArrowBottom/></button>
                     </div>
-                    {isOpenRiskLimitBlock && <div className="hidden-block_settings_trades_risk-limits_block">
-                    </div>}
+                    {isOpenRiskLimitBlock &&
+                        <div className="hidden-block_settings_trades_risk-limits_block">
+                            <div>{cryptoType}USDT</div>
+                            <div>{riskLimit}</div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>

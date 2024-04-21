@@ -1,5 +1,5 @@
 import {HedgingModeTypeT} from "layouts/providers/type";
-import {TRAD_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
+import {MARGIN_MODE, TRAD_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
 import {ReactNode} from "react";
 
 export interface TradeButtonsITF {
@@ -110,4 +110,22 @@ export interface ConfirmPositionDataForModalWithoutTPSLITF {
 }
 
 export interface ConfirmPositionDataForModalWithTPSLITF extends ConfirmPositionDataForModalWithoutTPSLITF, PositionDataITF {
+}
+
+export interface ContractItemITF {
+    leverage: number
+    marginMode: MARGIN_MODE
+    cryptoType: string
+    positionType: "long" | "short"
+}
+
+export interface QuantityItemITF {
+    positionType: "long" | "short"
+    value: string
+}
+
+export interface UnrealizedItemITF {
+    isIncrease: boolean
+    profit: number
+    percent: number
 }

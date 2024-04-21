@@ -1,7 +1,8 @@
 import React, {createContext, useContext, useState, memo} from "react"
 
-import {OrderITF, OrderMarkITF, SimulatorProviderITF, SimulatorTradingChartDetailsContextITF, StopOrderITF} from "./type";
+import {OrderITF, OrderMarkITF, PositionITF, SimulatorProviderITF, SimulatorTradingChartDetailsContextITF, StopOrderITF} from "./type";
 import {HistoryItem} from "store/simulator/type";
+import {PositionDataITF} from "../../components/molecules/RightBar/Futures/type";
 
 const defaultData: HistoryItem = {
     time: "",
@@ -53,28 +54,29 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     currentCryptoData: defaultData,
     limitOrdersMarks: [defaultOrderMark],
     marketOrdersMarks: [defaultOrderMark],
+    longPositionData: {} as PositionDataITF,
+    shortPositionData: {} as PositionDataITF,
     stopLimitPreOrders: [defaultStopPreOrder],
     stopLimitOrdersMarks: [],
-    setLimitOrders: () => {
-    },
-    setMarketOrders: () => {
-    },
-    setStopLimitOrders: () => {
-    },
-    setLimitOrdersMarks: () => {
-    },
-    setMarketOrdersMarks: () => {
-    },
-    setCurrentCryptoData: () => {
-    },
-    setStopLimitPreOrders: () => {
-    },
-    setStopLimitOrdersMarks: () => {
-    }
+    confirmedLongPositionData:{} as any,
+    confirmedShortPositionData:{} as any,
+    setLimitOrders: () => {},
+    setMarketOrders: () => {},
+    setLongPositionData:()=> {},
+    setShortPositionData:()=> {},
+    setStopLimitOrders: () => {},
+    setLimitOrdersMarks: () => {},
+    setMarketOrdersMarks: () => {},
+    setCurrentCryptoData: () => {},
+    setStopLimitPreOrders: () => {},
+    setStopLimitOrdersMarks: () => {},
+    setConfirmedLongPositionData: () => {},
+    setConfirmedShortPositionData: () => {},
 })
 export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF> = memo(({children}) => {
     const [currentCryptoData, setCurrentCryptoData] = useState<HistoryItem>(defaultData)
 
+    //===============SPOT=============================
     //Market
     const [marketOrders, setMarketOrders] = useState<OrderITF[] | []>([])
     const [marketOrdersMarks, setMarketOrdersMarks] = useState<OrderMarkITF[] | []>([])
@@ -88,24 +90,39 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
     const [stopLimitPreOrders, setStopLimitPreOrders] = useState<StopOrderITF[] | []>([])
     const [stopLimitOrdersMarks, setStopLimitOrdersMarks] = useState<OrderMarkITF[] | []>([])
 
+    //==============FUTURES================================
+    const [longPositionData, setLongPositionData] = useState<PositionITF | null>(null)
+    const [shortPositionData, setShortPositionData] = useState<PositionITF | null>(null)
+    //@TODO need to add the ts
+    const [confirmedLongPositionData, setConfirmedLongPositionData] = useState<any | null>(null)
+    const [confirmedShortPositionData, setConfirmedShortPositionData] = useState<any | null>(null)
+
     return (
         <SimulatorTradingChartDetailsContext.Provider value={{
             limitOrders,
             marketOrders,
             stopLimitOrders,
             limitOrdersMarks,
+            longPositionData,
+            shortPositionData,
             currentCryptoData,
             marketOrdersMarks,
             stopLimitPreOrders,
             stopLimitOrdersMarks,
+            confirmedLongPositionData,
+            confirmedShortPositionData,
             setLimitOrders,
             setMarketOrders,
             setStopLimitOrders,
+            setLongPositionData,
+            setShortPositionData,
             setLimitOrdersMarks,
             setCurrentCryptoData,
             setMarketOrdersMarks,
             setStopLimitPreOrders,
-            setStopLimitOrdersMarks
+            setStopLimitOrdersMarks,
+            setConfirmedLongPositionData,
+            setConfirmedShortPositionData
         }}>
             {children}
         </SimulatorTradingChartDetailsContext.Provider>

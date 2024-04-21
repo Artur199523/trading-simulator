@@ -5,6 +5,10 @@ export interface PositionHeaderITF {
     displayName: string
     isHoverInfo: boolean
     info: string
+    className?: string
+    currency?: string
+    isFormat?: boolean
+    isFixed?: number
 }
 
 export interface MarginModeDataITF {

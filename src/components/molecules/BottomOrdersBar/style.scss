@@ -32,16 +32,30 @@
       }
     }
 
-    &_content{
+    &_content {
       display: flex;
       flex-direction: column;
       height: calc(100% - 40px);
       overflow-x: hidden;
 
-      .TabContent{
+
+      .TabContent {
         overflow: auto;
         height: 100%;
         position: relative;
+        min-height: 250px;
+      }
+
+      .quantity {
+        color: $long;
+      }
+
+      .liquidity {
+        color: $main;
+      }
+
+      .realized {
+        color: $short;
       }
     }
   }

@@ -1,7 +1,7 @@
+import classNames from "classnames";
 import React, {memo} from "react";
 
 import {useFuturesTradingModalContext, useHiddenBlocksContext, useSimulatorTradingContext} from "layouts/providers";
-import classNames from "classnames";
 import {HEDGING, HIDDEN_BLOCKS, MODALS, POSITION_MODE} from "utils";
 
 import {Futures, Spot, TabContent, TabItem} from "components";

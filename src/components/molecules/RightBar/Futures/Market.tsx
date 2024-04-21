@@ -1,12 +1,13 @@
 import React, {memo, useEffect, useState} from "react";
 
 import {
+    useSimulatorTradingContext,
     useFuturesTradingModalContext,
     useSimulatorPlayerInfoContext,
-    useSimulatorTradingContext
+    useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
-import {ERROR, HEDGING, MODALS, showNotification, TRAD_TYPE, TRADE_POSITION} from "utils";
-import {interruptionRef} from "utils/functions/interruptionRef";
+import {ERROR, HEDGING, MODALS, POSITION_MODE, showNotification, TRAD_TYPE, TRADE_POSITION} from "utils";
+import {interruptionRef} from "utils";
 
 import OrderValueInfo from "./Components/OrderValueInfo";
 import TradeButtons from "./Components/TradeButtons";
@@ -25,8 +26,9 @@ const Market: React.FC = () => {
     const fieldsCopy = interruptionRef(settingsFields)
     const [fieldsValue, setFieldsValue] = useState<SettingsFieldsMarketITF>(fieldsCopy)
 
+    const {adjustLeverage, positionMode} = useSimulatorTradingContext()
     const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
-    const {adjustLeverage, longPositionData, shortPositionData, setLongPositionData, setShortPositionData} = useSimulatorTradingContext()
+    const {longPositionData, shortPositionData, setShortPositionData, setLongPositionData} = useSimulatorTradingChartDetailsContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
 
     const isTPSL = !!longPositionData || !!shortPositionData
@@ -74,8 +76,12 @@ const Market: React.FC = () => {
         const currentOrderValue = fieldsValue.order_value_usdt
 
         if (Number(currentOrderValue) < (balanceUSDT * adjustLeverage)) {
-            if (process.hedgingType === HEDGING.OPEN) {
-                if ((longPositionData && process.position === TRADE_POSITION.SHORT) || (shortPositionData && process.position === TRADE_POSITION.SHORT)) {
+            if (positionMode === POSITION_MODE.HEDGE) {
+                if (process.hedgingType === HEDGING.OPEN) {
+                    //@TODO this mode is not available yet
+                }
+            } else {
+                if ((longPositionData && process.position === TRADE_POSITION.SHORT) || (shortPositionData && process.position === TRADE_POSITION.LONG)) {
                     setCurrentModal(MODALS.RISK_ALERT)
                 } else {
                     const isTPLS = !!longPositionData || !!shortPositionData

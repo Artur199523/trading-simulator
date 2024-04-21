@@ -1,3 +1,5 @@
+@import "scss/color";
+
 .futures {
   display: flex;
   flex-direction: column;
@@ -192,8 +194,59 @@
       color: #adb1b8;
     }
 
-    & > div:last-child{
+    & > div:last-child {
       color: white;
+    }
+  }
+
+  &_order-contract-item {
+    padding-left: 10px;
+
+    &.long {
+      border-left: 2px solid $long;
+
+      & > span:last-child {
+        color: $long;
+      }
+    }
+
+    &.short {
+      border-left: 2px solid $short;
+
+      & > span:last-child {
+        color: $short;
+      }
+    }
+
+    span {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 3px;
+
+      &:first-child {
+        margin-top: 9px;
+        font-weight: 600;
+      }
+    }
+  }
+
+  &_order-quantity-item {
+    &.long {
+      color: $long;
+    }
+
+    &.short {
+      color: $short;
+    }
+  }
+
+  &_order-unrealized-item {
+    &.increase {
+      color: $long;
+    }
+
+    &.decrease {
+      color: $short;
     }
   }
 }
