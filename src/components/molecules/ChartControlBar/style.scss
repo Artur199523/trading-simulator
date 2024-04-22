@@ -1,0 +1,73 @@
+@import "scss/color";
+
+.chart-control-bar {
+  height: 50px;
+  display: flex;
+  background: #000a11;
+  justify-content: center;
+  border-bottom: 1px solid $main-opacity-05;
+
+  &_block {
+    width: 130px;
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      color: $main;
+      transition: 0.2s ease-in-out;
+
+      &:hover {
+        color: $main-opacity-05;
+      }
+    }
+
+    &_speed {
+      z-index: 10;
+      display: flex;
+      min-width: 27px;
+      position: relative;
+      align-items: center;
+
+      button {
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      &_options {
+        bottom: 50px;
+        width: 200px;
+        position: absolute;
+        background: #000a11;
+        padding: 10px 0;
+
+        h5 {
+          color: white;
+          font-size: 14px;
+          padding: 0 10px;
+          margin-bottom: 5px;
+        }
+
+        &_item {
+          color: white;
+          display: flex;
+          cursor: pointer;
+          padding: 5px 10px;
+          transition: 0.2s ease-in-out;
+          justify-content: space-between;
+
+          &.active {
+            background: $main-opacity-05;
+          }
+
+          &:hover {
+            background: $main-opacity-05;
+          }
+
+          span {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}
