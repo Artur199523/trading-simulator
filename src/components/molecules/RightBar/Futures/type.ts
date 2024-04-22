@@ -97,6 +97,7 @@ export interface TPSLDataForModalITF {
     tradType: TRAD_TYPE,
     orderPrice: string | undefined,
     orderValue: string
+    tradePosition?: TRADE_POSITION,
 }
 
 export interface ConfirmPositionDataForModalWithoutTPSLITF {
@@ -128,4 +129,9 @@ export interface UnrealizedItemITF {
     isIncrease: boolean
     profit: number
     percent: number
+}
+
+export interface ConfirmedTPSLDataForModalITF {
+    orderValue: number
+    tradePosition: TRADE_POSITION
 }

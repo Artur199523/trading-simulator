@@ -65,8 +65,8 @@ export interface SimulatorPlayerInfoContextITF {
 export interface SimulatorTradingChartDetailsContextITF {
     limitOrders: OrderITF[]
     marketOrders: OrderITF[]
-    longPositionData: PositionITF
-    shortPositionData: PositionITF
+    longPositionDataTPSL: PositionITF
+    shortPositionDataTPSL: PositionITF
     currentCryptoData: HistoryItem
     stopLimitOrders: StopOrderITF[]
     limitOrdersMarks: OrderMarkITF[]
@@ -75,9 +75,11 @@ export interface SimulatorTradingChartDetailsContextITF {
     stopLimitOrdersMarks: OrderMarkITF[]
     confirmedLongPositionData: any,
     confirmedShortPositionData: any,
+    confirmedLongPositionDataTPSL: PositionITF,
+    confirmedShortPositionDataTPSL: PositionITF,
     setCurrentCryptoData: (data: HistoryItem) => void
-    setLongPositionData: (position: PositionITF) => void
-    setShortPositionData: (position: PositionITF) => void
+    setLongPositionDataTPSL: (position: PositionITF) => void
+    setShortPositionDataTPSL: (position: PositionITF) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
     setMarketOrders: (order: (prev: OrderITF[]) => OrderITF[]) => void
     setLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
@@ -87,6 +89,8 @@ export interface SimulatorTradingChartDetailsContextITF {
     setStopLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setConfirmedLongPositionData: (position: any) => void,
     setConfirmedShortPositionData: (position: any) => void,
+    setConfirmedLongPositionDataTPSL: (tpsl: PositionITF) => void,
+    setConfirmedShortPositionDataTPSL: (tpsl: PositionITF) => void
 }
 
 export interface OrderITF {

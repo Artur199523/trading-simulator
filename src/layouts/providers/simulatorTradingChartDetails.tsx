@@ -1,8 +1,8 @@
 import React, {createContext, useContext, useState, memo} from "react"
 
 import {OrderITF, OrderMarkITF, PositionITF, SimulatorProviderITF, SimulatorTradingChartDetailsContextITF, StopOrderITF} from "./type";
+import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 import {HistoryItem} from "store/simulator/type";
-import {PositionDataITF} from "../../components/molecules/RightBar/Futures/type";
 
 const defaultData: HistoryItem = {
     time: "",
@@ -54,24 +54,42 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     currentCryptoData: defaultData,
     limitOrdersMarks: [defaultOrderMark],
     marketOrdersMarks: [defaultOrderMark],
-    longPositionData: {} as PositionDataITF,
-    shortPositionData: {} as PositionDataITF,
+    longPositionDataTPSL: {} as PositionDataITF,
+    shortPositionDataTPSL: {} as PositionDataITF,
     stopLimitPreOrders: [defaultStopPreOrder],
     stopLimitOrdersMarks: [],
-    confirmedLongPositionData:{} as any,
-    confirmedShortPositionData:{} as any,
-    setLimitOrders: () => {},
-    setMarketOrders: () => {},
-    setLongPositionData:()=> {},
-    setShortPositionData:()=> {},
-    setStopLimitOrders: () => {},
-    setLimitOrdersMarks: () => {},
-    setMarketOrdersMarks: () => {},
-    setCurrentCryptoData: () => {},
-    setStopLimitPreOrders: () => {},
-    setStopLimitOrdersMarks: () => {},
-    setConfirmedLongPositionData: () => {},
-    setConfirmedShortPositionData: () => {},
+    confirmedLongPositionData: {} as PositionITF,
+    confirmedShortPositionData: {} as PositionITF,
+    confirmedLongPositionDataTPSL: {} as any,
+    confirmedShortPositionDataTPSL: {} as any,
+    setLimitOrders: () => {
+    },
+    setMarketOrders: () => {
+    },
+    setStopLimitOrders: () => {
+    },
+    setLimitOrdersMarks: () => {
+    },
+    setMarketOrdersMarks: () => {
+    },
+    setCurrentCryptoData: () => {
+    },
+    setStopLimitPreOrders: () => {
+    },
+    setLongPositionDataTPSL: () => {
+    },
+    setShortPositionDataTPSL: () => {
+    },
+    setStopLimitOrdersMarks: () => {
+    },
+    setConfirmedLongPositionData: () => {
+    },
+    setConfirmedShortPositionData: () => {
+    },
+    setConfirmedLongPositionDataTPSL: () => {
+    },
+    setConfirmedShortPositionDataTPSL: () => {
+    }
 })
 export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF> = memo(({children}) => {
     const [currentCryptoData, setCurrentCryptoData] = useState<HistoryItem>(defaultData)
@@ -91,8 +109,11 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
     const [stopLimitOrdersMarks, setStopLimitOrdersMarks] = useState<OrderMarkITF[] | []>([])
 
     //==============FUTURES================================
-    const [longPositionData, setLongPositionData] = useState<PositionITF | null>(null)
-    const [shortPositionData, setShortPositionData] = useState<PositionITF | null>(null)
+    const [longPositionDataTPSL, setLongPositionDataTPSL] = useState<PositionITF | null>(null)
+    const [shortPositionDataTPSL, setShortPositionDataTPSL] = useState<PositionITF | null>(null)
+
+    const [confirmedLongPositionDataTPSL, setConfirmedLongPositionDataTPSL] = useState<PositionITF | null>(null)
+    const [confirmedShortPositionDataTPSL, setConfirmedShortPositionDataTPSL] = useState<PositionITF | null>(null)
     //@TODO need to add the ts
     const [confirmedLongPositionData, setConfirmedLongPositionData] = useState<any | null>(null)
     const [confirmedShortPositionData, setConfirmedShortPositionData] = useState<any | null>(null)
@@ -103,26 +124,30 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
             marketOrders,
             stopLimitOrders,
             limitOrdersMarks,
-            longPositionData,
-            shortPositionData,
             currentCryptoData,
             marketOrdersMarks,
             stopLimitPreOrders,
             stopLimitOrdersMarks,
+            longPositionDataTPSL,
+            shortPositionDataTPSL,
             confirmedLongPositionData,
             confirmedShortPositionData,
+            confirmedLongPositionDataTPSL,
+            confirmedShortPositionDataTPSL,
             setLimitOrders,
             setMarketOrders,
             setStopLimitOrders,
-            setLongPositionData,
-            setShortPositionData,
             setLimitOrdersMarks,
             setCurrentCryptoData,
             setMarketOrdersMarks,
             setStopLimitPreOrders,
+            setLongPositionDataTPSL,
             setStopLimitOrdersMarks,
+            setShortPositionDataTPSL,
             setConfirmedLongPositionData,
-            setConfirmedShortPositionData
+            setConfirmedShortPositionData,
+            setConfirmedLongPositionDataTPSL,
+            setConfirmedShortPositionDataTPSL,
         }}>
             {children}
         </SimulatorTradingChartDetailsContext.Provider>

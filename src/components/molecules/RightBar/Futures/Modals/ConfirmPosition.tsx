@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import {v4 as uuidv4} from 'uuid'
 import React from "react";
 
 import {
@@ -12,10 +13,10 @@ import {
     MODALS,
     calculationIM,
     calculationMM,
+    TRADE_POSITION,
     showNotification,
     calculationLiquidity,
     calculationRealizedPL,
-    calculationUnrealizedPL,
     calculationOrderCostLongPosition,
     calculationOrderCostShortPosition
 } from "utils";
@@ -24,18 +25,31 @@ import {ModalWindowTemplate} from "components";
 import ContractItem from "../Components/ContractItem";
 import QuantityItem from "../Components/QuantityItem";
 
-import {ConfirmPositionDataForModalWithTPSLITF, ConfirmPositionFiledItemITF, ItemTPSLITF} from "../type";
+import {ConfirmedTPSLDataForModalITF, ConfirmPositionDataForModalWithTPSLITF, ConfirmPositionFiledItemITF, ItemTPSLITF} from "../type";
 
 import "./style.scss"
 import UnrealizedItem from "../Components/UnrealizedItem";
+import {Edit} from "../../../../../assets/svg";
 
 const ConfirmPosition: React.FC = () => {
     const {cryptoType} = useSimulatorOptionsContext()
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
     const {marginMode, adjustLeverage} = useSimulatorTradingContext()
-    const {longPositionData, shortPositionData, setConfirmedShortPositionData, setConfirmedLongPositionData} = useSimulatorTradingChartDetailsContext()
-    const {setCurrentModal, dataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
+    const {
+        longPositionDataTPSL,
+        shortPositionDataTPSL,
+        setLongPositionDataTPSL,
+        setShortPositionDataTPSL,
+        setConfirmedLongPositionData,
+        setConfirmedShortPositionData,
+        confirmedLongPositionDataTPSL,
+        confirmedShortPositionDataTPSL,
+        setConfirmedLongPositionDataTPSL,
+        setConfirmedShortPositionDataTPSL
+    } = useSimulatorTradingChartDetailsContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
+    const {setCurrentModal, dataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
+    const {setDataForModal: setDataForModalTPSL} = useFuturesTradingModalContext<ConfirmedTPSLDataForModalITF>()
 
     const {trade_position_process, trade_type, order_value_usdt, profit_trigger_price, stop_trigger_price, trade_position} = dataForModal
     const {close: currentPrice} = currentCryptoData
@@ -77,13 +91,13 @@ const ConfirmPosition: React.FC = () => {
             return false;
         }
 
-        if (isTradePositionLong && longPositionData) {
+        if (isTradePositionLong && longPositionDataTPSL) {
             if (!isCurrentPriceMatchRangeLong) {
                 handleModalAndNotification()
             }
         }
 
-        if (isTradePositionShort && shortPositionData) {
+        if (isTradePositionShort && shortPositionDataTPSL) {
             if (!isCurrentPriceMatchRangeShort) {
                 handleModalAndNotification()
             }
@@ -96,8 +110,56 @@ const ConfirmPosition: React.FC = () => {
     const confirm = () => {
         if (currentPriceMatchRangeChecking()) {
             const positionType = trade_position_process === "Buy" ? "long" : "short"
+            const id = uuidv4()
+
+            const notAvailable = () => {
+                showNotification("Not available yet", "info", 0)
+            }
+
+            const Mmrclose = () => <button onClick={notAvailable}>+ Add</button>
+
+            const ReversePosition = () => <button onClick={notAvailable}>Reverse</button>
+
+            const TrailingStop = () => <button onClick={notAvailable}>+ Add</button>
+
+            const TPSL = () => {
+                const tradPosition = trade_position_process === "Buy" ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT
+                const isTPSL = !!confirmedShortPositionDataTPSL || !!confirmedLongPositionDataTPSL
+
+                let currentTPSL = null
+
+                const openTPSLModal = () => {
+                    setCurrentModal(MODALS.TP_SL)
+                    setDataForModalTPSL({orderValue: order_value_usdt, tradePosition: tradPosition})
+                }
+
+                if (tradPosition === TRADE_POSITION.LONG) {
+                    currentTPSL = confirmedLongPositionDataTPSL
+                }
+
+                if (tradPosition === TRADE_POSITION.SHORT) {
+                    currentTPSL = confirmedShortPositionDataTPSL
+                }
+
+                //@TODO will continue tomorrow
+                return (
+                    <React.Fragment>
+                        {isTPSL ?<div>3512<span></span>/<span>2154</span> <button><Edit/></button></div>
+                            : <button onClick={() => openTPSLModal()}>+ Add</button>}
+                    </React.Fragment>
+                )
+            }
+
+            const ClosedBy = () => (
+                <div>
+                    <button onClick={notAvailable}>Limit</button>
+                    &nbsp;
+                    <button onClick={notAvailable}>Market</button>
+                </div>
+            )
 
             const gropedData = {
+                id,
                 leverage: adjustLeverage,
                 contracts: <ContractItem positionType={positionType} cryptoType={cryptoType} marginMode={marginMode} leverage={adjustLeverage}/>,
                 quantity: <QuantityItem positionType={positionType} value={calculatedQuantity}/>,
@@ -109,6 +171,11 @@ const ConfirmPosition: React.FC = () => {
                 mm: calculationMM(adjustLeverage, 0.55, order_value_usdt),
                 unrealized_pl: <UnrealizedItem profit={0} percent={0} isIncrease={false}/>,
                 realized_pl: -calculationRealizedPL(calculatedQuantity, currentPrice, 0.055),
+                tp_sl: <TPSL/>,
+                trailing_stop: <TrailingStop/>,
+                mmr_close: <Mmrclose/>,
+                reverse_position: <ReversePosition/>,
+                close_by: <ClosedBy/>
             }
 
             if (trade_position_process === "Buy") {
@@ -121,6 +188,16 @@ const ConfirmPosition: React.FC = () => {
                     ...gropedData,
                     // tp_sl: shortPositionData
                 })
+            }
+
+            if (longPositionDataTPSL) {
+                setConfirmedLongPositionDataTPSL(longPositionDataTPSL)
+                setLongPositionDataTPSL(null)
+            }
+
+            if (shortPositionDataTPSL) {
+                setConfirmedShortPositionDataTPSL(shortPositionDataTPSL)
+                setShortPositionDataTPSL(null)
             }
 
             setCurrentModal(MODALS.CLOSE)

@@ -32,20 +32,20 @@ const LimitOrder: React.FC = () => {
     const {adjustLeverage} = useSimulatorTradingContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
     const {setCurrentModal} = useFuturesTradingModalContext()
-    const {longPositionData, shortPositionData, setShortPositionData, setLongPositionData} = useSimulatorTradingChartDetailsContext()
+    const {longPositionDataTPSL, shortPositionDataTPSL, setShortPositionDataTPSL, setLongPositionDataTPSL} = useSimulatorTradingChartDetailsContext()
 
-    const isTPSL = !!longPositionData || !!shortPositionData
+    const isTPSL = !!longPositionDataTPSL || !!shortPositionDataTPSL
 
     useEffect(() => {
         if (fieldsValue.order_value_usdt) {
             setFieldsValue(interruptionRef(settingsFields))
-            setLongPositionData(null)
-            setShortPositionData(null)
+            setLongPositionDataTPSL(null)
+            setShortPositionDataTPSL(null)
         }
 
         return () => {
-            setShortPositionData(null)
-            setLongPositionData(null)
+            setShortPositionDataTPSL(null)
+            setLongPositionDataTPSL(null)
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -115,7 +115,7 @@ const LimitOrder: React.FC = () => {
                 tradType={TRAD_TYPE.LIMIT}
                 orderValue={fieldsValue.order_value_usdt}
                 orderPrice={fieldsValue.order_price_usdt}
-                position={!!longPositionData ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT}
+                position={!!longPositionDataTPSL ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT}
             />
             {isTPSL && <TriggerPrice/>}
             <TradeButtons onClick={startTrade}/>

@@ -28,21 +28,28 @@ const Market: React.FC = () => {
 
     const {adjustLeverage, positionMode} = useSimulatorTradingContext()
     const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
-    const {longPositionData, shortPositionData, setShortPositionData, setLongPositionData} = useSimulatorTradingChartDetailsContext()
+    const {
+        longPositionDataTPSL,
+        shortPositionDataTPSL,
+        setLongPositionDataTPSL,
+        setShortPositionDataTPSL,
+        setConfirmedLongPositionDataTPSL,
+        setConfirmedShortPositionDataTPSL
+    } = useSimulatorTradingChartDetailsContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
 
-    const isTPSL = !!longPositionData || !!shortPositionData
+    const isTPSL = !!longPositionDataTPSL || !!shortPositionDataTPSL
 
     useEffect(() => {
         if (fieldsValue.order_value_usdt) {
             setFieldsValue(interruptionRef(settingsFields))
-            setLongPositionData(null)
-            setShortPositionData(null)
+            setLongPositionDataTPSL(null)
+            setShortPositionDataTPSL(null)
         }
 
         return () => {
-            setShortPositionData(null)
-            setLongPositionData(null)
+            setShortPositionDataTPSL(null)
+            setLongPositionDataTPSL(null)
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,12 +88,12 @@ const Market: React.FC = () => {
                     //@TODO this mode is not available yet
                 }
             } else {
-                if ((longPositionData && process.position === TRADE_POSITION.SHORT) || (shortPositionData && process.position === TRADE_POSITION.LONG)) {
+                if ((longPositionDataTPSL && process.position === TRADE_POSITION.SHORT) || (shortPositionDataTPSL && process.position === TRADE_POSITION.LONG)) {
                     setCurrentModal(MODALS.RISK_ALERT)
                 } else {
-                    const isTPLS = !!longPositionData || !!shortPositionData
+                    const isTPLS = !!longPositionDataTPSL || !!shortPositionDataTPSL
                     const isCurrentPositionLong = process.position === TRADE_POSITION.LONG
-                    const currentPositionData = isTPLS ? isCurrentPositionLong ? longPositionData : shortPositionData : {}
+                    const currentPositionData = isTPLS ? isCurrentPositionLong ? longPositionDataTPSL : shortPositionDataTPSL : {}
 
                     const confirmData = interruptionRef({
                         ...fieldsValue, ...currentPositionData,
@@ -129,7 +136,7 @@ const Market: React.FC = () => {
                 confirmed={isTPSL}
                 tradType={TRAD_TYPE.MARKET}
                 orderValue={fieldsValue.order_value_usdt}
-                position={!!longPositionData ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT}
+                position={!!longPositionDataTPSL ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT}
             />
             {isTPSL && <TriggerPrice/>}
             <TradeButtons onClick={startConfirmProcess}/>

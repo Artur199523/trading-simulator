@@ -45,23 +45,41 @@ const TPSL: React.FC = () => {
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
     const {setCurrentModal} = useFuturesTradingModalContext()
     const {dataForModal} = useFuturesTradingModalContext<TPSLDataForModalITF>()
-    const {setLongPositionData, setShortPositionData, longPositionData, shortPositionData} = useSimulatorTradingChartDetailsContext()
+    const {
+        longPositionDataTPSL,
+        shortPositionDataTPSL,
+        setLongPositionDataTPSL,
+        setShortPositionDataTPSL,
+        confirmedShortPositionData,
+        confirmedLongPositionDataTPSL,
+        confirmedShortPositionDataTPSL,
+        setConfirmedLongPositionDataTPSL,
+        setConfirmedShortPositionDataTPSL,
+    } = useSimulatorTradingChartDetailsContext()
 
-    const [activeTradeType, setActiveTradeType] = useState<TRADE_POSITION>(TRADE_POSITION.LONG)
+    const [activeTradeType, setActiveTradeType] = useState<TRADE_POSITION>(dataForModal.tradePosition ?? TRADE_POSITION.LONG)
 
     const [fieldsValue, setFieldsValue] = useState(settingsFieldsCopy)
 
     const currentPrice = dataForModal.tradType === TRAD_TYPE.LIMIT ? Number(dataForModal.orderPrice) : currentCryptoData.close
 
     useEffect(() => {
-        if (longPositionData) {
-            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Long: longPositionData}))
+        if (longPositionDataTPSL) {
+            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Long: longPositionDataTPSL}))
             setActiveTradeType(TRADE_POSITION.LONG)
         }
 
-        if (shortPositionData) {
-            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: shortPositionData}))
+        if (shortPositionDataTPSL) {
+            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: shortPositionDataTPSL}))
             setActiveTradeType(TRADE_POSITION.SHORT)
+        }
+
+        if (confirmedLongPositionDataTPSL && dataForModal.tradePosition) {
+            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Long: confirmedLongPositionDataTPSL}))
+        }
+
+        if (confirmedShortPositionDataTPSL && dataForModal.tradePosition) {
+            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: confirmedShortPositionData}))
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -405,15 +423,25 @@ const TPSL: React.FC = () => {
         const triggerStopPrice = confirmedData.stop_trigger_price
 
         if (!triggerStopPrice && !triggerProfitPrice) {
-            setLongPositionData(null)
-            setShortPositionData(null)
+            setLongPositionDataTPSL(null)
+            setShortPositionDataTPSL(null)
         } else {
-            if (activeTradeType === TRADE_POSITION.LONG) {
-                setLongPositionData(confirmedData)
-                setShortPositionData(null)
-            } else {
-                setShortPositionData(confirmedData)
-                setLongPositionData(null)
+            if (activeTradeType === TRADE_POSITION.LONG && !confirmedLongPositionDataTPSL) {
+                setLongPositionDataTPSL(confirmedData)
+                setShortPositionDataTPSL(null)
+            }
+
+            if (activeTradeType === TRADE_POSITION.SHORT && !confirmedShortPositionDataTPSL) {
+                setShortPositionDataTPSL(confirmedData)
+                setLongPositionDataTPSL(null)
+            }
+
+            if (confirmedShortPositionDataTPSL) {
+                setConfirmedShortPositionDataTPSL(confirmedData)
+            }
+
+            if (confirmedLongPositionDataTPSL) {
+                setConfirmedLongPositionDataTPSL(confirmedData)
             }
         }
 
@@ -523,10 +551,12 @@ const TPSL: React.FC = () => {
                 <HeaderItem label="Qty" value={(orderValue / currentCryptoData.close).toFixed(3)}/>
                 <HeaderItem label="Last Traded Price" value={currentCryptoData.close}/>
             </div>
-            <div className={`futures-modal_tpls_trade-type ${activeTradeType}`}>
-                <Button onClick={() => setActiveTradeType(TRADE_POSITION.LONG)}>Long</Button>
-                <Button onClick={() => setActiveTradeType(TRADE_POSITION.SHORT)}>Short</Button>
-            </div>
+            {<div className={`futures-modal_tpls_trade-type ${activeTradeType}`}>
+                {!dataForModal.tradePosition && <React.Fragment>
+                    <Button onClick={() => setActiveTradeType(TRADE_POSITION.LONG)}>Long</Button>
+                    <Button onClick={() => setActiveTradeType(TRADE_POSITION.SHORT)}>Short</Button>
+                </React.Fragment>}
+            </div>}
             <div className="futures-modal_tpls_which_order">
                 <span>Applicable to</span>
                 <span>Entire position</span>
