@@ -1,6 +1,6 @@
 import React from "react";
 
-import {useFuturesTradingModalContext} from "layouts/providers";
+import {useFuturesTradingModalContext, useSimulatorTradingChartDetailsContext} from "layouts/providers";
 import {MODALS} from "utils";
 
 import {ModalWindowTemplate} from "components";
@@ -8,10 +8,14 @@ import {ModalWindowTemplate} from "components";
 import "./style.scss"
 
 const RiskAlert: React.FC = () => {
-    const {setCurrentModal} = useFuturesTradingModalContext()
+    const {setCurrentModal,dataForModal,setDataForModal} = useFuturesTradingModalContext()
+    const {setShortPositionDataTPSL, setLongPositionDataTPSL} = useSimulatorTradingChartDetailsContext()
 
     const confirm = () => {
-
+        setShortPositionDataTPSL(null)
+        setLongPositionDataTPSL(null)
+        setCurrentModal(MODALS.CONFIRM_POSITION)
+        setDataForModal(dataForModal)
     }
 
     return (

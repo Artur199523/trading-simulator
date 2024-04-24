@@ -50,7 +50,6 @@ const TPSL: React.FC = () => {
         shortPositionDataTPSL,
         setLongPositionDataTPSL,
         setShortPositionDataTPSL,
-        confirmedShortPositionData,
         confirmedLongPositionDataTPSL,
         confirmedShortPositionDataTPSL,
         setConfirmedLongPositionDataTPSL,
@@ -79,7 +78,7 @@ const TPSL: React.FC = () => {
         }
 
         if (confirmedShortPositionDataTPSL && dataForModal.tradePosition) {
-            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: confirmedShortPositionData}))
+            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: confirmedShortPositionDataTPSL}))
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -426,21 +425,22 @@ const TPSL: React.FC = () => {
             setLongPositionDataTPSL(null)
             setShortPositionDataTPSL(null)
         } else {
-            if (activeTradeType === TRADE_POSITION.LONG && !confirmedLongPositionDataTPSL) {
+
+            if (activeTradeType === TRADE_POSITION.LONG && !confirmedLongPositionDataTPSL && !dataForModal.tradePosition) {
                 setLongPositionDataTPSL(confirmedData)
                 setShortPositionDataTPSL(null)
             }
 
-            if (activeTradeType === TRADE_POSITION.SHORT && !confirmedShortPositionDataTPSL) {
+            if (activeTradeType === TRADE_POSITION.SHORT && !confirmedShortPositionDataTPSL && !dataForModal.tradePosition) {
                 setShortPositionDataTPSL(confirmedData)
                 setLongPositionDataTPSL(null)
             }
 
-            if (confirmedShortPositionDataTPSL) {
+            if (activeTradeType === TRADE_POSITION.SHORT && (confirmedShortPositionDataTPSL || dataForModal.tradePosition)) {
                 setConfirmedShortPositionDataTPSL(confirmedData)
             }
 
-            if (confirmedLongPositionDataTPSL) {
+            if (activeTradeType === TRADE_POSITION.LONG && (confirmedLongPositionDataTPSL || dataForModal.tradePosition)) {
                 setConfirmedLongPositionDataTPSL(confirmedData)
             }
         }

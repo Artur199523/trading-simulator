@@ -26,15 +26,13 @@ const Market: React.FC = () => {
     const fieldsCopy = interruptionRef(settingsFields)
     const [fieldsValue, setFieldsValue] = useState<SettingsFieldsMarketITF>(fieldsCopy)
 
-    const {adjustLeverage, positionMode} = useSimulatorTradingContext()
+    const {adjustLeverage, positionMode, riskLimit} = useSimulatorTradingContext()
     const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
     const {
         longPositionDataTPSL,
         shortPositionDataTPSL,
         setLongPositionDataTPSL,
         setShortPositionDataTPSL,
-        setConfirmedLongPositionDataTPSL,
-        setConfirmedShortPositionDataTPSL
     } = useSimulatorTradingChartDetailsContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
 
@@ -82,34 +80,46 @@ const Market: React.FC = () => {
     const startConfirmProcess = (process: StartTradeInitialOptions) => {
         const currentOrderValue = fieldsValue.order_value_usdt
 
-        if (Number(currentOrderValue) < (balanceUSDT * adjustLeverage)) {
-            if (positionMode === POSITION_MODE.HEDGE) {
-                if (process.hedgingType === HEDGING.OPEN) {
-                    //@TODO this mode is not available yet
-                }
-            } else {
-                if ((longPositionDataTPSL && process.position === TRADE_POSITION.SHORT) || (shortPositionDataTPSL && process.position === TRADE_POSITION.LONG)) {
-                    setCurrentModal(MODALS.RISK_ALERT)
-                } else {
-                    const isTPLS = !!longPositionDataTPSL || !!shortPositionDataTPSL
-                    const isCurrentPositionLong = process.position === TRADE_POSITION.LONG
-                    const currentPositionData = isTPLS ? isCurrentPositionLong ? longPositionDataTPSL : shortPositionDataTPSL : {}
+        if (!currentOrderValue) {
+            showNotification(ERROR.LESS_VALUE, "error", 0)
+            return
+        }
 
-                    const confirmData = interruptionRef({
-                        ...fieldsValue, ...currentPositionData,
-                        trade_type: "Market",
-                        trade_position_process: isCurrentPositionLong ? "Buy" : "Sell",
-                        trade_position: process.position,
-                        time_in_force: "Immediate-Or-Cancel",
-                        is_tp_ls: isTPLS
-                    })
+        if (Number(currentOrderValue) > (balanceUSDT * adjustLeverage)) {
+            showNotification(ERROR.INSUFFICIENT, "error", 0)
+            return;
+        }
 
-                    setDataForModal(confirmData)
-                    setCurrentModal(MODALS.CONFIRM_POSITION)
-                }
+        if (Number(currentOrderValue) > riskLimit) {
+            showNotification(ERROR.EXCEEDED_RISK_ZONE, "error", 0)
+            return;
+        }
+
+        if (positionMode === POSITION_MODE.HEDGE) {
+            if (process.hedgingType === HEDGING.OPEN) {
+                //@TODO this mode is not available yet
             }
         } else {
-            showNotification(ERROR.INSUFFICIENT, "error")
+            const isTPLS = !!longPositionDataTPSL || !!shortPositionDataTPSL
+            const isCurrentPositionLong = process.position === TRADE_POSITION.LONG
+            const currentPositionData = isTPLS ? isCurrentPositionLong ? longPositionDataTPSL : shortPositionDataTPSL : {}
+
+            const confirmData = interruptionRef({
+                ...fieldsValue, ...currentPositionData,
+                trade_type: "Market",
+                trade_position_process: isCurrentPositionLong ? "Buy" : "Sell",
+                trade_position: process.position,
+                time_in_force: "Immediate-Or-Cancel",
+                is_tp_ls: isTPLS
+            })
+
+            if ((longPositionDataTPSL && process.position === TRADE_POSITION.SHORT) || (shortPositionDataTPSL && process.position === TRADE_POSITION.LONG)) {
+                setCurrentModal(MODALS.RISK_ALERT)
+                setDataForModal(confirmData)
+            } else {
+                setDataForModal(confirmData)
+                setCurrentModal(MODALS.CONFIRM_POSITION)
+            }
         }
     }
 
