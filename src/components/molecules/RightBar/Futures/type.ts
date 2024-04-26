@@ -1,5 +1,5 @@
 import {HedgingModeTypeT} from "layouts/providers/type";
-import {MARGIN_MODE, TRAD_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
+import {CALL_ENVIRONMENT, MARGIN_MODE, TRAD_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
 import {ReactNode} from "react";
 
 export interface TradeButtonsITF {
@@ -49,6 +49,7 @@ export interface PositionDataITF {
     stop_trigger_stop: string
     stop_percent: number
     stop_validation: SettingsFieldsValidationITF
+    name: TRADE_POSITION
 }
 
 export interface SettingsFieldsValidationITF {
@@ -98,6 +99,7 @@ export interface TPSLDataForModalITF {
     orderPrice: string | undefined,
     orderValue: string
     tradePosition?: TRADE_POSITION,
+    call: CALL_ENVIRONMENT
 }
 
 export interface ConfirmPositionDataForModalWithoutTPSLITF {
@@ -117,11 +119,11 @@ export interface ContractItemITF {
     leverage: number
     marginMode: MARGIN_MODE
     cryptoType: string
-    positionType: "long" | "short"
+    positionType: TRADE_POSITION
 }
 
 export interface QuantityItemITF {
-    positionType: "long" | "short"
+    positionType: TRADE_POSITION
     value: string
 }
 
@@ -134,4 +136,5 @@ export interface UnrealizedItemITF {
 export interface ConfirmedTPSLDataForModalITF {
     orderValue: number
     tradePosition: TRADE_POSITION
+    call: CALL_ENVIRONMENT
 }

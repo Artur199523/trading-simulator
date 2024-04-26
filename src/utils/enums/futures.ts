@@ -77,3 +77,8 @@ export enum ORDER_ACTIVE_TAB {
     ORDER_HISTORY = "order_history",
     TRADE_HISTORY = "trade_history",
 }
+
+export enum CALL_ENVIRONMENT {
+    OUTSIDE = "outside",
+    INSIDE = "inside"
+}

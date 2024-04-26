@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 
 import {useFuturesTradingModalContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
-import {MODALS, ORDER_TYPE, TRAD_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
+import {CALL_ENVIRONMENT, MODALS, ORDER_TYPE, TRAD_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
 
 import {Button, Input, InputRangeSlider, ModalWindowTemplate} from "components";
 import {interruptionRef} from "utils/functions/interruptionRef";
@@ -22,7 +22,8 @@ const settingsFields: SettingsFieldsITF = {
         stop_trigger_price: "",
         stop_trigger_stop: "",
         stop_percent: 0,
-        stop_validation: {issue: false, message: "The Stop Loss price must be lower than the order price"}
+        stop_validation: {issue: false, message: "The Stop Loss price must be lower than the order price"},
+        name: TRADE_POSITION.LONG,
     },
     Short: {
         current_profit_trigger: TRIGGERS.ROI,
@@ -34,7 +35,8 @@ const settingsFields: SettingsFieldsITF = {
         stop_trigger_price: "",
         stop_trigger_stop: "",
         stop_percent: 0,
-        stop_validation: {issue: false, message: "The Stop Loss price must be higher than the order price"}
+        stop_validation: {issue: false, message: "The Stop Loss price must be higher than the order price"},
+        name: TRADE_POSITION.SHORT,
     }
 }
 
@@ -63,22 +65,24 @@ const TPSL: React.FC = () => {
     const currentPrice = dataForModal.tradType === TRAD_TYPE.LIMIT ? Number(dataForModal.orderPrice) : currentCryptoData.close
 
     useEffect(() => {
-        if (longPositionDataTPSL) {
+        if (longPositionDataTPSL && dataForModal.call === CALL_ENVIRONMENT.OUTSIDE) {
             setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Long: longPositionDataTPSL}))
             setActiveTradeType(TRADE_POSITION.LONG)
         }
 
-        if (shortPositionDataTPSL) {
+        if (shortPositionDataTPSL && dataForModal.call === CALL_ENVIRONMENT.OUTSIDE) {
             setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: shortPositionDataTPSL}))
             setActiveTradeType(TRADE_POSITION.SHORT)
         }
 
-        if (confirmedLongPositionDataTPSL && dataForModal.tradePosition) {
+        if (confirmedLongPositionDataTPSL && dataForModal.call === CALL_ENVIRONMENT.INSIDE) {
             setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Long: confirmedLongPositionDataTPSL}))
+            setActiveTradeType(TRADE_POSITION.LONG)
         }
 
-        if (confirmedShortPositionDataTPSL && dataForModal.tradePosition) {
+        if (confirmedShortPositionDataTPSL && dataForModal.call === CALL_ENVIRONMENT.INSIDE) {
             setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: confirmedShortPositionDataTPSL}))
+            setActiveTradeType(TRADE_POSITION.SHORT)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -417,30 +421,31 @@ const TPSL: React.FC = () => {
 
     const confirmMode = () => {
         //@TODO need to add position details checking like if{}
-        const confirmedData: PositionDataITF = fieldsValue[activeTradeType]
+        const confirmedData: PositionDataITF = interruptionRef(fieldsValue[activeTradeType])
         const triggerProfitPrice = confirmedData.profit_trigger_price
         const triggerStopPrice = confirmedData.stop_trigger_price
 
-        if (!triggerStopPrice && !triggerProfitPrice) {
+        if (!triggerProfitPrice && !triggerStopPrice) {
             setLongPositionDataTPSL(null)
             setShortPositionDataTPSL(null)
+            setConfirmedShortPositionDataTPSL(null)
+            setConfirmedLongPositionDataTPSL(null)
         } else {
-
-            if (activeTradeType === TRADE_POSITION.LONG && !confirmedLongPositionDataTPSL && !dataForModal.tradePosition) {
+            if (activeTradeType === TRADE_POSITION.LONG && dataForModal.call === CALL_ENVIRONMENT.OUTSIDE) {
                 setLongPositionDataTPSL(confirmedData)
                 setShortPositionDataTPSL(null)
             }
 
-            if (activeTradeType === TRADE_POSITION.SHORT && !confirmedShortPositionDataTPSL && !dataForModal.tradePosition) {
+            if (activeTradeType === TRADE_POSITION.SHORT && dataForModal.call === CALL_ENVIRONMENT.OUTSIDE) {
                 setShortPositionDataTPSL(confirmedData)
                 setLongPositionDataTPSL(null)
             }
 
-            if (activeTradeType === TRADE_POSITION.SHORT && (confirmedShortPositionDataTPSL || dataForModal.tradePosition)) {
+            if (activeTradeType === TRADE_POSITION.SHORT && dataForModal.call === CALL_ENVIRONMENT.INSIDE) {
                 setConfirmedShortPositionDataTPSL(confirmedData)
             }
 
-            if (activeTradeType === TRADE_POSITION.LONG && (confirmedLongPositionDataTPSL || dataForModal.tradePosition)) {
+            if (activeTradeType === TRADE_POSITION.LONG && dataForModal.call === CALL_ENVIRONMENT.INSIDE) {
                 setConfirmedLongPositionDataTPSL(confirmedData)
             }
         }
@@ -552,7 +557,7 @@ const TPSL: React.FC = () => {
                 <HeaderItem label="Last Traded Price" value={currentCryptoData.close}/>
             </div>
             {<div className={`futures-modal_tpls_trade-type ${activeTradeType}`}>
-                {!dataForModal.tradePosition && <React.Fragment>
+                {dataForModal.call === CALL_ENVIRONMENT.OUTSIDE && <React.Fragment>
                     <Button onClick={() => setActiveTradeType(TRADE_POSITION.LONG)}>Long</Button>
                     <Button onClick={() => setActiveTradeType(TRADE_POSITION.SHORT)}>Short</Button>
                 </React.Fragment>}

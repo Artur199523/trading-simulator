@@ -149,38 +149,6 @@
     }
   }
 
-  &_order-value-info {
-    width: 100%;
-    height: 50px;
-    margin: 20px 0;
-    padding: 7px 12px;
-    border-radius: 4px;
-    border: 1px solid #25282c;
-
-    &_quantity, &_cost {
-      height: 20px;
-      display: flex;
-      font-size: 12px;
-      justify-content: space-between;
-
-      & > div:first-child {
-        color: #adb1b8;
-      }
-
-      & > div:last-child {
-        color: white;
-
-        & > span:first-child {
-          color: #20b26c;
-        }
-
-        & > span:last-child {
-          color: #ef454a;
-        }
-      }
-    }
-  }
-
   &_trigger-price {
     display: flex;
     font-size: 12px;
@@ -199,54 +167,116 @@
     }
   }
 
-  &_order-contract-item {
-    padding-left: 10px;
+  &_order {
+    &-contract-item {
+      padding-left: 10px;
 
-    &.long {
-      border-left: 2px solid $long;
+      &.long {
+        border-left: 2px solid $long;
 
-      & > span:last-child {
-        color: $long;
+        & > span:last-child {
+          color: $long;
+        }
+      }
+
+      &.short {
+        border-left: 2px solid $short;
+
+        & > span:last-child {
+          color: $short;
+        }
+      }
+
+      span {
+        display: block;
+        font-size: 12px;
+        margin-bottom: 3px;
+
+        &:first-child {
+          margin-top: 9px;
+          font-weight: 600;
+        }
       }
     }
 
-    &.short {
-      border-left: 2px solid $short;
+    &-quantity-item {
+      &.long {
+        color: $long;
+      }
 
-      & > span:last-child {
+      &.short {
         color: $short;
       }
     }
 
-    span {
-      display: block;
-      font-size: 12px;
-      margin-bottom: 3px;
+    &-unrealized-item {
+      min-width: 140px;
 
-      &:first-child {
-        margin-top: 9px;
-        font-weight: 600;
+      &.increase {
+        color: $long;
+      }
+
+      &.decrease {
+        color: $short;
       }
     }
-  }
 
-  &_order-quantity-item {
-    &.long {
-      color: $long;
+    &-value-info {
+      width: 100%;
+      height: 50px;
+      margin: 20px 0;
+      padding: 7px 12px;
+      border-radius: 4px;
+      border: 1px solid #25282c;
+
+      &_quantity, &_cost {
+        height: 20px;
+        display: flex;
+        font-size: 12px;
+        justify-content: space-between;
+
+        & > div:first-child {
+          color: #adb1b8;
+        }
+
+        & > div:last-child {
+          color: white;
+
+          & > span:first-child {
+            color: #20b26c;
+          }
+
+          & > span:last-child {
+            color: #ef454a;
+          }
+        }
+      }
     }
 
-    &.short {
-      color: $short;
-    }
-  }
+    &-tpsl {
+      &_details {
+        display: flex;
+        align-items: center;
 
-  &_order-unrealized-item {
-    &.increase {
-      color: $long;
-    }
+        & > div {
+          & > span:first-child {
+            color: $long;
+          }
 
-    &.decrease {
-      color: $short;
+          & > span:last-child {
+            color: $short;
+          }
+        }
+
+        button {
+          background: none;
+          margin-left: 5px;
+
+          svg {
+            width: 15px;
+          }
+        }
+      }
     }
   }
 }

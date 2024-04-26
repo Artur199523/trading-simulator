@@ -5,8 +5,8 @@ import React from "react";
 import {
     useSimulatorOptionsContext,
     useSimulatorTradingContext,
-    useFuturesTradingModalContext,
     useSimulatorPlayerInfoContext,
+    useFuturesTradingModalContext,
     useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
 import {
@@ -22,14 +22,18 @@ import {
 } from "utils";
 
 import {ModalWindowTemplate} from "components";
+import OrderTPSL from "../Components/OrderTPSL";
 import ContractItem from "../Components/ContractItem";
 import QuantityItem from "../Components/QuantityItem";
+import OrderClosedBy from "../Components/OrderClosedBy";
+import OrderMmrClose from "../Components/OrderMmrClose";
+import UnrealizedItem from "../Components/UnrealizedItem";
+import OrderTrailingStop from "../Components/OrderTrailingStop";
+import OrderReversePosition from "../Components/OrderReversePosition";
 
-import {ConfirmedTPSLDataForModalITF, ConfirmPositionDataForModalWithTPSLITF, ConfirmPositionFiledItemITF, ItemTPSLITF} from "../type";
+import {ConfirmPositionDataForModalWithTPSLITF, ConfirmPositionFiledItemITF, ItemTPSLITF} from "../type";
 
 import "./style.scss"
-import UnrealizedItem from "../Components/UnrealizedItem";
-import {Edit} from "../../../../../assets/svg";
 
 const ConfirmPosition: React.FC = () => {
     const {cryptoType} = useSimulatorOptionsContext()
@@ -42,14 +46,11 @@ const ConfirmPosition: React.FC = () => {
         setShortPositionDataTPSL,
         setConfirmedLongPositionData,
         setConfirmedShortPositionData,
-        confirmedLongPositionDataTPSL,
-        confirmedShortPositionDataTPSL,
         setConfirmedLongPositionDataTPSL,
         setConfirmedShortPositionDataTPSL
     } = useSimulatorTradingChartDetailsContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
     const {setCurrentModal, dataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
-    const {setDataForModal: setDataForModalTPSL} = useFuturesTradingModalContext<ConfirmedTPSLDataForModalITF>()
 
     const {trade_position_process, trade_type, order_value_usdt, profit_trigger_price, stop_trigger_price, trade_position} = dataForModal
     const {close: currentPrice} = currentCryptoData
@@ -109,84 +110,37 @@ const ConfirmPosition: React.FC = () => {
     //@TODO need to work on the tp_sl part
     const confirm = () => {
         if (currentPriceMatchRangeChecking()) {
-            const positionType = trade_position_process === "Buy" ? "long" : "short"
+            const positionType = trade_position_process === "Buy" ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT
             const id = uuidv4()
-
-            const notAvailable = () => {
-                showNotification("Not available yet", "info", 0)
-            }
-
-            const Mmrclose = () => <button onClick={notAvailable}>+ Add</button>
-
-            const ReversePosition = () => <button onClick={notAvailable}>Reverse</button>
-
-            const TrailingStop = () => <button onClick={notAvailable}>+ Add</button>
-
-            const TPSL = () => {
-                const tradPosition = trade_position_process === "Buy" ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT
-                const isTPSL = !!confirmedShortPositionDataTPSL || !!confirmedLongPositionDataTPSL
-
-                let currentTPSL = null
-
-                const openTPSLModal = () => {
-                    setCurrentModal(MODALS.TP_SL)
-                    setDataForModalTPSL({orderValue: order_value_usdt, tradePosition: tradPosition})
-                }
-
-                if (tradPosition === TRADE_POSITION.LONG) {
-                    currentTPSL = confirmedLongPositionDataTPSL
-                }
-
-                if (tradPosition === TRADE_POSITION.SHORT) {
-                    currentTPSL = confirmedShortPositionDataTPSL
-                }
-
-                //@TODO will continue tomorrow
-                return (
-                    <React.Fragment>
-                        {isTPSL ?<div>3512<span></span>/<span>2154</span> <button><Edit/></button></div>
-                            : <button onClick={() => openTPSLModal()}>+ Add</button>}
-                    </React.Fragment>
-                )
-            }
-
-            const ClosedBy = () => (
-                <div>
-                    <button onClick={notAvailable}>Limit</button>
-                    &nbsp;
-                    <button onClick={notAvailable}>Market</button>
-                </div>
-            )
 
             const gropedData = {
                 id,
-                leverage: adjustLeverage,
-                contracts: <ContractItem positionType={positionType} cryptoType={cryptoType} marginMode={marginMode} leverage={adjustLeverage}/>,
-                quantity: <QuantityItem positionType={positionType} value={calculatedQuantity}/>,
+                tp_sl: <OrderTPSL/>,
                 value: order_value_usdt,
-                entry_price: currentPrice,
+                leverage: adjustLeverage,
                 mark_price: currentPrice,
-                liquidity_price: calculatedLiquidity ? calculatedLiquidity : "--",
+                entry_price: currentPrice,
+                close_by: <OrderClosedBy/>,
+                mmr_close: <OrderMmrClose/>,
+                position: TRADE_POSITION.LONG,
+                trailing_stop: <OrderTrailingStop/>,
+                reverse_position: <OrderReversePosition/>,
                 im: calculationIM(order_value_usdt, adjustLeverage),
                 mm: calculationMM(adjustLeverage, 0.55, order_value_usdt),
+                liquidity_price: calculatedLiquidity ? calculatedLiquidity : "--",
                 unrealized_pl: <UnrealizedItem profit={0} percent={0} isIncrease={false}/>,
+                quantity: <QuantityItem positionType={positionType} value={calculatedQuantity}/>,
                 realized_pl: -calculationRealizedPL(calculatedQuantity, currentPrice, 0.055),
-                tp_sl: <TPSL/>,
-                trailing_stop: <TrailingStop/>,
-                mmr_close: <Mmrclose/>,
-                reverse_position: <ReversePosition/>,
-                close_by: <ClosedBy/>
+                contracts: <ContractItem positionType={positionType} cryptoType={cryptoType} marginMode={marginMode} leverage={adjustLeverage}/>
             }
 
             if (trade_position_process === "Buy") {
                 setConfirmedLongPositionData({
                     ...gropedData,
-                    // tp_sl: longPositionData
                 })
             } else {
                 setConfirmedShortPositionData({
                     ...gropedData,
-                    // tp_sl: shortPositionData
                 })
             }
 
