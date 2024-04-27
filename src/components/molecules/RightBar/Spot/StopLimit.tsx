@@ -9,7 +9,7 @@ import {
 } from "layouts/providers";
 import {divide, ERROR, multiply, showNotification} from "utils";
 
-import {Input, InputRange} from "components";
+import {Input, InputRange, InputRangeSlider} from "components";
 import TradeButton from "../TradeButton";
 
 import {ProcessT} from "layouts/providers/type";
@@ -108,8 +108,8 @@ const StopLimit: React.FC = () => {
         const Influence = Number(stopUSDT) > Number(currentCryptoData.close) ? "up" : "down"
         const percentOfCrypto = currentCryptoData.close * 15 / 100
 
-        if ((Influence === "up" && stopUSDT < limitUSDT && ( Number(stopUSDT) - currentCryptoData.close > percentOfCrypto))
-            || (Influence === "down" && stopUSDT > limitUSDT && ( currentCryptoData.close - Number(stopUSDT) > percentOfCrypto))) {
+        if ((Influence === "up" && stopUSDT < limitUSDT && (Number(stopUSDT) - currentCryptoData.close > percentOfCrypto))
+            || (Influence === "down" && stopUSDT > limitUSDT && (currentCryptoData.close - Number(stopUSDT) > percentOfCrypto))) {
             showNotification(ERROR.INSUFFICIENT_INTERVAL, "error", 0)
             return
         }
@@ -155,33 +155,39 @@ const StopLimit: React.FC = () => {
                 name="stop"
                 type="number"
                 value={stopUSDT}
-                placeholder="Stop (USDT)"
+                labelText="Trigger Price"
                 onChange={(e) => setStopUSDT(e.target.value)}
             />
             <Input
                 name="limit"
                 type="number"
+                rightText="USDT"
                 value={limitUSDT}
-                placeholder="Limit (USDT)"
+                labelText="Order Price"
                 onChange={(e) => limitUSDTHandle(e.target.value)}
             />
             <Input
-                name="quantity"
-                value={quantityCrypto}
                 type="number"
-                placeholder={`Quantity (${cryptoType})`}
+                name="quantity"
+                labelText="Qty"
+                value={quantityCrypto}
+                rightText={cryptoType}
                 onChange={(e) => quantityHandle(e.target.value)}
             />
-            <InputRange
-                disabled={!limitUSDT || (process === "sell" ? !balanceTradeableCrypto : !balanceUSDT)}
+            <InputRangeSlider
+                name=""
+                max={100}
+                division={4}
                 value={percent}
-                onChange={(e) => rangeHandle(e as any)}
+                onChange={(e) => rangeHandle(e.target.value as any)}
+                disabled={!limitUSDT || (process === "sell" ? !balanceTradeableCrypto : !balanceUSDT)}
             />
             <Input
                 name="total"
-                value={totalPrice}
                 type="number"
-                placeholder='Total (USDT)'
+                rightText="USDT"
+                value={totalPrice}
+                labelText="Order Value"
                 onChange={(e) => totalUSDTHandle(e.target.value)}
             />
             <TradeButton disabled={!limitUSDT || !quantityCrypto || !totalPrice} onClick={tradeInLimitOrder}/>

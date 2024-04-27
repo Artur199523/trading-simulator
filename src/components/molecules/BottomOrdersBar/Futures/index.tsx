@@ -5,15 +5,21 @@ import {TabContent, TabItem} from "components";
 import PositionOrder from "./PositionOrder";
 
 import "../style.scss"
+import {useSimulatorTradingChartDetailsContext} from "../../../../layouts/providers";
 
 const FuturesOrders = () => {
     const [activeTab, setActiveTab] = useState<string>(ORDER_ACTIVE_TAB.POSITION)
+    const {confirmedLongPositionData, confirmedShortPositionDataTPSL} = useSimulatorTradingChartDetailsContext()
+
+    const longPositionCount = confirmedLongPositionData ? 1 : 0
+    const shortPositionCount = confirmedShortPositionDataTPSL ? 1 : 0
+    const totalCount = longPositionCount + shortPositionCount
 
     return (
         <div className="bottom-order-bar_futures-orders">
             <div className="bottom-order-bar_futures-orders_tabs">
                 <span>Trade</span>
-                <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.POSITION as string} setActiveTab={setActiveTab}>Position(0)</TabItem>
+                <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.POSITION as string} setActiveTab={setActiveTab}>{`Position(${totalCount})`}</TabItem>
                 <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.PL} setActiveTab={setActiveTab}>P&L</TabItem>
                 <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.CURRENT_ORDERS} setActiveTab={setActiveTab}>Current Orders(0)</TabItem>
                 <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.ORDER_HISTORY} setActiveTab={setActiveTab}>Order History</TabItem>

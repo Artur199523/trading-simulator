@@ -6,5 +6,6 @@ export interface RangeSliderITF {
     value: number
     symbol?: string
     division?: number
+    disabled?: boolean
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }

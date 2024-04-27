@@ -7,7 +7,7 @@ import {
     useSimulatorTradingContext,
     useFuturesTradingModalContext
 } from "layouts/providers";
-import {HIDDEN_BLOCKS, MODALS, POSITION_MODE} from "utils";
+import {formatNumber, HIDDEN_BLOCKS, MODALS, POSITION_MODE} from "utils";
 
 import {SettingsITF} from "./type";
 
@@ -56,7 +56,7 @@ const Settings: React.FC<SettingsITF> = ({className}) => {
                     {isOpenRiskLimitBlock &&
                         <div className="hidden-block_settings_trades_risk-limits_block">
                             <div>{cryptoType}USDT</div>
-                            <div>{riskLimit}</div>
+                            <div>{formatNumber(riskLimit)} USDT</div>
                         </div>
                     }
                 </div>

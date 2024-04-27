@@ -8,7 +8,7 @@ import {
 } from "layouts/providers";
 import {divide, ERROR, minus, multiply, plus, showNotification} from "utils";
 
-import {Input, InputRange} from "components";
+import {Input, InputRange, InputRangeSlider} from "components";
 import TradeButton from "../TradeButton";
 
 import {OrderITF, ProcessT} from "layouts/providers/type";
@@ -271,26 +271,33 @@ const LimitOrder: React.FC = () => {
             <Input
                 name="price"
                 type="number"
+                rightText="USDT"
                 value={priceUSDT}
-                placeholder="Price (USDT)"
+                labelText="Order Price"
                 onChange={(e) => priceUSDTHandle(e.target.value)}
             />
             <Input
                 name="crypto"
-                value={quantityCrypto}
                 type="number"
-                placeholder={`Quantity (${cryptoType})`}
+                labelText="Qty"
+                value={quantityCrypto}
+                rightText={cryptoType}
                 onChange={(e) => quantityHandle(e.target.value)}
             />
-            <InputRange
+            <InputRangeSlider
+                name=""
+                max={100}
+                division={4}
+                value={percent}
+                onChange={(e) => rangeHandle(e.target.value as any)}
                 disabled={!priceUSDT || (process === "sell" ? !balanceTradeableCrypto : !balanceUSDT)}
-                value={percent} onChange={(e) => rangeHandle(e as any)}
             />
             <Input
+                type="number"
+                rightText="USDT"
                 name="totalUSDT"
                 value={totalPrice}
-                type="number"
-                placeholder='Total (USDT)'
+                labelText="Order value"
                 onChange={(e) => totalUSDTHandle(e.target.value)}
             />
             <TradeButton disabled={(!priceUSDT || !quantityCrypto)} onClick={tradeInLimitOrder}/>

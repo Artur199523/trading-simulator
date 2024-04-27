@@ -1,16 +1,17 @@
 import React, {memo, useEffect, useState} from "react";
 
-import {useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
+import {useSimulatorOptionsContext, useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
 
 import {divide, ERROR, minus, multiply, plus, showNotification} from "utils";
-import {Input, InputRange} from "components";
+import {Input, InputRange, InputRangeSlider} from "components";
 import TradeButton from "../TradeButton";
 
 import {ProcessT} from "layouts/providers/type";
 
 const Market: React.FC = () => {
-    const {balanceUSDT, setBalanceUSDT, balanceTradeableCrypto, setBalanceTradeableCrypto} = useSimulatorPlayerInfoContext()
+    const {balanceUSDT, setBalanceUSDT, balanceTradeableCrypto, setBalanceTradeableCrypto,} = useSimulatorPlayerInfoContext()
     const {currentCryptoData, setMarketOrders, setMarketOrdersMarks} = useSimulatorTradingChartDetailsContext()
+    const {cryptoType} = useSimulatorOptionsContext()
     const {process} = useSimulatorTradingContext()
 
     const [percent, setPercent] = useState(0)
@@ -117,9 +118,10 @@ const Market: React.FC = () => {
     }
 
     const rangeHandle = (percent: number) => {
+        console.log(percent)
         const processBalance = process === "buy" ? balanceUSDT : balanceTradeableCrypto
         const calculatedPrice = divide(multiply(processBalance, percent), 100)
-        const currentPrice = calculatedPrice === 0 ? "" : processBalance.toString()
+        const currentPrice = calculatedPrice === 0 ? "" : calculatedPrice.toString()
 
         setPercent(percent)
         setValue(currentPrice)
@@ -141,21 +143,20 @@ const Market: React.FC = () => {
     return (
         <div className="spot_market">
             <Input
-                name="price"
-                type="number"
-                value={price}
-                disabled={true}
-                placeholder="Price"
-                onChange={(e) => setPrice(e.target.value)}
-            />
-            <Input
                 name="usdt"
                 value={value}
                 type="number"
-                placeholder={process === "buy" ? "USDT" : "ETH"}
+                rightText={process === "buy" ? "USDT" : cryptoType}
+                labelText={process === "buy" ? "Order Value" : "Qty"}
                 onChange={(e) => valueHandle(e.target.value)}
             />
-            <InputRange value={percent} onChange={(e) => rangeHandle(e as any)}/>
+            <InputRangeSlider
+                name=""
+                max={100}
+                division={4}
+                value={percent}
+                onChange={(e) => rangeHandle(e.target.value as any)}
+            />
             <TradeButton disabled={!value} onClick={tradeInMarket}/>
         </div>
     )

@@ -12,8 +12,8 @@ const Balance: React.FC = () => {
     return (
         <div className="right-bar_balance">
             {process === "buy"
-                ? <div className="spot_market_balance">Available: <span>{balanceUSDT} USDT</span></div>
-                : <div className="spot_market_balance">Available: <span>{balanceTradeableCrypto} {cryptoType}</span></div>
+                ? <div><span>Available Balance</span> <span>{balanceUSDT} USDT</span></div>
+                : <div><span>Available Balance</span> <span>{balanceTradeableCrypto} {cryptoType}</span></div>
             }
         </div>
     )
