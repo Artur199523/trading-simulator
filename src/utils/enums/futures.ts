@@ -39,7 +39,8 @@ export enum MODALS {
     POSITION_MODE = "position-mode",
     ADJUST_LEVERAGE = "adjust-leverage",
     CONFIRM_POSITION = "confirm-position",
-    ORDER_PLACEMENT_PREFERENCES = "order-placement-preferences",
+    CLOSE_POSITION_MARKET = "close-position-market",
+    ORDER_PLACEMENT_PREFERENCES = "order-placement-preferences"
 }
 
 export enum POSITION_MODE {

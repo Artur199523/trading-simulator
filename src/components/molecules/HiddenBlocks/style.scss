@@ -175,7 +175,7 @@
       }
 
       &_section-block {
-        min-height: 520px;
+        min-height: calc(100vh - 500px);
 
         section {
           width: 100%;

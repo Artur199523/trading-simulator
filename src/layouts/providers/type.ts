@@ -1,6 +1,6 @@
 import React from "react";
 
-import {HEDGING, HIDDEN_BLOCKS, MARGIN_MODE, MODALS, POSITION_MODE} from "utils";
+import {HEDGING, HIDDEN_BLOCKS, MARGIN_MODE, MODALS, POSITION_MODE, TRADE_POSITION} from "utils";
 
 import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 import {HistoryItem} from "store/simulator/type";
@@ -11,25 +11,25 @@ export interface SimulatorProviderITF {
 }
 
 export interface SimulatorOptionsContextITF {
-    date: number,
-    currency: CurrencyT,
-    interval: IntervalT,
-    cryptoType: CryptoTypeT,
+    date: number
+    currency: CurrencyT
+    interval: IntervalT
+    cryptoType: CryptoTypeT
     setDate: (date: number) => void
-    setInterval: (interval: IntervalT) => void,
-    setCurrency: (currency: CurrencyT) => void,
-    setCryptoType: (crypto: CryptoTypeT) => void,
+    setInterval: (interval: IntervalT) => void
+    setCurrency: (currency: CurrencyT) => void
+    setCryptoType: (crypto: CryptoTypeT) => void
 }
 
 export interface SimulatorToolsContextITF {
     next: boolean
-    isPlay: boolean,
-    isStart: boolean,
-    currentSpeed: CurrentSpeedT,
-    setNext: (isNext: boolean) => void,
-    setIsPlay: (isPlay: boolean) => void,
-    setIsStart: (isStart: boolean) => void,
-    setCurrentSpeed: (speed: CurrentSpeedT) => void,
+    isPlay: boolean
+    isStart: boolean
+    currentSpeed: CurrentSpeedT
+    setNext: (isNext: boolean) => void
+    setIsPlay: (isPlay: boolean) => void
+    setIsStart: (isStart: boolean) => void
+    setCurrentSpeed: (speed: CurrentSpeedT) => void
 }
 
 export interface SimulatorTradingContextITF {
@@ -65,62 +65,66 @@ export interface SimulatorPlayerInfoContextITF {
 export interface SimulatorTradingChartDetailsContextITF {
     limitOrders: OrderITF[]
     marketOrders: OrderITF[]
-    longPositionDataTPSL: PositionITF
-    shortPositionDataTPSL: PositionITF
     currentCryptoData: HistoryItem
     stopLimitOrders: StopOrderITF[]
     limitOrdersMarks: OrderMarkITF[]
     marketOrdersMarks: OrderMarkITF[]
+    longPositionDataTPSL: PositionITF
     stopLimitPreOrders: StopOrderITF[]
+    shortPositionDataTPSL: PositionITF
     stopLimitOrdersMarks: OrderMarkITF[]
-    confirmedLongPositionData: any,
-    confirmedShortPositionData: any,
-    confirmedLongPositionDataTPSL: PositionITF,
-    confirmedShortPositionDataTPSL: PositionITF,
+    confirmedLongPositionDataTPSL: PositionITF
+    confirmedShortPositionDataTPSL: PositionITF
+    confirmedLongPositionData: ConfirmedPositionData
+    confirmedShortPositionData: ConfirmedPositionData
+    confirmedLongPositionDataHistory: ConfirmedPositionData[]
+    confirmedShortPositionDataHistory: ConfirmedPositionData[]
     setCurrentCryptoData: (data: HistoryItem) => void
     setLongPositionDataTPSL: (position: PositionITF) => void
     setShortPositionDataTPSL: (position: PositionITF) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
+    setConfirmedLongPositionDataTPSL: (tpsl: PositionITF) => void
+    setConfirmedShortPositionDataTPSL: (tpsl: PositionITF) => void
     setMarketOrders: (order: (prev: OrderITF[]) => OrderITF[]) => void
+    setConfirmedLongPositionData: (position: ConfirmedPositionData) => void
+    setConfirmedShortPositionData: (position: ConfirmedPositionData) => void
     setLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setStopLimitOrders: (order: (prev: StopOrderITF[]) => StopOrderITF[]) => void
     setMarketOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setStopLimitPreOrders: (order: (prev: StopOrderITF[]) => StopOrderITF[]) => void
     setStopLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
-    setConfirmedLongPositionData: (position: any) => void,
-    setConfirmedShortPositionData: (position: any) => void,
-    setConfirmedLongPositionDataTPSL: (tpsl: PositionITF) => void,
-    setConfirmedShortPositionDataTPSL: (tpsl: PositionITF) => void
+    setConfirmedLongPositionDataHistory: (positionHistory: (prev: ConfirmedPositionData[]) => ConfirmedPositionData[]) => void
+    setConfirmedShortPositionDataHistory: (positionHistory: (prev: ConfirmedPositionData[]) => ConfirmedPositionData[]) => void
 }
 
 export interface OrderITF {
-    date: Date;
-    symbol: SymbolT;
-    side: SideT;
-    quantity: number;
-    stop_price: number;
-    last: number;
-    price: number;
-    type: TypeT;
-    limit_price: number;
-    order_id: number;
+    date: Date
+    side: SideT
+    type: TypeT
+    last: number
+    price: number
+    symbol: SymbolT
     status: StatusT
+    quantity: number
+    order_id: number
+    stop_price: number
+    limit_price: number
 }
 
 export interface StopOrderITF extends OrderITF {
     fee: number
     total: number
-    influence: InfluenceT
     isActive: boolean
+    influence: InfluenceT
 }
 
 export interface OrderMarkITF {
-    time: number,
-    position: MarkPositionT,
-    color: string,
-    shape: MarkShapeT,
-    id: string,
-    text: string,
+    id: string
+    time: number
+    text: string
+    color: string
+    shape: MarkShapeT
+    position: MarkPositionT
 }
 
 export interface ModalsContextITF {
@@ -133,13 +137,38 @@ export interface PositionITF extends PositionDataITF {
 type ReducedModalContextType<T> = Omit<ModalContextType<T>, 'dataForModal' | 'setDataForModal'>;
 
 export interface EnhancedModalContextType<T> extends ReducedModalContextType<MODALS> {
-    dataForModal: T;
-    setDataForModal: React.Dispatch<React.SetStateAction<T>>;
+    dataForModal: T
+    setDataForModal: React.Dispatch<React.SetStateAction<T>>
 }
 
 export interface EnhancedHiddenBlockContextType {
     hiddenBlock: HIDDEN_BLOCKS
     setHiddenBlock: React.Dispatch<React.SetStateAction<HIDDEN_BLOCKS>>
+}
+
+export interface ConfirmedPositionData {
+    id: string
+    im: number
+    mm: number
+    value: number
+    profit?: number
+    leverage: number
+    percent?: number
+    mark_price: number
+    order_cost: number
+    entry_price: number
+    realized_pl: number
+    position: TRADE_POSITION
+    tp_sl: React.JSX.Element
+    calculated_quantity: number
+    close_by: React.JSX.Element
+    quantity: React.JSX.Element
+    mmr_close: React.JSX.Element
+    contracts: React.JSX.Element
+    liquidity_price: number | string
+    trailing_stop: React.JSX.Element
+    unrealized_pl: React.JSX.Element
+    reverse_position: React.JSX.Element
 }
 
 export type SymbolT = "ETH" | "BTC" | ""

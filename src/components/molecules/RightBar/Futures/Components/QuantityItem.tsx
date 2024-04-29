@@ -6,7 +6,8 @@ import {TRADE_POSITION} from "utils";
 import {QuantityItemITF} from "../type";
 
 const QuantityItem: React.FC<QuantityItemITF> = ({positionType, value}) => {
-    let quantity = Number(value)
+
+    let quantity = value
     let isLongPosition = positionType === TRADE_POSITION.LONG;
 
     quantity = isLongPosition ? quantity : -quantity

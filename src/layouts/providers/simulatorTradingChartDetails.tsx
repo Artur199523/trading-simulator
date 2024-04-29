@@ -1,6 +1,14 @@
 import React, {createContext, useContext, useState, memo} from "react"
 
-import {OrderITF, OrderMarkITF, PositionITF, SimulatorProviderITF, SimulatorTradingChartDetailsContextITF, StopOrderITF} from "./type";
+import {
+    OrderITF,
+    PositionITF,
+    OrderMarkITF,
+    StopOrderITF,
+    SimulatorProviderITF,
+    ConfirmedPositionData,
+    SimulatorTradingChartDetailsContextITF
+} from "./type";
 import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 import {HistoryItem} from "store/simulator/type";
 
@@ -49,19 +57,21 @@ const defaultOrderMark: OrderMarkITF = {
 
 const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartDetailsContextITF>({
     stopLimitOrders: [],
+    stopLimitOrdersMarks: [],
     limitOrders: [defaultOrder],
     marketOrders: [defaultOrder],
     currentCryptoData: defaultData,
     limitOrdersMarks: [defaultOrderMark],
     marketOrdersMarks: [defaultOrderMark],
+    stopLimitPreOrders: [defaultStopPreOrder],
     longPositionDataTPSL: {} as PositionDataITF,
     shortPositionDataTPSL: {} as PositionDataITF,
-    stopLimitPreOrders: [defaultStopPreOrder],
-    stopLimitOrdersMarks: [],
-    confirmedLongPositionData: {} as PositionITF,
-    confirmedShortPositionData: {} as PositionITF,
-    confirmedLongPositionDataTPSL: {} as any,
-    confirmedShortPositionDataTPSL: {} as any,
+    confirmedLongPositionDataTPSL: {} as PositionITF,
+    confirmedShortPositionDataTPSL: {} as PositionITF,
+    confirmedLongPositionData: {} as ConfirmedPositionData,
+    confirmedShortPositionData: {} as ConfirmedPositionData,
+    confirmedLongPositionDataHistory: [] as ConfirmedPositionData[],
+    confirmedShortPositionDataHistory: [] as ConfirmedPositionData[],
     setLimitOrders: () => {
     },
     setMarketOrders: () => {
@@ -89,6 +99,10 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     setConfirmedLongPositionDataTPSL: () => {
     },
     setConfirmedShortPositionDataTPSL: () => {
+    },
+    setConfirmedLongPositionDataHistory: () => {
+    },
+    setConfirmedShortPositionDataHistory: () => {
     }
 })
 export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF> = memo(({children}) => {
@@ -114,9 +128,12 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
 
     const [confirmedLongPositionDataTPSL, setConfirmedLongPositionDataTPSL] = useState<PositionITF | null>(null)
     const [confirmedShortPositionDataTPSL, setConfirmedShortPositionDataTPSL] = useState<PositionITF | null>(null)
-    //@TODO need to add the ts
-    const [confirmedLongPositionData, setConfirmedLongPositionData] = useState<any | null>(null)
-    const [confirmedShortPositionData, setConfirmedShortPositionData] = useState<any | null>(null)
+
+    const [confirmedLongPositionData, setConfirmedLongPositionData] = useState<ConfirmedPositionData | null>(null)
+    const [confirmedShortPositionData, setConfirmedShortPositionData] = useState<ConfirmedPositionData | null>(null)
+
+    const [confirmedLongPositionDataHistory, setConfirmedLongPositionDataHistory] = useState<ConfirmedPositionData[] | []>([])
+    const [confirmedShortPositionDataHistory, setConfirmedShortPositionDataHistory] = useState<ConfirmedPositionData[] | []>([])
 
     return (
         <SimulatorTradingChartDetailsContext.Provider value={{
@@ -134,6 +151,8 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
             confirmedShortPositionData,
             confirmedLongPositionDataTPSL,
             confirmedShortPositionDataTPSL,
+            confirmedLongPositionDataHistory,
+            confirmedShortPositionDataHistory,
             setLimitOrders,
             setMarketOrders,
             setStopLimitOrders,
@@ -148,6 +167,8 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
             setConfirmedShortPositionData,
             setConfirmedLongPositionDataTPSL,
             setConfirmedShortPositionDataTPSL,
+            setConfirmedLongPositionDataHistory,
+            setConfirmedShortPositionDataHistory
         }}>
             {children}
         </SimulatorTradingChartDetailsContext.Provider>

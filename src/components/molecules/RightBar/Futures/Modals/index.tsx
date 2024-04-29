@@ -4,6 +4,7 @@ import {useFuturesTradingModalContext} from "layouts/providers";
 import {MODALS} from "utils";
 
 import OrderPlacementPreferences from "./OrderPlacementPreferences";
+import ClosePositionMarket from "./ClosePositionMarket";
 import ConfirmPosition from "./ConfirmPosition";
 import AdjustLeverage from "./AdjustLeverage";
 import PositionMode from "./PositionMode";
@@ -30,8 +31,10 @@ const FuturesTradingModals = () => {
                         <AdjustLeverage/>,
                     [MODALS.CONFIRM_POSITION]:
                         <ConfirmPosition/>,
+                    [MODALS.CLOSE_POSITION_MARKET]:
+                        <ClosePositionMarket/>,
                     [MODALS.ORDER_PLACEMENT_PREFERENCES]:
-                        <OrderPlacementPreferences/>,
+                        <OrderPlacementPreferences/>
                 }[currentModal]
             }
         </React.Fragment>

@@ -124,7 +124,7 @@ export interface ContractItemITF {
 
 export interface QuantityItemITF {
     positionType: TRADE_POSITION
-    value: string
+    value: number | string
 }
 
 export interface UnrealizedItemITF {
@@ -137,4 +137,8 @@ export interface ConfirmedTPSLDataForModalITF {
     orderValue: number
     tradePosition: TRADE_POSITION
     call: CALL_ENVIRONMENT
+}
+
+export interface OrderClosedByITF {
+    positionType: TRADE_POSITION
 }

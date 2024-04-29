@@ -11,9 +11,14 @@ import {
 } from "layouts/providers";
 import {
     MODALS,
+    TRADE_POSITION,
+    plus,
+    minus,
+    divide,
+    multiply,
     calculationIM,
     calculationMM,
-    TRADE_POSITION,
+    interruptionRef,
     showNotification,
     calculationLiquidity,
     calculationRealizedPL,
@@ -44,12 +49,18 @@ const ConfirmPosition: React.FC = () => {
         shortPositionDataTPSL,
         setLongPositionDataTPSL,
         setShortPositionDataTPSL,
+        confirmedLongPositionData,
+        confirmedShortPositionData,
         setConfirmedLongPositionData,
         setConfirmedShortPositionData,
         setConfirmedLongPositionDataTPSL,
-        setConfirmedShortPositionDataTPSL
+        confirmedLongPositionDataHistory,
+        confirmedShortPositionDataHistory,
+        setConfirmedShortPositionDataTPSL,
+        setConfirmedLongPositionDataHistory,
+        setConfirmedShortPositionDataHistory
     } = useSimulatorTradingChartDetailsContext()
-    const {balanceUSDT} = useSimulatorPlayerInfoContext()
+    const {balanceUSDT, setBalanceUSDT} = useSimulatorPlayerInfoContext()
     const {setCurrentModal, dataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
 
     const {trade_position_process, trade_type, order_value_usdt, profit_trigger_price, stop_trigger_price, trade_position} = dataForModal
@@ -60,7 +71,7 @@ const ConfirmPosition: React.FC = () => {
     };
 
     const calculatedLiquidity = Number(calculationLiquidity(currentPrice, balanceUSDT, Number(order_value_usdt), trade_position).toFixed(2))
-    const calculatedQuantity = (order_value_usdt / currentCryptoData.close).toFixed(2)
+    const calculatedQuantity = Number((order_value_usdt / currentCryptoData.close).toFixed(2))
 
     const titleColor = trade_position_process === "Buy" ? "green" : "red"
     const titleText = `${trade_type} ${trade_position}`
@@ -106,26 +117,62 @@ const ConfirmPosition: React.FC = () => {
 
         return true
     }
+    const convertCurrentPositionData = (gropedData: any, confirmedPositionDataHistory: any, positionType: TRADE_POSITION) => {
+        const data = interruptionRef(confirmedPositionDataHistory) as []
 
-    //@TODO need to work on the tp_sl part
+        let convertedData = data.reduce((initialState: any, currentValue: any) => {
+            initialState.im += currentValue.im
+            initialState.mm += currentValue.mm
+            initialState.value += currentValue.value
+            initialState.realized_pl += currentValue.realized_pl
+            initialState.calculated_quantity += Number(currentValue.calculated_quantity)
+            initialState.total_session_value += multiply(currentValue.entry_price, currentValue.calculated_quantity)
+
+            return initialState
+        }, {value: 0, calculated_quantity: 0, im: 0, mm: 0, realized_pl: 0, total_session_value: 0})
+
+        const totalSessionValue = plus(multiply(gropedData.entry_price, gropedData.calculated_quantity), convertedData.total_session_value)
+        const totalIM = plus(gropedData.im, convertedData.im)
+        const totalMM = plus(gropedData.mm, convertedData.mm)
+        const totalValue = plus(gropedData.value, convertedData.value)
+        const totalRealizedPl = plus(gropedData.realized_pl, convertedData.realized_pl)
+        const totalQuantity = plus(gropedData.calculated_quantity, convertedData.calculated_quantity)
+        const averageEntryPrice = Number(divide(totalSessionValue, totalQuantity).toFixed(2))
+
+        gropedData = {
+            ...gropedData,
+            im: totalIM,
+            mm: totalMM,
+            value: totalValue,
+            realized_pl: totalRealizedPl,
+            calculated_quantity: totalQuantity,
+            entry_price: averageEntryPrice,
+            quantity: <QuantityItem positionType={positionType} value={totalQuantity.toFixed(2)}/>,
+        }
+
+        return gropedData
+    }
+
     const confirm = () => {
         if (currentPriceMatchRangeChecking()) {
             const positionType = trade_position_process === "Buy" ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT
             const id = uuidv4()
 
-            const gropedData = {
+            let gropedData = {
                 id,
                 tp_sl: <OrderTPSL/>,
+                position: positionType,
                 value: order_value_usdt,
                 leverage: adjustLeverage,
                 mark_price: currentPrice,
                 entry_price: currentPrice,
-                close_by: <OrderClosedBy/>,
                 mmr_close: <OrderMmrClose/>,
-                position: TRADE_POSITION.LONG,
                 trailing_stop: <OrderTrailingStop/>,
+                order_cost: Number(parseInt(orderCost)),
+                calculated_quantity: calculatedQuantity,
                 reverse_position: <OrderReversePosition/>,
                 im: calculationIM(order_value_usdt, adjustLeverage),
+                close_by: <OrderClosedBy positionType={positionType}/>,
                 mm: calculationMM(adjustLeverage, 0.55, order_value_usdt),
                 liquidity_price: calculatedLiquidity ? calculatedLiquidity : "--",
                 unrealized_pl: <UnrealizedItem profit={0} percent={0} isIncrease={false}/>,
@@ -135,13 +182,39 @@ const ConfirmPosition: React.FC = () => {
             }
 
             if (trade_position_process === "Buy") {
-                setConfirmedLongPositionData({
-                    ...gropedData,
-                })
+                if (!confirmedLongPositionData) {
+                    setConfirmedLongPositionData({
+                        ...gropedData,
+                    })
+
+                    setBalanceUSDT(prev => minus(prev, Number(parseInt(orderCost))))
+                    setConfirmedLongPositionDataHistory(prev => [...prev, gropedData])
+                } else {
+                    setBalanceUSDT(prev => minus(prev, Number(parseInt(orderCost))))
+                    setConfirmedLongPositionDataHistory(prev => [...prev, gropedData])
+
+                    const convertedData = convertCurrentPositionData(gropedData, confirmedLongPositionDataHistory, positionType)
+
+                    setConfirmedLongPositionData({
+                        ...convertedData,
+                    })
+                }
             } else {
-                setConfirmedShortPositionData({
-                    ...gropedData,
-                })
+                if (!confirmedShortPositionData) {
+                    setConfirmedShortPositionData({
+                        ...gropedData,
+                    })
+                    setConfirmedShortPositionDataHistory(prev => [...prev, gropedData])
+                } else {
+                    setBalanceUSDT(prev => minus(prev, Number(parseInt(orderCost))))
+                    setConfirmedShortPositionDataHistory(prev => [...prev, gropedData])
+
+                    const convertedData = convertCurrentPositionData(gropedData, confirmedShortPositionDataHistory, positionType)
+
+                    setConfirmedShortPositionData({
+                        ...convertedData
+                    })
+                }
             }
 
             if (longPositionDataTPSL) {

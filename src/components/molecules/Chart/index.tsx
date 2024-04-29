@@ -12,6 +12,7 @@ import UnrealizedItem from "../RightBar/Futures/Components/UnrealizedItem";
 import {HistoryItem, TradingVolumeITF} from "store/simulator/type";
 
 import "./style.scss"
+import {ConfirmedPositionData} from "../../../layouts/providers/type";
 
 const Chart: React.FC = () => {
     const dispatch = useAppDispatch()
@@ -303,24 +304,25 @@ const Chart: React.FC = () => {
 
     const trackChangesOfPositions = () => {
         if (confirmedLongPositionData) {
-            setConfirmedLongPositionData(prev => {
-                    const {entry_price, leverage, value} = prev
-                    const profit = calculateProfitPriceByTrigger(currentCryptoData.close, entry_price, leverage, value)
-                    const percent = calculationChange(entry_price, currentCryptoData.close)
+            // @ts-ignore
+            setConfirmedLongPositionData((prev: ConfirmedPositionData) => {
+                const {entry_price, leverage, value} = prev
+                const profit = calculateProfitPriceByTrigger(currentCryptoData.close, entry_price, leverage, value)
+                const percent = calculationChange(entry_price, currentCryptoData.close)
 
-                    return {
-                        ...prev,
-                        percent,
-                        profit,
-                        mark_price: currentCryptoData.close,
-                        unrealized_pl: <UnrealizedItem profit={profit} percent={percent} isIncrease={entry_price < currentCryptoData.close}/>
-                    }
+                return {
+                    ...prev,
+                    percent,
+                    profit,
+                    mark_price: currentCryptoData.close,
+                    unrealized_pl: <UnrealizedItem profit={profit} percent={percent} isIncrease={entry_price < currentCryptoData.close}/>
                 }
-            )
+            })
         }
 
         if (confirmedShortPositionData) {
-            setConfirmedShortPositionData(prev => {
+            // @ts-ignore
+            setConfirmedShortPositionData((prev: ConfirmedPositionData) => {
                 const {entry_price, leverage, value} = prev
                 const profit = calculateProfitPriceByTrigger(currentCryptoData.close, entry_price, leverage, value)
                 const percent = calculationChange(entry_price, currentCryptoData.close)

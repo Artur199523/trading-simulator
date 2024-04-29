@@ -28,7 +28,7 @@ const RangeSlider: React.FC<RangeSliderITF> = ({onChange, value, max, name, divi
                 onMouseLeave={() => setHovered(false)}
                 onChange={(event) => onChange(event)}
                 style={{
-                    background: `linear-gradient(90deg, rgba(247, 166, 0, 1) ${percentage}%, rgb(255, 255, 255, 0.5) ${percentage}%)`
+                    background: `linear-gradient(90deg, rgba(0, 149, 250, 1) ${percentage}%, rgb(255, 255, 255, 0.5) ${percentage}%)`
                 }}
             />
             <div

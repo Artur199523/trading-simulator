@@ -17,12 +17,14 @@ const TradeButtons: React.FC<TradeButtonsITF> = ({onClick}) => {
     return (
         <div className="futures_trade-buttons">
             <button
-                disabled={confirmedShortPositionData} onClick={() => onClick({hedgingType: currentHedgingModePositionType, position: TRADE_POSITION.LONG})}
+                disabled={!!confirmedShortPositionData}
+                onClick={() => onClick({hedgingType: currentHedgingModePositionType, position: TRADE_POSITION.LONG})}
             >
                 {longButtonText}
             </button>
             <button
-                disabled={confirmedLongPositionData} onClick={() => onClick({hedgingType: currentHedgingModePositionType, position: TRADE_POSITION.SHORT})}
+                disabled={!!confirmedLongPositionData}
+                onClick={() => onClick({hedgingType: currentHedgingModePositionType, position: TRADE_POSITION.SHORT})}
             >
                 {shortButtonText}
             </button>

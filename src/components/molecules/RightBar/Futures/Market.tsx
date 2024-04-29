@@ -6,8 +6,18 @@ import {
     useSimulatorPlayerInfoContext,
     useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
-import {ERROR, HEDGING, MODALS, POSITION_MODE, showNotification, TRAD_TYPE, TRADE_POSITION} from "utils";
-import {interruptionRef} from "utils";
+import {
+    ERROR,
+    MODALS,
+    HEDGING,
+    TRAD_TYPE,
+    POSITION_MODE,
+    TRADE_POSITION,
+    interruptionRef,
+    showNotification,
+    calculationOrderCostLongPosition,
+    calculationOrderCostShortPosition
+} from "utils";
 
 import OrderValueInfo from "./Components/OrderValueInfo";
 import TradeButtons from "./Components/TradeButtons";
@@ -79,15 +89,22 @@ const Market: React.FC = () => {
 
     const startConfirmProcess = (process: StartTradeInitialOptions) => {
         const currentOrderValue = fieldsValue.order_value_usdt
+        const orderCostLong = calculationOrderCostLongPosition(currentOrderValue, adjustLeverage, 0.055)
+        const orderCostShort = calculationOrderCostShortPosition(currentOrderValue, adjustLeverage, 0.055)
+
+        if (process.position === TRADE_POSITION.LONG && orderCostLong > balanceUSDT) {
+            showNotification(ERROR.INSUFFICIENT, "error", 0)
+            return;
+        }
+
+        if (process.position === TRADE_POSITION.SHORT && orderCostShort > balanceUSDT) {
+            showNotification(ERROR.INSUFFICIENT, "error", 0)
+            return;
+        }
 
         if (!currentOrderValue) {
             showNotification(ERROR.LESS_VALUE, "error", 0)
             return
-        }
-
-        if (Number(currentOrderValue) > (balanceUSDT * adjustLeverage)) {
-            showNotification(ERROR.INSUFFICIENT, "error", 0)
-            return;
         }
 
         if (Number(currentOrderValue) > riskLimit) {
