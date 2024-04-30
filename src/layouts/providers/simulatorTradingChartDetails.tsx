@@ -7,7 +7,7 @@ import {
     StopOrderITF,
     SimulatorProviderITF,
     ConfirmedPositionData,
-    SimulatorTradingChartDetailsContextITF
+    SimulatorTradingChartDetailsContextITF, PlHistoryITF, CurrentOrdersTPSLITF, OrderHistoryLimitMarketITF, OrderHistoryTPSLITF, TradeHistoryITF
 } from "./type";
 import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 import {HistoryItem} from "store/simulator/type";
@@ -61,15 +61,20 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     limitOrders: [defaultOrder],
     marketOrders: [defaultOrder],
     currentCryptoData: defaultData,
+    PlHistory: [] as PlHistoryITF[],
     limitOrdersMarks: [defaultOrderMark],
+    tradeHistory: [] as TradeHistoryITF[],
     marketOrdersMarks: [defaultOrderMark],
     stopLimitPreOrders: [defaultStopPreOrder],
     longPositionDataTPSL: {} as PositionDataITF,
     shortPositionDataTPSL: {} as PositionDataITF,
+    orderHistoryTPSL: [] as OrderHistoryTPSLITF[],
+    currentOrdersTPSL: [] as CurrentOrdersTPSLITF[],
     confirmedLongPositionDataTPSL: {} as PositionITF,
     confirmedShortPositionDataTPSL: {} as PositionITF,
     confirmedLongPositionData: {} as ConfirmedPositionData,
     confirmedShortPositionData: {} as ConfirmedPositionData,
+    orderHistoryLimitMarket: [] as OrderHistoryLimitMarketITF[],
     confirmedLongPositionDataHistory: [] as ConfirmedPositionData[],
     confirmedShortPositionDataHistory: [] as ConfirmedPositionData[],
     setLimitOrders: () => {
@@ -135,18 +140,30 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
     const [confirmedLongPositionDataHistory, setConfirmedLongPositionDataHistory] = useState<ConfirmedPositionData[] | []>([])
     const [confirmedShortPositionDataHistory, setConfirmedShortPositionDataHistory] = useState<ConfirmedPositionData[] | []>([])
 
+    // @TODO continue
+    const [PlHistory, setPlHistory] = useState<PlHistoryITF[] | []>([])
+    const [currentOrdersTPSL, setCurrentOrdersTPSL] = useState<CurrentOrdersTPSLITF[] | []>([])
+    const [orderHistoryLimitMarket, setOrderHistoryLimitMarket] = useState<OrderHistoryLimitMarketITF[] | []>([])
+    const [orderHistoryTPSL, serOrderHistoryTPSL] = useState<OrderHistoryTPSLITF[] | []>([])
+    const [tradeHistory, setTradeHistoy] = useState<TradeHistoryITF[] | []>([])
+
     return (
         <SimulatorTradingChartDetailsContext.Provider value={{
+            PlHistory,
             limitOrders,
             marketOrders,
+            tradeHistory,
             stopLimitOrders,
+            orderHistoryTPSL,
             limitOrdersMarks,
+            currentOrdersTPSL,
             currentCryptoData,
             marketOrdersMarks,
             stopLimitPreOrders,
             stopLimitOrdersMarks,
             longPositionDataTPSL,
             shortPositionDataTPSL,
+            orderHistoryLimitMarket,
             confirmedLongPositionData,
             confirmedShortPositionData,
             confirmedLongPositionDataTPSL,

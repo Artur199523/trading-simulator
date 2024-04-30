@@ -83,3 +83,18 @@ export enum CALL_ENVIRONMENT {
     OUTSIDE = "outside",
     INSIDE = "inside"
 }
+
+export enum TRADE_TYPE {
+    CLOSE_LONG = "Close Long",
+    CLOSE_SHORT = "Close Short",
+    OPEN_LONG = "Open Long"
+}
+
+export enum EXIST_TYPE {
+    TRADE = "Trade"
+}
+
+export enum ORDER_STATUS {
+    FILLED = "filled",
+    CANCELED = "canceled",
+}

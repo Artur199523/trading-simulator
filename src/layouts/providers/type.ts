@@ -1,6 +1,6 @@
 import React from "react";
 
-import {HEDGING, HIDDEN_BLOCKS, MARGIN_MODE, MODALS, POSITION_MODE, TRADE_POSITION} from "utils";
+import {EXIST_TYPE, HEDGING, HIDDEN_BLOCKS, MARGIN_MODE, MODALS, ORDER_STATUS, POSITION_MODE, TRADE_POSITION, TRADE_TYPE} from "utils";
 
 import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 import {HistoryItem} from "store/simulator/type";
@@ -65,7 +65,9 @@ export interface SimulatorPlayerInfoContextITF {
 export interface SimulatorTradingChartDetailsContextITF {
     limitOrders: OrderITF[]
     marketOrders: OrderITF[]
+    PlHistory: PlHistoryITF[]
     currentCryptoData: HistoryItem
+    tradeHistory: TradeHistoryITF[]
     stopLimitOrders: StopOrderITF[]
     limitOrdersMarks: OrderMarkITF[]
     marketOrdersMarks: OrderMarkITF[]
@@ -73,10 +75,13 @@ export interface SimulatorTradingChartDetailsContextITF {
     stopLimitPreOrders: StopOrderITF[]
     shortPositionDataTPSL: PositionITF
     stopLimitOrdersMarks: OrderMarkITF[]
+    orderHistoryTPSL: OrderHistoryTPSLITF[]
+    currentOrdersTPSL: CurrentOrdersTPSLITF[]
     confirmedLongPositionDataTPSL: PositionITF
     confirmedShortPositionDataTPSL: PositionITF
     confirmedLongPositionData: ConfirmedPositionData
     confirmedShortPositionData: ConfirmedPositionData
+    orderHistoryLimitMarket: OrderHistoryLimitMarketITF[]
     confirmedLongPositionDataHistory: ConfirmedPositionData[]
     confirmedShortPositionDataHistory: ConfirmedPositionData[]
     setCurrentCryptoData: (data: HistoryItem) => void
@@ -170,6 +175,66 @@ export interface ConfirmedPositionData {
     unrealized_pl: React.JSX.Element
     reverse_position: React.JSX.Element
 }
+
+
+export interface PlHistoryITF {
+    quantity: string
+    contracts: string
+    closed_pl: number
+    exit_price: number
+    trade_time: string
+    entry_price: number
+    exit_type: EXIST_TYPE
+    trade_type: TRADE_TYPE
+    color: OrderColorT
+}
+
+export interface CurrentOrdersTPSLITF {
+    contracts: string
+    quantity: string
+    trigger_price: { tp: string, sl: string }
+    order_price: string
+    trade_type: TRADE_TYPE
+    order_No: string
+    order_time: string
+    color: OrderColorT
+}
+
+export interface OrderHistoryLimitMarketITF {
+    contracts: string
+    filled_total: { filled: number, total: number }
+    filled_price_order_price: { filled_price: number, order_price: string }
+    trade_type: TRADE_TYPE
+    order_type: string
+    status: ORDER_STATUS
+    order_No: string
+    order_time: string
+    color: OrderColorT
+}
+
+export interface OrderHistoryTPSLITF {
+    contracts: string
+    filled_actual_qty: { filled: number, actual_qty: number }
+    trigger_price: number
+    filled_price_order_price: { filled_price: number, order_price: string }
+    trade_type: TRADE_TYPE
+    status: ORDER_STATUS
+    order_No: string
+    order_time: string
+    color: OrderColorT
+}
+
+export interface TradeHistoryITF {
+    contracts: string
+    filled_total: { filled: number, total: number }
+    filled_price_order_price: { filled_price: number, order_price: string }
+    tradeType: TRADE_TYPE
+    filled_type: string
+    transaction_id: string
+    transaction_time: string
+}
+
+export type OrderColorT = "red" | "green"
 
 export type SymbolT = "ETH" | "BTC" | ""
 

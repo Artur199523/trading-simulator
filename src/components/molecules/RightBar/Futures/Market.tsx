@@ -16,7 +16,7 @@ import {
     interruptionRef,
     showNotification,
     calculationOrderCostLongPosition,
-    calculationOrderCostShortPosition
+    calculationOrderCostShortPosition, formatNumber, fixedNumber
 } from "utils";
 
 import OrderValueInfo from "./Components/OrderValueInfo";
@@ -80,7 +80,7 @@ const Market: React.FC = () => {
             case "order_value_percent":
                 const calculatedOrderValueUSDT = valueToNumber * (balanceUSDT * adjustLeverage) / 100
 
-                fields.order_value_usdt = calculatedOrderValueUSDT
+                fields.order_value_usdt = fixedNumber(calculatedOrderValueUSDT,4)
                 break
         }
 
