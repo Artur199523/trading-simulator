@@ -1,4 +1,4 @@
-import {POSITION_HEADERS} from "../enums/futures";
+import {ORDER_HISTORY_MARKET_LIMIT_HEADERS, POSITION_HEADERS} from "../enums/futures";
 
 export interface PositionHeaderITF {
     value: POSITION_HEADERS
@@ -14,4 +14,9 @@ export interface PositionHeaderITF {
 export interface MarginModeDataITF {
     section_name: string,
     list: string[]
+}
+
+export interface OrderHistoryMarketLimitITF {
+    value: ORDER_HISTORY_MARKET_LIMIT_HEADERS
+    displayName: string
 }

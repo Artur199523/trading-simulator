@@ -5,6 +5,7 @@ import {EXIST_TYPE, HEDGING, HIDDEN_BLOCKS, MARGIN_MODE, MODALS, ORDER_STATUS, P
 import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 import {HistoryItem} from "store/simulator/type";
 import {ModalContextType} from "utils/types";
+import {OrderHistoryMarketLimitITF} from "../../utils/const/type";
 
 export interface SimulatorProviderITF {
     children: React.ReactNode
@@ -84,9 +85,13 @@ export interface SimulatorTradingChartDetailsContextITF {
     orderHistoryLimitMarket: OrderHistoryLimitMarketITF[]
     confirmedLongPositionDataHistory: ConfirmedPositionData[]
     confirmedShortPositionDataHistory: ConfirmedPositionData[]
+    setPlHistory: (history: PlHistoryITF[]) => void
     setCurrentCryptoData: (data: HistoryItem) => void
+    setTradeHistory: (history: TradeHistoryITF[]) => void
     setLongPositionDataTPSL: (position: PositionITF) => void
     setShortPositionDataTPSL: (position: PositionITF) => void
+    serOrderHistoryTPSL: (history: OrderHistoryTPSLITF[]) => void
+    setCurrentOrdersTPSL: (order: CurrentOrdersTPSLITF[]) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
     setConfirmedLongPositionDataTPSL: (tpsl: PositionITF) => void
     setConfirmedShortPositionDataTPSL: (tpsl: PositionITF) => void
@@ -98,6 +103,7 @@ export interface SimulatorTradingChartDetailsContextITF {
     setMarketOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setStopLimitPreOrders: (order: (prev: StopOrderITF[]) => StopOrderITF[]) => void
     setStopLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
+    setOrderHistoryLimitMarket: (order: (prev: OrderHistoryLimitMarketITF[]) => OrderHistoryLimitMarketITF[]) => void
     setConfirmedLongPositionDataHistory: (positionHistory: (prev: ConfirmedPositionData[]) => ConfirmedPositionData[]) => void
     setConfirmedShortPositionDataHistory: (positionHistory: (prev: ConfirmedPositionData[]) => ConfirmedPositionData[]) => void
 }
@@ -208,7 +214,7 @@ export interface OrderHistoryLimitMarketITF {
     order_type: string
     status: ORDER_STATUS
     order_No: string
-    order_time: string
+    order_time: Date
     color: OrderColorT
 }
 

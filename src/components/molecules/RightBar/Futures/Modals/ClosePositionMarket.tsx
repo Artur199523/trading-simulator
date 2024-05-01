@@ -1,4 +1,5 @@
 import React from "react";
+import {v4 as uuidv4} from 'uuid'
 
 import {
     useFuturesTradingModalContext,
@@ -6,9 +7,11 @@ import {
     useSimulatorPlayerInfoContext,
     useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
-import {MODALS, showNotification, TRADE_POSITION} from "utils";
+import {MODALS, ORDER_STATUS, showNotification, TRADE_POSITION, TRADE_TYPE} from "utils";
 
 import {Input, InputRangeSlider, ModalWindowTemplate} from "components";
+
+import {OrderHistoryLimitMarketITF} from "layouts/providers/type";
 
 import "./style.scss"
 
@@ -18,10 +21,11 @@ const ClosPositionMarket: React.FC = () => {
     const {
         confirmedLongPositionData,
         confirmedShortPositionData,
+        setOrderHistoryLimitMarket,
         setConfirmedLongPositionData,
         setConfirmedShortPositionData,
         setConfirmedLongPositionDataTPSL,
-        setConfirmedShortPositionDataTPSL
+        setConfirmedShortPositionDataTPSL,
     } = useSimulatorTradingChartDetailsContext()
 
     const {setBalanceUSDT} = useSimulatorPlayerInfoContext()
@@ -37,6 +41,20 @@ const ClosPositionMarket: React.FC = () => {
         setBalanceUSDT(prev => prev + im + profit)
 
         showNotification(`${currentPosition} position closed successfully`, "success", 0)
+
+        let history: OrderHistoryLimitMarketITF = {
+            contracts: `${cryptoType}USDT`,
+            filled_total: {filled: currentPositionData.calculated_quantity, total: currentPositionData.calculated_quantity},
+            filled_price_order_price: {filled_price: currentPositionData.mark_price, order_price: "Market"},
+            trade_type: currentPosition === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
+            order_type: "Market",
+            status: ORDER_STATUS.FILLED,
+            order_No: uuidv4().split("-")[0],
+            order_time: new Date(),
+            color: currentPosition === TRADE_POSITION.LONG ? "red" : "green",
+        }
+
+        setOrderHistoryLimitMarket(prev => [history,...prev])
 
         if (currentPosition === TRADE_POSITION.LONG) {
             setConfirmedLongPositionData(null)

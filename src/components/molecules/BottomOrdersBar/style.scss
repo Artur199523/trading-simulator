@@ -38,12 +38,33 @@
       height: calc(100% - 40px);
       overflow-x: hidden;
 
+      &_order-history {
+        &_tabs {
+          background: #000a11;
+          display: flex;
+          padding: 6px;
+
+          .tab_item, span {
+            color: #adb1b8;
+            margin-right: 12px;
+          }
+        }
+
+        &_content {
+          .TabContent {
+            max-height: 220px;
+
+            td {
+              height: 50px;
+            }
+          }
+        }
+      }
 
       .TabContent {
         overflow: auto;
         height: 100%;
         position: relative;
-        min-height: 250px;
       }
 
       .quantity {
@@ -62,5 +83,34 @@
 
   &_spot-order {
 
+  }
+}
+
+.order-contract {
+  height: 35px;
+  display: flex;
+  padding-left: 10px;
+  align-items: center;
+
+  span {
+    display: block;
+  }
+
+  &.green {
+    border-left: 2px solid $long;
+  }
+
+  &.red {
+    border-left: 2px solid $short;
+  }
+}
+
+.order-trade-type {
+  &.green {
+    color: $long;
+  }
+
+  &.red {
+    color: $short;
   }
 }

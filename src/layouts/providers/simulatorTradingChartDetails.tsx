@@ -77,13 +77,21 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     orderHistoryLimitMarket: [] as OrderHistoryLimitMarketITF[],
     confirmedLongPositionDataHistory: [] as ConfirmedPositionData[],
     confirmedShortPositionDataHistory: [] as ConfirmedPositionData[],
+    setPlHistory: () => {
+    },
     setLimitOrders: () => {
+    },
+    setTradeHistory: () => {
     },
     setMarketOrders: () => {
     },
     setStopLimitOrders: () => {
     },
+    serOrderHistoryTPSL: () => {
+    },
     setLimitOrdersMarks: () => {
+    },
+    setCurrentOrdersTPSL: () => {
     },
     setMarketOrdersMarks: () => {
     },
@@ -96,6 +104,8 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     setShortPositionDataTPSL: () => {
     },
     setStopLimitOrdersMarks: () => {
+    },
+    setOrderHistoryLimitMarket: () => {
     },
     setConfirmedLongPositionData: () => {
     },
@@ -145,7 +155,7 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
     const [currentOrdersTPSL, setCurrentOrdersTPSL] = useState<CurrentOrdersTPSLITF[] | []>([])
     const [orderHistoryLimitMarket, setOrderHistoryLimitMarket] = useState<OrderHistoryLimitMarketITF[] | []>([])
     const [orderHistoryTPSL, serOrderHistoryTPSL] = useState<OrderHistoryTPSLITF[] | []>([])
-    const [tradeHistory, setTradeHistoy] = useState<TradeHistoryITF[] | []>([])
+    const [tradeHistory, setTradeHistory] = useState<TradeHistoryITF[] | []>([])
 
     return (
         <SimulatorTradingChartDetailsContext.Provider value={{
@@ -170,16 +180,21 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
             confirmedShortPositionDataTPSL,
             confirmedLongPositionDataHistory,
             confirmedShortPositionDataHistory,
+            setPlHistory,
             setLimitOrders,
+            setTradeHistory,
             setMarketOrders,
             setStopLimitOrders,
+            serOrderHistoryTPSL,
             setLimitOrdersMarks,
+            setCurrentOrdersTPSL,
             setCurrentCryptoData,
             setMarketOrdersMarks,
             setStopLimitPreOrders,
             setLongPositionDataTPSL,
             setStopLimitOrdersMarks,
             setShortPositionDataTPSL,
+            setOrderHistoryLimitMarket,
             setConfirmedLongPositionData,
             setConfirmedShortPositionData,
             setConfirmedLongPositionDataTPSL,

@@ -1,11 +1,13 @@
 import React, {useState} from "react";
 
+import {useSimulatorTradingChartDetailsContext} from "layouts/providers";
 import {ORDER_ACTIVE_TAB} from "utils";
+
 import {TabContent, TabItem} from "components";
 import PositionOrder from "./PositionOrder";
+import OrderHistory from "./OrderHistory";
 
 import "../style.scss"
-import {useSimulatorTradingChartDetailsContext} from "../../../../layouts/providers";
 
 const FuturesOrders = () => {
     const [activeTab, setActiveTab] = useState<string>(ORDER_ACTIVE_TAB.POSITION)
@@ -19,26 +21,26 @@ const FuturesOrders = () => {
         <div className="bottom-order-bar_futures-orders">
             <div className="bottom-order-bar_futures-orders_tabs">
                 <span>Trade</span>
-                <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.POSITION as string} setActiveTab={setActiveTab}>{`Position(${totalCount})`}</TabItem>
+                <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.POSITION} setActiveTab={setActiveTab}>{`Position(${totalCount})`}</TabItem>
                 <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.PL} setActiveTab={setActiveTab}>P&L</TabItem>
                 <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.CURRENT_ORDERS} setActiveTab={setActiveTab}>Current Orders(0)</TabItem>
                 <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.ORDER_HISTORY} setActiveTab={setActiveTab}>Order History</TabItem>
                 <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.TRADE_HISTORY} setActiveTab={setActiveTab}>Trade History</TabItem>
             </div>
             <div className="bottom-order-bar_futures-orders_content">
-                <TabContent id="position" activeTab={activeTab}>
+                <TabContent id={ORDER_ACTIVE_TAB.POSITION} activeTab={activeTab}>
                     <PositionOrder/>
                 </TabContent>
-                <TabContent id="pl" activeTab={activeTab}>
+                <TabContent id={ORDER_ACTIVE_TAB.PL} activeTab={activeTab}>
                     pl
                 </TabContent>
-                <TabContent id="current_orders" activeTab={activeTab}>
+                <TabContent id={ORDER_ACTIVE_TAB.CURRENT_ORDERS} activeTab={activeTab}>
                     current_orders
                 </TabContent>
-                <TabContent id="order_history" activeTab={activeTab}>
-                    order_history
+                <TabContent id={ORDER_ACTIVE_TAB.ORDER_HISTORY} activeTab={activeTab}>
+                    <OrderHistory/>
                 </TabContent>
-                <TabContent id="trade_history" activeTab={activeTab}>
+                <TabContent id={ORDER_ACTIVE_TAB.TRADE_HISTORY} activeTab={activeTab}>
                     trade_history
                 </TabContent>
             </div>

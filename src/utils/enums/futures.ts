@@ -87,7 +87,8 @@ export enum CALL_ENVIRONMENT {
 export enum TRADE_TYPE {
     CLOSE_LONG = "Close Long",
     CLOSE_SHORT = "Close Short",
-    OPEN_LONG = "Open Long"
+    OPEN_LONG = "Open Long",
+    OPEN_SHORT = "Open Short"
 }
 
 export enum EXIST_TYPE {
@@ -95,6 +96,25 @@ export enum EXIST_TYPE {
 }
 
 export enum ORDER_STATUS {
-    FILLED = "filled",
-    CANCELED = "canceled",
+    FILLED = "Filled",
+    CANCELED = "Canceled",
+}
+
+export enum ORDER_HISTORY_MARKET_LIMIT_HEADERS {
+    FILLED_PRICE_ORDER_PRICE = "filled_price_order_price",
+    CONTRACTS = "contracts",
+    FILLED_TOTAL = "filled_total",
+    TRADE_TYPE = "trade_type",
+    ORDER_TYPE = "order_type",
+    STATUS = "status",
+    ORDER_NO = "order_No",
+    ORDER_TIME = "order_time",
+}
+
+export enum ORDER_HISTORY_ACTIVE_TAB {
+    LIMIT_MARKET = "limit_market",
+    CONDITIONAL = "conditional",
+    TP_SL = "tp_sl",
+    TRAILING_STOP = "trailing_stop",
+    MMR_CLOSE = "mmr_close",
 }

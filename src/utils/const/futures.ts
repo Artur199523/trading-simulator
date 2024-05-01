@@ -1,5 +1,5 @@
-import {POSITION_HEADERS} from "utils";
-import {MarginModeDataITF, PositionHeaderITF} from "./type";
+import {ORDER_HISTORY_MARKET_LIMIT_HEADERS, POSITION_HEADERS} from "utils";
+import {MarginModeDataITF, OrderHistoryMarketLimitITF, PositionHeaderITF} from "./type";
 
 // @TODO need to add info text
 export const positionHeader: PositionHeaderITF[] = [
@@ -18,6 +18,17 @@ export const positionHeader: PositionHeaderITF[] = [
     {value: POSITION_HEADERS.MMR_CLOSE, displayName: "MMR Close", isHoverInfo: true, info: ""},
     {value: POSITION_HEADERS.REVERSE_POSITION, displayName: "Reverse Position", isHoverInfo: true, info: ""},
     {value: POSITION_HEADERS.CLOSE_BY, displayName: "Close By", isHoverInfo: false, info: ""},
+]
+
+export const ORDER_HISTORY_MARKET_LIMIT: OrderHistoryMarketLimitITF[] = [
+    {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.CONTRACTS, displayName: "Contracts"},
+    {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.FILLED_TOTAL, displayName: "File/Total"},
+    {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.FILLED_PRICE_ORDER_PRICE, displayName: "Filled Price/Order Price"},
+    {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.TRADE_TYPE, displayName: "Trade Type"},
+    {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.ORDER_TYPE, displayName: "Order Type"},
+    {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.STATUS, displayName: "Status"},
+    {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.ORDER_NO, displayName: "Order No."},
+    {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.ORDER_TIME, displayName: "Order Time"},
 ]
 
 export const CROSS_MARGIN_DATA: MarginModeDataITF[] = [
