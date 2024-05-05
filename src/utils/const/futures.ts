@@ -1,4 +1,4 @@
-import {ORDER_HISTORY_MARKET_LIMIT_HEADERS, POSITION_HEADERS} from "utils";
+import {ORDER_HISTORY_GLOBAL_HEADERS, ORDER_HISTORY_MARKET_LIMIT_HEADERS, POSITION_HEADERS, PROFIT_LOSS_HEADERS, TRADE_HISTORY_HEADERS} from "utils";
 import {MarginModeDataITF, OrderHistoryMarketLimitITF, PositionHeaderITF} from "./type";
 
 // @TODO need to add info text
@@ -9,10 +9,19 @@ export const positionHeader: PositionHeaderITF[] = [
     {value: POSITION_HEADERS.ENTRY_PRICE, displayName: "Entry Price", isHoverInfo: true, info: "", isFormat: true},
     {value: POSITION_HEADERS.MARK_PRICE, displayName: "Mark Price", isHoverInfo: false, info: "", isFormat: true},
     {value: POSITION_HEADERS.LIQUIDITY_PRICE, displayName: "Liq. Price", isHoverInfo: true, info: "", className: "liquidity"},
-    {value: POSITION_HEADERS.IM, displayName: "IM", isHoverInfo: true, info: "", currency: "USDT", isFormat: true,isFixed:2},
-    {value: POSITION_HEADERS.MM, displayName: "MM", isHoverInfo: true, info: "", currency: "USDT", isFormat: true,isFixed:2},
+    {value: POSITION_HEADERS.IM, displayName: "IM", isHoverInfo: true, info: "", currency: "USDT", isFormat: true, isFixed: 2},
+    {value: POSITION_HEADERS.MM, displayName: "MM", isHoverInfo: true, info: "", currency: "USDT", isFormat: true, isFixed: 2},
     {value: POSITION_HEADERS.UNREALIZED_PL, displayName: "Unrealized P&L(%)", isHoverInfo: false, info: "", className: "realized"},
-    {value: POSITION_HEADERS.REALIZED_PL, displayName: "Realized P&L", isHoverInfo: true, info: "", currency: "USDT", className: "realized", isFormat: true,isFixed:2},
+    {
+        value: POSITION_HEADERS.REALIZED_PL,
+        displayName: "Realized P&L",
+        isHoverInfo: true,
+        info: "",
+        currency: "USDT",
+        className: "realized",
+        isFormat: true,
+        isFixed: 2
+    },
     {value: POSITION_HEADERS.TP_SL, displayName: "TP/SL", isHoverInfo: false, info: ""},
     {value: POSITION_HEADERS.TRAILING_STOP, displayName: "Trailing Stop", isHoverInfo: true, info: ""},
     {value: POSITION_HEADERS.MMR_CLOSE, displayName: "MMR Close", isHoverInfo: true, info: ""},
@@ -29,6 +38,72 @@ export const ORDER_HISTORY_MARKET_LIMIT: OrderHistoryMarketLimitITF[] = [
     {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.STATUS, displayName: "Status"},
     {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.ORDER_NO, displayName: "Order No."},
     {value: ORDER_HISTORY_MARKET_LIMIT_HEADERS.ORDER_TIME, displayName: "Order Time"},
+]
+
+export const ORDER_HISTORY_CONDITIONAL = [
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.CONTRACTS, displayName: "Contracts"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.FILLED_ACTUAL_QTY, displayName: "Filled/Actual Qty"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.FILLED_PRICE_ORDER_PRICE, displayName: "Filled Price/Order Price"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.TRIGGER_PRICE, displayName: "Trigger Price"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.TRADE_TYPE, displayName: "Trade Type"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.STATUS, displayName: "Status"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.ORDER_NO, displayName: "Order No."},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.ORDER_TIME, displayName: "Order Time"},
+]
+
+export const ORDER_HISTORY_TP_SL = [
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.CONTRACTS, displayName: "Contracts"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.FILLED_ACTUAL_QTY, displayName: "Filled/Actual Qty"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.TRIGGER_PRICE, displayName: "Trigger Price"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.FILLED_PRICE_ORDER_PRICE, displayName: "Filled Price/Order Price"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.TRADE_TYPE, displayName: "Trade Type"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.STATUS, displayName: "Status"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.ORDER_NO, displayName: "Order No."},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.ORDER_TIME, displayName: "Order Time"},
+]
+
+export const ORDER_HISTORY_TRAILING_STOP = [
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.CONTRACTS, displayName: "Contracts"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.FILLED_ACTUAL_QTY, displayName: "Filled/Actual Qty"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.TRIGGER_PRICE, displayName: "Trigger Price"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.FILLED_PRICE_ORDER_PRICE, displayName: "Filled Price/Order Price"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.TRADE_TYPE, displayName: "Trade Type"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.STATUS, displayName: "Status"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.ORDER_NO, displayName: "Order No."},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.ORDER_TIME, displayName: "Order Time"},
+]
+
+export const ORDER_HISTORY_MMR_CLOSE = [
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.CONTRACTS, displayName: "Contracts"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.FILLED_ACTUAL_QTY, displayName: "Filled/Actual Qty"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.TRIGGER_PRICE, displayName: "MMR Trigger"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.FILLED_PRICE_ORDER_PRICE, displayName: "Filled Price/Order Price"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.TRADE_TYPE, displayName: "Trade Type"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.STATUS, displayName: "Status"},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.ORDER_NO, displayName: "Order No."},
+    {value: ORDER_HISTORY_GLOBAL_HEADERS.ORDER_TIME, displayName: "Order Time"},
+]
+
+export const TRADE_HISTORY = [
+    {value: TRADE_HISTORY_HEADERS.CONTRACTS, displayName: "Contracts"},
+    {value: TRADE_HISTORY_HEADERS.FILLED_TOTAL, displayName: "Filled/Total"},
+    {value: TRADE_HISTORY_HEADERS.FILLED_PRICE_ORDER_PRICE, displayName: "Filled Price/Order Price"},
+    {value: TRADE_HISTORY_HEADERS.TRADE_TYPE, displayName: "Trade Type"},
+    {value: TRADE_HISTORY_HEADERS.ORDER_TYPE, displayName: "Order Type"},
+    {value: TRADE_HISTORY_HEADERS.FILLED_TYPE, displayName: "Filled Type"},
+    {value: TRADE_HISTORY_HEADERS.TRANSACTION_ID, displayName: "Transaction ID"},
+    {value: TRADE_HISTORY_HEADERS.TRANSACTION_TIME, displayName: "Transaction Time"},
+]
+
+export const PROFIT_LOSS = [
+    {value: PROFIT_LOSS_HEADERS.CONTRACTS, displayName: "Contracts"},
+    {value: PROFIT_LOSS_HEADERS.QUANTITY, displayName: "Qty"},
+    {value: PROFIT_LOSS_HEADERS.ENTRY_PRICE, displayName: "Entry Price"},
+    {value: PROFIT_LOSS_HEADERS.EXIT_PRICE, displayName: "Exit Price"},
+    {value: PROFIT_LOSS_HEADERS.TRADE_TYPE, displayName: "Trade Type"},
+    {value: PROFIT_LOSS_HEADERS.CLOSED_PL, displayName: "Closed P&L"},
+    {value: PROFIT_LOSS_HEADERS.EXIT_TYPE, displayName: "Exit Type"},
+    {value: PROFIT_LOSS_HEADERS.TRADE_TIME, displayName: "Trade Time"},
 ]
 
 export const CROSS_MARGIN_DATA: MarginModeDataITF[] = [

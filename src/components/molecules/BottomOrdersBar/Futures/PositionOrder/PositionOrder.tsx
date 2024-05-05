@@ -3,7 +3,7 @@ import React from "react"
 import {useSimulatorTradingChartDetailsContext} from "layouts/providers";
 import {positionHeader} from "utils";
 
-import {FlexibleTable} from "components";
+import {FlexibleTable} from "components/index";
 
 const PositionOrder = () => {
     const {confirmedLongPositionData, confirmedShortPositionData} = useSimulatorTradingChartDetailsContext()

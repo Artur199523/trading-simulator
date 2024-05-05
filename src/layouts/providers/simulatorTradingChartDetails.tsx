@@ -5,9 +5,15 @@ import {
     PositionITF,
     OrderMarkITF,
     StopOrderITF,
+    TradeHistoryITF,
+    OrderHistoryTPSLITF,
     SimulatorProviderITF,
+    CurrentOrdersTPSLITF,
+    ProfitLossHistoryITF,
     ConfirmedPositionData,
-    SimulatorTradingChartDetailsContextITF, PlHistoryITF, CurrentOrdersTPSLITF, OrderHistoryLimitMarketITF, OrderHistoryTPSLITF, TradeHistoryITF
+    OrderHistoryConditionalITF,
+    OrderHistoryLimitMarketITF,
+    SimulatorTradingChartDetailsContextITF,
 } from "./type";
 import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 import {HistoryItem} from "store/simulator/type";
@@ -61,7 +67,6 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     limitOrders: [defaultOrder],
     marketOrders: [defaultOrder],
     currentCryptoData: defaultData,
-    PlHistory: [] as PlHistoryITF[],
     limitOrdersMarks: [defaultOrderMark],
     tradeHistory: [] as TradeHistoryITF[],
     marketOrdersMarks: [defaultOrderMark],
@@ -69,16 +74,16 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     longPositionDataTPSL: {} as PositionDataITF,
     shortPositionDataTPSL: {} as PositionDataITF,
     orderHistoryTPSL: [] as OrderHistoryTPSLITF[],
+    profitLossHistory: [] as ProfitLossHistoryITF[],
     currentOrdersTPSL: [] as CurrentOrdersTPSLITF[],
     confirmedLongPositionDataTPSL: {} as PositionITF,
     confirmedShortPositionDataTPSL: {} as PositionITF,
     confirmedLongPositionData: {} as ConfirmedPositionData,
     confirmedShortPositionData: {} as ConfirmedPositionData,
+    orderHistoryConditional: [] as OrderHistoryConditionalITF[],
     orderHistoryLimitMarket: [] as OrderHistoryLimitMarketITF[],
     confirmedLongPositionDataHistory: [] as ConfirmedPositionData[],
     confirmedShortPositionDataHistory: [] as ConfirmedPositionData[],
-    setPlHistory: () => {
-    },
     setLimitOrders: () => {
     },
     setTradeHistory: () => {
@@ -90,6 +95,8 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     serOrderHistoryTPSL: () => {
     },
     setLimitOrdersMarks: () => {
+    },
+    setProfitLossHistory: () => {
     },
     setCurrentOrdersTPSL: () => {
     },
@@ -104,6 +111,8 @@ const SimulatorTradingChartDetailsContext = createContext<SimulatorTradingChartD
     setShortPositionDataTPSL: () => {
     },
     setStopLimitOrdersMarks: () => {
+    },
+    setOrderHistoryConditional: () => {
     },
     setOrderHistoryLimitMarket: () => {
     },
@@ -150,22 +159,23 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
     const [confirmedLongPositionDataHistory, setConfirmedLongPositionDataHistory] = useState<ConfirmedPositionData[] | []>([])
     const [confirmedShortPositionDataHistory, setConfirmedShortPositionDataHistory] = useState<ConfirmedPositionData[] | []>([])
 
-    // @TODO continue
-    const [PlHistory, setPlHistory] = useState<PlHistoryITF[] | []>([])
-    const [currentOrdersTPSL, setCurrentOrdersTPSL] = useState<CurrentOrdersTPSLITF[] | []>([])
-    const [orderHistoryLimitMarket, setOrderHistoryLimitMarket] = useState<OrderHistoryLimitMarketITF[] | []>([])
-    const [orderHistoryTPSL, serOrderHistoryTPSL] = useState<OrderHistoryTPSLITF[] | []>([])
+    //============FUTURES ORDER HISTORY DATA========================
     const [tradeHistory, setTradeHistory] = useState<TradeHistoryITF[] | []>([])
+    const [orderHistoryTPSL, serOrderHistoryTPSL] = useState<OrderHistoryTPSLITF[] | []>([])
+    const [profitLossHistory, setProfitLossHistory] = useState<ProfitLossHistoryITF[] | []>([])
+    const [currentOrdersTPSL, setCurrentOrdersTPSL] = useState<CurrentOrdersTPSLITF[] | []>([])
+    const [orderHistoryConditional, setOrderHistoryConditional] = useState<[] | OrderHistoryConditionalITF[]>([])
+    const [orderHistoryLimitMarket, setOrderHistoryLimitMarket] = useState<OrderHistoryLimitMarketITF[] | []>([])
 
     return (
         <SimulatorTradingChartDetailsContext.Provider value={{
-            PlHistory,
             limitOrders,
             marketOrders,
             tradeHistory,
             stopLimitOrders,
             orderHistoryTPSL,
             limitOrdersMarks,
+            profitLossHistory,
             currentOrdersTPSL,
             currentCryptoData,
             marketOrdersMarks,
@@ -173,6 +183,7 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
             stopLimitOrdersMarks,
             longPositionDataTPSL,
             shortPositionDataTPSL,
+            orderHistoryConditional,
             orderHistoryLimitMarket,
             confirmedLongPositionData,
             confirmedShortPositionData,
@@ -180,13 +191,13 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
             confirmedShortPositionDataTPSL,
             confirmedLongPositionDataHistory,
             confirmedShortPositionDataHistory,
-            setPlHistory,
             setLimitOrders,
             setTradeHistory,
             setMarketOrders,
             setStopLimitOrders,
             serOrderHistoryTPSL,
             setLimitOrdersMarks,
+            setProfitLossHistory,
             setCurrentOrdersTPSL,
             setCurrentCryptoData,
             setMarketOrdersMarks,
@@ -194,6 +205,7 @@ export const SimulatorTradingChartDetailsProvider: React.FC<SimulatorProviderITF
             setLongPositionDataTPSL,
             setStopLimitOrdersMarks,
             setShortPositionDataTPSL,
+            setOrderHistoryConditional,
             setOrderHistoryLimitMarket,
             setConfirmedLongPositionData,
             setConfirmedShortPositionData,

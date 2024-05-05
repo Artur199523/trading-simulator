@@ -26,7 +26,7 @@ import {
     calculationLiquidity,
     calculationRealizedPL,
     calculationOrderCostLongPosition,
-    calculationOrderCostShortPosition
+    calculationOrderCostShortPosition, EXIST_TYPE
 } from "utils";
 
 import OrderReversePosition from "../Components/OrderReversePosition";
@@ -40,7 +40,7 @@ import OrderTPSL from "../Components/OrderTPSL";
 import {ModalWindowTemplate} from "components";
 
 import {ConfirmPositionDataForModalWithTPSLITF, ConfirmPositionFiledItemITF, ItemTPSLITF} from "../type";
-import {OrderHistoryLimitMarketITF} from "layouts/providers/type";
+import {OrderHistoryLimitMarketITF, ProfitLossHistoryITF, TradeHistoryITF} from "layouts/providers/type";
 
 import "./style.scss"
 
@@ -51,16 +51,17 @@ const ConfirmPosition: React.FC = () => {
     const {
         longPositionDataTPSL,
         shortPositionDataTPSL,
-        setLongPositionDataTPSL,
-        setShortPositionDataTPSL,
         confirmedLongPositionData,
         confirmedShortPositionData,
+        confirmedLongPositionDataHistory,
+        confirmedShortPositionDataHistory,
+        setTradeHistory,
+        setLongPositionDataTPSL,
+        setShortPositionDataTPSL,
         setOrderHistoryLimitMarket,
         setConfirmedLongPositionData,
         setConfirmedShortPositionData,
         setConfirmedLongPositionDataTPSL,
-        confirmedLongPositionDataHistory,
-        confirmedShortPositionDataHistory,
         setConfirmedShortPositionDataTPSL,
         setConfirmedLongPositionDataHistory,
         setConfirmedShortPositionDataHistory,
@@ -128,6 +129,7 @@ const ConfirmPosition: React.FC = () => {
 
         return true
     }
+
     const convertCurrentPositionData = (gropedData: any, confirmedPositionDataHistory: any, positionType: TRADE_POSITION) => {
         const data = interruptionRef(confirmedPositionDataHistory) as []
 
@@ -164,6 +166,36 @@ const ConfirmPosition: React.FC = () => {
         return gropedData
     }
 
+    const saveTradeHistory = (positionType: TRADE_POSITION) => {
+
+        let orderHistory: OrderHistoryLimitMarketITF = {
+            contracts: `${cryptoType}USDT`,
+            filled_total: {filled: calculatedQuantity, total: calculatedQuantity},
+            filled_price_order_price: {filled_price: currentPrice, order_price: "Market"},
+            trade_type: positionType === TRADE_POSITION.LONG ? TRADE_TYPE.OPEN_LONG : TRADE_TYPE.OPEN_SHORT,
+            order_type: "Market",
+            status: ORDER_STATUS.FILLED,
+            order_No: uuidv4().split("-")[0],
+            order_time: new Date(),
+            color: positionType === TRADE_POSITION.LONG ? "green" : "red",
+        }
+
+        let tradeHistory: TradeHistoryITF = {
+            contracts: `${cryptoType}USDT`,
+            filled_total: {filled: calculatedQuantity, total: calculatedQuantity},
+            filled_price_order_price: {filled_price: currentPrice, order_price: "Market"},
+            trade_type: positionType === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
+            order_type: "Market",
+            filled_type: EXIST_TYPE.TRADE,
+            transaction_id: uuidv4().split("-")[0],
+            transaction_time: new Date(),
+            color: positionType === TRADE_POSITION.LONG ? "green" : "red",
+        }
+
+        setOrderHistoryLimitMarket(prev => [orderHistory, ...prev])
+        setTradeHistory(prev => [tradeHistory, ...prev])
+    }
+
     const confirm = () => {
         if (currentPriceMatchRangeChecking()) {
             const positionType = trade_position_process === "Buy" ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT
@@ -192,19 +224,7 @@ const ConfirmPosition: React.FC = () => {
                 contracts: <ContractItem positionType={positionType} cryptoType={cryptoType} marginMode={marginMode} leverage={adjustLeverage}/>
             }
 
-            let history: OrderHistoryLimitMarketITF = {
-                contracts: `${cryptoType}USDT`,
-                filled_total: {filled: calculatedQuantity, total: calculatedQuantity},
-                filled_price_order_price: {filled_price: currentPrice, order_price: "Market"},
-                trade_type: positionType === TRADE_POSITION.LONG ? TRADE_TYPE.OPEN_LONG : TRADE_TYPE.OPEN_SHORT,
-                order_type: "Market",
-                status: ORDER_STATUS.FILLED,
-                order_No: id.split("-")[0],
-                order_time: new Date(),
-                color: positionType === TRADE_POSITION.LONG ? "green" : "red",
-            }
-
-            setOrderHistoryLimitMarket(prev => [history, ...prev])
+            saveTradeHistory(positionType)
 
             if (trade_position_process === "Buy") {
                 if (!confirmedLongPositionData) {

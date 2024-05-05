@@ -492,7 +492,7 @@ const TPSL: React.FC = () => {
                         </div>)
                 } else {
                     return (stopTriggerPrice && <div className="futures-modal_tpls_trigger-controller_calculated-info">
-                        Last Traded Price to {stopTriggerPrice_ROI} will trigger market Stop Loss order; your expected profit will be {loss_ROI} USDT
+                        Last Traded Price to {stopTriggerPrice_ROI} will trigger market Stop Loss order; your expected loss will be {loss_ROI} USDT
                         (ROI: {stopROI_ROI}%)
                     </div>)
                 }

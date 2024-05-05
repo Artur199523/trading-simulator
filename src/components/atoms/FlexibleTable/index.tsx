@@ -4,34 +4,46 @@ import {fixedNumber, formatNumber} from "utils";
 
 import {FlexibleTableItemITF, FlexibleTableITF} from "./type";
 
+import {NoData} from "assets/svg";
 import "./style.scss"
 
 // @TODO continue table creating for future
 const FlexibleTable: React.FC<FlexibleTableITF> = ({header, body}) => {
     return (
-        <table className="flexible-table-container">
-            <thead className="flexible-table-container_head">
-            <tr className="flexible-table-container_head_item">
-                {header.map((header, index) => (
-                    <th key={index}>{header.displayName}</th>
-                ))}
-            </tr>
-            </thead>
-            <tbody className="flexible-table-container_body">
-            {body.map((row, rowIndex) => (
-                <tr className="flexible-table-container_body_item" key={rowIndex}>
+        <React.Fragment>
+            <table className="flexible-table-container">
+                <thead className="flexible-table-container_head">
+                <tr className="flexible-table-container_head_item">
                     {header.map((header, index) => (
-                        <td
-                            className={`flexible-table-container_body_item_text-block ${header.className ? header.className : ""}`}
-                            key={index}
-                        >
-                            <FlexibleTableItem header={header} row={row}/>
-                        </td>
+                        <th key={index}>{header.displayName}</th>
                     ))}
                 </tr>
-            ))}
-            </tbody>
-        </table>
+                </thead>
+                <tbody className="flexible-table-container_body">
+                {body.length &&
+                    <React.Fragment>
+                        {body.map((row, rowIndex) => (
+                            <tr className="flexible-table-container_body_item" key={rowIndex}>
+                                {header.map((header, index) => (
+                                    <td
+                                        className={`flexible-table-container_body_item_text-block ${header.className ? header.className : ""}`}
+                                        key={index}
+                                    >
+                                        <FlexibleTableItem header={header} row={row}/>
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </React.Fragment>}
+                </tbody>
+            </table>
+            {!body.length && <div className="flexible-table-container_no-data">
+                <div>
+                    <NoData/>
+                    <p>No Available Data</p>
+                </div>
+            </div>}
+        </React.Fragment>
     )
 }
 

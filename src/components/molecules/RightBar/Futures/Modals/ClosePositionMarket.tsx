@@ -7,11 +7,11 @@ import {
     useSimulatorPlayerInfoContext,
     useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
-import {MODALS, ORDER_STATUS, showNotification, TRADE_POSITION, TRADE_TYPE} from "utils";
+import {EXIST_TYPE, MODALS, ORDER_STATUS, showNotification, TRADE_POSITION, TRADE_TYPE} from "utils";
 
 import {Input, InputRangeSlider, ModalWindowTemplate} from "components";
 
-import {OrderHistoryLimitMarketITF} from "layouts/providers/type";
+import {OrderHistoryLimitMarketITF, ProfitLossHistoryITF, TradeHistoryITF} from "layouts/providers/type";
 
 import "./style.scss"
 
@@ -21,6 +21,8 @@ const ClosPositionMarket: React.FC = () => {
     const {
         confirmedLongPositionData,
         confirmedShortPositionData,
+        setTradeHistory,
+        setProfitLossHistory,
         setOrderHistoryLimitMarket,
         setConfirmedLongPositionData,
         setConfirmedShortPositionData,
@@ -37,12 +39,8 @@ const ClosPositionMarket: React.FC = () => {
     const quantity = currentPositionData.calculated_quantity
     const im = currentPositionData.im
 
-    const confirmPreference = () => {
-        setBalanceUSDT(prev => prev + im + profit)
-
-        showNotification(`${currentPosition} position closed successfully`, "success", 0)
-
-        let history: OrderHistoryLimitMarketITF = {
+    const saveTradeHistory = () => {
+        let orderHistory: OrderHistoryLimitMarketITF = {
             contracts: `${cryptoType}USDT`,
             filled_total: {filled: currentPositionData.calculated_quantity, total: currentPositionData.calculated_quantity},
             filled_price_order_price: {filled_price: currentPositionData.mark_price, order_price: "Market"},
@@ -54,7 +52,41 @@ const ClosPositionMarket: React.FC = () => {
             color: currentPosition === TRADE_POSITION.LONG ? "red" : "green",
         }
 
-        setOrderHistoryLimitMarket(prev => [history,...prev])
+        let tradeHistory: TradeHistoryITF = {
+            contracts: `${cryptoType}USDT`,
+            filled_total: {filled: currentPositionData.calculated_quantity, total: currentPositionData.calculated_quantity},
+            filled_price_order_price: {filled_price: currentPositionData.mark_price, order_price: "Market"},
+            trade_type: currentPosition === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
+            order_type: "Market",
+            filled_type: EXIST_TYPE.TRADE,
+            transaction_id: uuidv4().split("-")[0],
+            transaction_time: new Date(),
+            color: currentPosition === TRADE_POSITION.LONG ? "red" : "green",
+        }
+
+        let profitLossHistory: ProfitLossHistoryITF = {
+            contracts: `${cryptoType}USDT`,
+            quantity: currentPositionData.calculated_quantity,
+            entry_price: currentPositionData.entry_price,
+            exit_price: currentPositionData.mark_price,
+            trade_type: currentPositionData.position === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
+            closed_pl: profit,
+            exit_type: EXIST_TYPE.TRADE,
+            trade_time: new Date(),
+            color: currentPositionData.position === TRADE_POSITION.LONG ? "red" : "green",
+        }
+
+        setOrderHistoryLimitMarket(prev => [orderHistory, ...prev])
+        setProfitLossHistory(prev => [profitLossHistory, ...prev])
+        setTradeHistory(prev => [tradeHistory, ...prev])
+    }
+
+    const confirmPreference = () => {
+        setBalanceUSDT(prev => prev + im + profit)
+
+        showNotification(`${currentPosition} position closed successfully`, "success", 0)
+
+        saveTradeHistory()
 
         if (currentPosition === TRADE_POSITION.LONG) {
             setConfirmedLongPositionData(null)

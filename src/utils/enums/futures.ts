@@ -118,3 +118,36 @@ export enum ORDER_HISTORY_ACTIVE_TAB {
     TRAILING_STOP = "trailing_stop",
     MMR_CLOSE = "mmr_close",
 }
+
+export enum ORDER_HISTORY_GLOBAL_HEADERS {
+    CONTRACTS = "contracts",
+    FILLED_ACTUAL_QTY = "filled_actual_qty",
+    FILLED_PRICE_ORDER_PRICE = "filled_price_order_price",
+    TRIGGER_PRICE = "trigger_price",
+    TRADE_TYPE = "trade_type",
+    STATUS = "status",
+    ORDER_NO = "order_No",
+    ORDER_TIME = "order_time"
+}
+
+export enum TRADE_HISTORY_HEADERS {
+    CONTRACTS = "contracts",
+    FILLED_TOTAL = "filled_total",
+    FILLED_PRICE_ORDER_PRICE = "filled_price_order_price",
+    TRADE_TYPE = "trade_type",
+    ORDER_TYPE = "order_type",
+    FILLED_TYPE = "filled_type",
+    TRANSACTION_ID = "transaction_id",
+    TRANSACTION_TIME = "transaction_time"
+}
+
+export enum PROFIT_LOSS_HEADERS {
+    CONTRACTS = "contracts",
+    QUANTITY = "quantity",
+    ENTRY_PRICE = "entry_price",
+    EXIT_PRICE = "exit_price",
+    TRADE_TYPE = "trade_type",
+    CLOSED_PL = "closed_pl",
+    EXIT_TYPE = "exit_type",
+    TRADE_TIME = "trade_time",
+}

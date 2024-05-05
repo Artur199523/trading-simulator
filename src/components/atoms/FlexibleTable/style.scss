@@ -41,7 +41,7 @@
       background: #101014;
 
       & > td {
-        height: 72px;
+        height: 52px;
         color: #fff;
         padding: 0 16px;
         font-size: 12px;
@@ -66,7 +66,28 @@
 
     &_btn {
 
+    }
+  }
 
+  &_no-data {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    & > div {
+      display: flex;
+      flex-direction: column;
+
+      svg {
+        margin: auto;
+      }
+
+      p {
+        color: #71757a;
+        font-size: 12px;
+        text-align: center;
+      }
     }
   }
 }

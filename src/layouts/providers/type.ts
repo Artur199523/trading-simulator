@@ -5,7 +5,6 @@ import {EXIST_TYPE, HEDGING, HIDDEN_BLOCKS, MARGIN_MODE, MODALS, ORDER_STATUS, P
 import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 import {HistoryItem} from "store/simulator/type";
 import {ModalContextType} from "utils/types";
-import {OrderHistoryMarketLimitITF} from "../../utils/const/type";
 
 export interface SimulatorProviderITF {
     children: React.ReactNode
@@ -66,7 +65,6 @@ export interface SimulatorPlayerInfoContextITF {
 export interface SimulatorTradingChartDetailsContextITF {
     limitOrders: OrderITF[]
     marketOrders: OrderITF[]
-    PlHistory: PlHistoryITF[]
     currentCryptoData: HistoryItem
     tradeHistory: TradeHistoryITF[]
     stopLimitOrders: StopOrderITF[]
@@ -77,17 +75,17 @@ export interface SimulatorTradingChartDetailsContextITF {
     shortPositionDataTPSL: PositionITF
     stopLimitOrdersMarks: OrderMarkITF[]
     orderHistoryTPSL: OrderHistoryTPSLITF[]
+    profitLossHistory: ProfitLossHistoryITF[]
     currentOrdersTPSL: CurrentOrdersTPSLITF[]
     confirmedLongPositionDataTPSL: PositionITF
     confirmedShortPositionDataTPSL: PositionITF
     confirmedLongPositionData: ConfirmedPositionData
     confirmedShortPositionData: ConfirmedPositionData
+    orderHistoryConditional: OrderHistoryConditionalITF[]
     orderHistoryLimitMarket: OrderHistoryLimitMarketITF[]
     confirmedLongPositionDataHistory: ConfirmedPositionData[]
     confirmedShortPositionDataHistory: ConfirmedPositionData[]
-    setPlHistory: (history: PlHistoryITF[]) => void
     setCurrentCryptoData: (data: HistoryItem) => void
-    setTradeHistory: (history: TradeHistoryITF[]) => void
     setLongPositionDataTPSL: (position: PositionITF) => void
     setShortPositionDataTPSL: (position: PositionITF) => void
     serOrderHistoryTPSL: (history: OrderHistoryTPSLITF[]) => void
@@ -103,7 +101,10 @@ export interface SimulatorTradingChartDetailsContextITF {
     setMarketOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setStopLimitPreOrders: (order: (prev: StopOrderITF[]) => StopOrderITF[]) => void
     setStopLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
+    setTradeHistory: (history: (prev: TradeHistoryITF[]) => TradeHistoryITF[]) => void
+    setProfitLossHistory: (history: (prev: ProfitLossHistoryITF[]) => ProfitLossHistoryITF[]) => void
     setOrderHistoryLimitMarket: (order: (prev: OrderHistoryLimitMarketITF[]) => OrderHistoryLimitMarketITF[]) => void
+    setOrderHistoryConditional: (history: (prev: OrderHistoryConditionalITF[]) => OrderHistoryConditionalITF[]) => void
     setConfirmedLongPositionDataHistory: (positionHistory: (prev: ConfirmedPositionData[]) => ConfirmedPositionData[]) => void
     setConfirmedShortPositionDataHistory: (positionHistory: (prev: ConfirmedPositionData[]) => ConfirmedPositionData[]) => void
 }
@@ -183,15 +184,15 @@ export interface ConfirmedPositionData {
 }
 
 
-export interface PlHistoryITF {
-    quantity: string
-    contracts: string
+export interface ProfitLossHistoryITF {
+    quantity: number
+    contracts: string | React.JSX.Element
     closed_pl: number
     exit_price: number
-    trade_time: string
+    trade_time: Date | string
     entry_price: number
     exit_type: EXIST_TYPE
-    trade_type: TRADE_TYPE
+    trade_type: TRADE_TYPE | React.JSX.Element
     color: OrderColorT
 }
 
@@ -218,6 +219,17 @@ export interface OrderHistoryLimitMarketITF {
     color: OrderColorT
 }
 
+export interface OrderHistoryConditionalITF {
+    contracts: string
+    filled_actual_qty: string
+    filled_price_order_price: { filled_price: number, order_price: number }
+    trigger_price: number
+    trade_type: TRADE_TYPE
+    status: StatusT
+    order_No: string
+    order_time: string
+}
+
 export interface OrderHistoryTPSLITF {
     contracts: string
     filled_actual_qty: { filled: number, actual_qty: number }
@@ -234,10 +246,12 @@ export interface TradeHistoryITF {
     contracts: string
     filled_total: { filled: number, total: number }
     filled_price_order_price: { filled_price: number, order_price: string }
-    tradeType: TRADE_TYPE
+    trade_type: TRADE_TYPE
+    order_type: string
     filled_type: string
     transaction_id: string
-    transaction_time: string
+    transaction_time: Date
+    color: OrderColorT
 }
 
 export type OrderColorT = "red" | "green"
