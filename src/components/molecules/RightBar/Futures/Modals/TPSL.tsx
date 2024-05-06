@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 
-import {useFuturesTradingModalContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
+import {useFuturesTradingModalContext, useSimulatorToolsContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
 import {CALL_ENVIRONMENT, MODALS, ORDER_TYPE, TRAD_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
 
 import {Button, Input, InputRangeSlider, ModalWindowTemplate} from "components";
@@ -43,6 +43,7 @@ const settingsFields: SettingsFieldsITF = {
 const TPSL: React.FC = () => {
     const settingsFieldsCopy = interruptionRef(settingsFields)
 
+    const {setCurrentSpeed} = useSimulatorToolsContext()
     const {adjustLeverage} = useSimulatorTradingContext()
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
     const {setCurrentModal} = useFuturesTradingModalContext()
@@ -50,10 +51,12 @@ const TPSL: React.FC = () => {
     const {
         longPositionDataTPSL,
         shortPositionDataTPSL,
-        setLongPositionDataTPSL,
-        setShortPositionDataTPSL,
+        confirmedLongPositionData,
+        confirmedShortPositionData,
         confirmedLongPositionDataTPSL,
         confirmedShortPositionDataTPSL,
+        setLongPositionDataTPSL,
+        setShortPositionDataTPSL,
         setConfirmedLongPositionDataTPSL,
         setConfirmedShortPositionDataTPSL,
     } = useSimulatorTradingChartDetailsContext()
@@ -62,9 +65,15 @@ const TPSL: React.FC = () => {
 
     const [fieldsValue, setFieldsValue] = useState(settingsFieldsCopy)
 
-    const currentPrice = dataForModal.tradType === TRAD_TYPE.LIMIT ? Number(dataForModal.orderPrice) : currentCryptoData.close
+    const isInsideAction = dataForModal.call === CALL_ENVIRONMENT.INSIDE
+    const isLongPositionActiveType = activeTradeType === TRADE_POSITION.LONG
+
+    const currentPrice = dataForModal.tradType === TRAD_TYPE.LIMIT ? Number(dataForModal.orderPrice) : isInsideAction ? isLongPositionActiveType ? confirmedLongPositionData.entry_price : confirmedShortPositionData.entry_price : currentCryptoData.close
+    const [isUpdate, setIsUpdate] = useState(false)
 
     useEffect(() => {
+        setCurrentSpeed(1)
+
         if (longPositionDataTPSL && dataForModal.call === CALL_ENVIRONMENT.OUTSIDE) {
             setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Long: longPositionDataTPSL}))
             setActiveTradeType(TRADE_POSITION.LONG)
@@ -78,11 +87,13 @@ const TPSL: React.FC = () => {
         if (confirmedLongPositionDataTPSL && dataForModal.call === CALL_ENVIRONMENT.INSIDE) {
             setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Long: confirmedLongPositionDataTPSL}))
             setActiveTradeType(TRADE_POSITION.LONG)
+            setIsUpdate(true)
         }
 
         if (confirmedShortPositionDataTPSL && dataForModal.call === CALL_ENVIRONMENT.INSIDE) {
             setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: confirmedShortPositionDataTPSL}))
             setActiveTradeType(TRADE_POSITION.SHORT)
+            setIsUpdate(true)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -461,6 +472,7 @@ const TPSL: React.FC = () => {
     const orderValue = Number(dataForModal.orderValue)
 
     // @TODO need to check
+    // @TODO need to do that it calculate with current price
     const calculateAndRenderTPSL = (trigger: TRIGGERS, orderType: ORDER_TYPE) => {
         const profitTriggerPrice = fieldsValue[activeTradeType]["profit_trigger_price"]
         const stopTriggerPrice = fieldsValue[activeTradeType]["stop_trigger_price"]
@@ -550,14 +562,22 @@ const TPSL: React.FC = () => {
     }
 
     return (
-        <ModalWindowTemplate show={true} title="Add TP/SL" cancelCallback={() => setCurrentModal(MODALS.CLOSE)} confirmCallback={confirmMode}>
+        <ModalWindowTemplate
+            show={true}
+            title={`${isUpdate ? 'Update' : 'Add'} TP/SL`}
+            cancelCallback={() => setCurrentModal(MODALS.CLOSE)} confirmCallback={confirmMode}
+        >
             <div className="futures-modal_tpls_header">
                 <HeaderItem label="Order Price" value="Last Traded Price"/>
-                <HeaderItem label="Qty" value={(orderValue / currentCryptoData.close).toFixed(3)}/>
+                <HeaderItem
+                    label="Qty"
+                    value={(orderValue / (isInsideAction ? currentPrice : currentCryptoData.close)).toFixed(3)}
+                />
+                {isInsideAction && <HeaderItem label="Entry Price" value={currentPrice}/>}
                 <HeaderItem label="Last Traded Price" value={currentCryptoData.close}/>
             </div>
             {<div className={`futures-modal_tpls_trade-type ${activeTradeType}`}>
-                {dataForModal.call === CALL_ENVIRONMENT.OUTSIDE && <React.Fragment>
+                {!isInsideAction && <React.Fragment>
                     <Button onClick={() => setActiveTradeType(TRADE_POSITION.LONG)}>Long</Button>
                     <Button onClick={() => setActiveTradeType(TRADE_POSITION.SHORT)}>Short</Button>
                 </React.Fragment>}

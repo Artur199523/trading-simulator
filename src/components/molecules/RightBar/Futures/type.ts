@@ -50,6 +50,7 @@ export interface PositionDataITF {
     stop_percent: number
     stop_validation: SettingsFieldsValidationITF
     name: TRADE_POSITION
+    entry_price?: number
 }
 
 export interface SettingsFieldsValidationITF {

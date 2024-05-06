@@ -119,6 +119,14 @@ export enum ORDER_HISTORY_ACTIVE_TAB {
     MMR_CLOSE = "mmr_close",
 }
 
+export enum CURRENT_ORDERS_ACTIVE_TAB {
+    ACTIVE = "active",
+    CONDITIONAL = "conditional",
+    TP_SL = "tp_sl",
+    TRAILING_STOP = "trailing_stop",
+    MMR_CLOSE = "mmr_close",
+}
+
 export enum ORDER_HISTORY_GLOBAL_HEADERS {
     CONTRACTS = "contracts",
     FILLED_ACTUAL_QTY = "filled_actual_qty",
@@ -150,4 +158,72 @@ export enum PROFIT_LOSS_HEADERS {
     CLOSED_PL = "closed_pl",
     EXIT_TYPE = "exit_type",
     TRADE_TIME = "trade_time",
+}
+
+export enum CURRENT_ORDER_ACTIVE_HEADERS {
+    CONTRACTS = "contracts",
+    QUANTITY = "quantity",
+    ORDER_PRICE = "order_price",
+    FILLED_TOTAL = "filled_total",
+    TP_SL = "tp_sl",
+    TRADE_TYPE = "trade_type",
+    ORDER_TYPE = "order_type",
+    REDUCE_ONLY = "reduce_only",
+    STATUS = "status",
+    ORDER_NO = "order_No",
+    ORDER_TIME = "order_time",
+    ACTION = "action"
+}
+
+export enum CURRENT_ORDER_CONDITIONAL_HEADERS {
+    CONTRACTS = "contracts",
+    QUANTITY = "quantity",
+    TRIGGER_PRICE = "trigger_price",
+    PRICE_DISTANCE = "price_distance",
+    ORDER_PRICE = "order_price",
+    TP_SL = "tp_sl",
+    TRADE_TYPE = "trade_type",
+    REDUCE_ONLY = "reduce_only",
+    STATUS = "status",
+    ORDER_NO = "order_No",
+    ORDER_TIME = "order_time",
+    ACTION = "action",
+}
+
+export enum CURRENT_ORDER_TP_SL_HEADERS {
+    CONTRACTS = "contracts",
+    QUANTITY = "quantity",
+    TRIGGER_PRICE = "trigger_price",
+    ORDER_PRICE = "order_price",
+    TRADE_TYPE = "trade_type",
+    ORDER_NO = "order_No",
+    ORDER_TIME = "order_time",
+    ACTION = "action",
+}
+
+export enum CURRENT_ORDER_TRAILING_STOP_HEADERS {
+    CONTRACTS = "contracts",
+    QUANTITY = "quantity",
+    ORDER_PRICE = "order_price",
+    TRIGGER_PRICE = "trigger_price",
+    PRICE_DISTANCE = "price_distance",
+    RETRACEMENT = "retracement",
+    ACTIVATION_PRICE = "activity_price",
+    TRADE_TYPE = "trade_type",
+    STATUS = "status",
+    ORDER_NO = "order_No",
+    ORDER_TIME = "order_time",
+    ACTION = "action",
+}
+
+export enum CURRENT_ORDER_MMR_CLOSE_HEADERS {
+    CONTRACTS = "contracts",
+    QUANTITY = "quantity",
+    TRIGGER_MMR = "trigger_mmr",
+    ORDER_PRICE = "order_price",
+    TRADE_TYPE = "trade_type",
+    STATUS = "status",
+    ORDER_NO = "order_No",
+    ORDER_TIME = "order_time",
+    ACTION = "action",
 }

@@ -38,7 +38,7 @@
       height: calc(100% - 40px);
       overflow-x: hidden;
 
-      &_order-history {
+      &_order-history, &_current-orders {
         &_tabs {
           background: #000a11;
           display: flex;
@@ -59,15 +59,16 @@
             }
           }
         }
-      }
 
-      & > .TabContent {
-        max-height: 250px;
-        overflow: auto;
-        height: 100%;
-        position: relative;
-      }
+        & > .TabContent {
+          max-height: 250px;
+          overflow: auto;
+          height: 100%;
+          position: relative;
+        }
 
+
+      }
       .quantity {
         color: $long;
       }
@@ -80,29 +81,29 @@
         color: $short;
       }
     }
+
+    &_spot-order {
+
+    }
   }
 
-  &_spot-order {
+  .order-contract {
+    height: 35px;
+    display: flex;
+    padding-left: 10px;
+    align-items: center;
 
-  }
-}
+    span {
+      display: block;
+    }
 
-.order-contract {
-  height: 35px;
-  display: flex;
-  padding-left: 10px;
-  align-items: center;
+    &.green {
+      border-left: 2px solid $long;
+    }
 
-  span {
-    display: block;
-  }
-
-  &.green {
-    border-left: 2px solid $long;
-  }
-
-  &.red {
-    border-left: 2px solid $short;
+    &.red {
+      border-left: 2px solid $short;
+    }
   }
 }
 

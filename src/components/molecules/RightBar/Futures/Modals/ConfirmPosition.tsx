@@ -1,16 +1,17 @@
 import classNames from "classnames";
 import {v4 as uuidv4} from 'uuid';
-import React from "react";
+import React, {useEffect} from "react";
 
 import {
     useSimulatorOptionsContext,
     useSimulatorTradingContext,
     useFuturesTradingModalContext,
     useSimulatorPlayerInfoContext,
-    useSimulatorTradingChartDetailsContext
+    useSimulatorTradingChartDetailsContext, useSimulatorToolsContext
 } from "layouts/providers";
 import {
     MODALS,
+    EXIST_TYPE,
     TRADE_TYPE,
     ORDER_STATUS,
     TRADE_POSITION,
@@ -26,7 +27,7 @@ import {
     calculationLiquidity,
     calculationRealizedPL,
     calculationOrderCostLongPosition,
-    calculationOrderCostShortPosition, EXIST_TYPE
+    calculationOrderCostShortPosition,
 } from "utils";
 
 import OrderReversePosition from "../Components/OrderReversePosition";
@@ -40,7 +41,7 @@ import OrderTPSL from "../Components/OrderTPSL";
 import {ModalWindowTemplate} from "components";
 
 import {ConfirmPositionDataForModalWithTPSLITF, ConfirmPositionFiledItemITF, ItemTPSLITF} from "../type";
-import {OrderHistoryLimitMarketITF, ProfitLossHistoryITF, TradeHistoryITF} from "layouts/providers/type";
+import {OrderHistoryLimitMarketITF, TradeHistoryITF} from "layouts/providers/type";
 
 import "./style.scss"
 
@@ -66,18 +67,25 @@ const ConfirmPosition: React.FC = () => {
         setConfirmedLongPositionDataHistory,
         setConfirmedShortPositionDataHistory,
     } = useSimulatorTradingChartDetailsContext()
-    const {balanceUSDT, setBalanceUSDT} = useSimulatorPlayerInfoContext()
+    const {setBalanceUSDT} = useSimulatorPlayerInfoContext()
+    const {setCurrentSpeed} = useSimulatorToolsContext()
     const {setCurrentModal, dataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
 
     const {trade_position_process, trade_type, order_value_usdt, profit_trigger_price, stop_trigger_price, trade_position} = dataForModal
     const {close: currentPrice} = currentCryptoData
+
+    useEffect(() => {
+        setCurrentSpeed(1)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const getDisplayOrDash = (value: any) => {
         return value !== undefined && value !== null && value !== '' ? value : '--';
     };
 
     const calculationLiquidityUtils = (totalValue: number) => {
-        return fixedNumber(calculationLiquidity(currentPrice, balanceUSDT, (Number(order_value_usdt) + totalValue), trade_position), 2)
+        //with calculationIM will be calculated liquidity based on the entry position
+        return fixedNumber(calculationLiquidity(currentPrice, calculationIM(order_value_usdt, adjustLeverage), (Number(order_value_usdt) + totalValue), trade_position), 2)
     }
 
     const confirmedPositionDataHistory = [...confirmedShortPositionDataHistory, ...confirmedLongPositionDataHistory]
