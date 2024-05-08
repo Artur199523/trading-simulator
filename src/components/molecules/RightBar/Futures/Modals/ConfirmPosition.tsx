@@ -1,6 +1,6 @@
+import React, {useEffect} from "react";
 import classNames from "classnames";
 import {v4 as uuidv4} from 'uuid';
-import React, {useEffect} from "react";
 
 import {
     useSimulatorOptionsContext,
@@ -84,8 +84,11 @@ const ConfirmPosition: React.FC = () => {
     };
 
     const calculationLiquidityUtils = (totalValue: number) => {
+        const orderTotalValue = order_value_usdt + totalValue
+        const calculatedIM = calculationIM(orderTotalValue, adjustLeverage)
+
         //with calculationIM will be calculated liquidity based on the entry position
-        return fixedNumber(calculationLiquidity(currentPrice, calculationIM(order_value_usdt, adjustLeverage), (Number(order_value_usdt) + totalValue), trade_position), 2)
+        return fixedNumber(calculationLiquidity(currentPrice, calculatedIM, orderTotalValue, trade_position), 2)
     }
 
     const confirmedPositionDataHistory = [...confirmedShortPositionDataHistory, ...confirmedLongPositionDataHistory]

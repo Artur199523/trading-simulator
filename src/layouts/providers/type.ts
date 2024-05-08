@@ -89,7 +89,6 @@ export interface SimulatorTradingChartDetailsContextITF {
     setLongPositionDataTPSL: (position: PositionITF) => void
     setShortPositionDataTPSL: (position: PositionITF) => void
     serOrderHistoryTPSL: (history: OrderHistoryTPSLITF[]) => void
-    setCurrentOrdersTPSL: (order: CurrentOrdersTPSLITF[]) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
     setConfirmedLongPositionDataTPSL: (tpsl: PositionITF) => void
     setConfirmedShortPositionDataTPSL: (tpsl: PositionITF) => void
@@ -102,6 +101,7 @@ export interface SimulatorTradingChartDetailsContextITF {
     setStopLimitPreOrders: (order: (prev: StopOrderITF[]) => StopOrderITF[]) => void
     setStopLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setTradeHistory: (history: (prev: TradeHistoryITF[]) => TradeHistoryITF[]) => void
+    setCurrentOrdersTPSL: (order: (prev: CurrentOrdersTPSLITF[]) => CurrentOrdersTPSLITF[]) => void
     setProfitLossHistory: (history: (prev: ProfitLossHistoryITF[]) => ProfitLossHistoryITF[]) => void
     setOrderHistoryLimitMarket: (order: (prev: OrderHistoryLimitMarketITF[]) => OrderHistoryLimitMarketITF[]) => void
     setOrderHistoryConditional: (history: (prev: OrderHistoryConditionalITF[]) => OrderHistoryConditionalITF[]) => void
@@ -199,11 +199,11 @@ export interface ProfitLossHistoryITF {
 export interface CurrentOrdersTPSLITF {
     contracts: string
     quantity: string
-    trigger_price: { tp: string, sl: string }
+    trigger_price: { tp: number, sl: number }
     order_price: string
     trade_type: TRADE_TYPE
     order_No: string
-    order_time: string
+    order_time: Date
     color: OrderColorT
 }
 

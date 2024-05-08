@@ -1,13 +1,21 @@
 import React, {useEffect, useState} from "react";
+import {v4 as uuidv4} from 'uuid';
 
-import {useFuturesTradingModalContext, useSimulatorToolsContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
-import {CALL_ENVIRONMENT, MODALS, ORDER_TYPE, TRAD_TYPE, TRADE_POSITION, TRIGGERS} from "utils";
+import {
+    useFuturesTradingModalContext,
+    useSimulatorOptionsContext,
+    useSimulatorToolsContext,
+    useSimulatorTradingChartDetailsContext,
+    useSimulatorTradingContext
+} from "layouts/providers";
+import {CALL_ENVIRONMENT, MODALS, ORDER_TYPE, TRAD_TYPE, TRADE_POSITION, TRADE_TYPE, TRIGGERS} from "utils";
 
 import {Button, Input, InputRangeSlider, ModalWindowTemplate} from "components";
 import {interruptionRef} from "utils/functions/interruptionRef";
 import TPSLTrigger from "../Components/TPSLTrigger";
 
 import {HeaderItemITF, InputOptionsITF, PositionDataITF, SettingsFieldsITF, TPSLDataForModalITF} from "../type";
+import {OrderColorT} from "layouts/providers/type";
 
 import "./style.scss"
 
@@ -43,12 +51,14 @@ const settingsFields: SettingsFieldsITF = {
 const TPSL: React.FC = () => {
     const settingsFieldsCopy = interruptionRef(settingsFields)
 
+    const {cryptoType} = useSimulatorOptionsContext()
     const {setCurrentSpeed} = useSimulatorToolsContext()
     const {adjustLeverage} = useSimulatorTradingContext()
     const {currentCryptoData} = useSimulatorTradingChartDetailsContext()
     const {setCurrentModal} = useFuturesTradingModalContext()
     const {dataForModal} = useFuturesTradingModalContext<TPSLDataForModalITF>()
     const {
+        setCurrentOrdersTPSL,
         longPositionDataTPSL,
         shortPositionDataTPSL,
         confirmedLongPositionData,
@@ -298,7 +308,7 @@ const TPSL: React.FC = () => {
             case "stop_trigger_price":
                 switch (path.current_stop_trigger) {
                     case TRIGGERS.ROI:
-                        const calculatedROI = calculateROI(currentPrice, Number(value), adjustLeverage)
+                        const calculatedROI = calculateROI(currentPrice, valueToNumber, adjustLeverage)
 
                         if (activeTradeType === TRADE_POSITION.LONG) {
                             path.stop_trigger_stop = valueToNumber ? calculatedROI : ""
@@ -459,6 +469,19 @@ const TPSL: React.FC = () => {
             if (activeTradeType === TRADE_POSITION.LONG && dataForModal.call === CALL_ENVIRONMENT.INSIDE) {
                 setConfirmedLongPositionDataTPSL(confirmedData)
             }
+
+            const tpSlOrderData = {
+                contracts: `${cryptoType}USDT`,
+                quantity: "Entire Position",
+                trigger_price: {tp: Number(confirmedData.profit_trigger_price), sl: Number(confirmedData.stop_trigger_price)},
+                order_price: "Market",
+                trade_type: activeTradeType === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
+                order_No: uuidv4().split("-")[0],
+                order_time: new Date(),
+                color: (activeTradeType === TRADE_POSITION.LONG ? "red" : "green") as OrderColorT,
+            }
+
+            setCurrentOrdersTPSL(prev => [...prev, tpSlOrderData])
         }
 
         setCurrentModal(MODALS.CLOSE)

@@ -51,6 +51,7 @@ export interface PositionDataITF {
     stop_validation: SettingsFieldsValidationITF
     name: TRADE_POSITION
     entry_price?: number
+    id?: string
 }
 
 export interface SettingsFieldsValidationITF {
