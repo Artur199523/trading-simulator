@@ -91,6 +91,11 @@ export enum TRADE_TYPE {
     OPEN_SHORT = "Open Short"
 }
 
+export enum TRIGGER_PRICE_TYPE {
+    PROFIT = "profit",
+    STOP = "stop"
+}
+
 export enum EXIST_TYPE {
     TRADE = "Trade"
 }

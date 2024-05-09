@@ -2,11 +2,11 @@ import React, {useEffect, useState} from "react";
 import {v4 as uuidv4} from 'uuid';
 
 import {
-    useFuturesTradingModalContext,
-    useSimulatorOptionsContext,
     useSimulatorToolsContext,
-    useSimulatorTradingChartDetailsContext,
-    useSimulatorTradingContext
+    useSimulatorOptionsContext,
+    useSimulatorTradingContext,
+    useFuturesTradingModalContext,
+    useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
 import {CALL_ENVIRONMENT, MODALS, ORDER_TYPE, TRAD_TYPE, TRADE_POSITION, TRADE_TYPE, TRIGGERS} from "utils";
 
@@ -95,13 +95,13 @@ const TPSL: React.FC = () => {
         }
 
         if (confirmedLongPositionDataTPSL && dataForModal.call === CALL_ENVIRONMENT.INSIDE) {
-            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Long: confirmedLongPositionDataTPSL}))
+            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Long: interruptionRef(confirmedLongPositionDataTPSL)}))
             setActiveTradeType(TRADE_POSITION.LONG)
             setIsUpdate(true)
         }
 
         if (confirmedShortPositionDataTPSL && dataForModal.call === CALL_ENVIRONMENT.INSIDE) {
-            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: confirmedShortPositionDataTPSL}))
+            setFieldsValue((prev: SettingsFieldsITF) => ({...prev, Short: interruptionRef(confirmedShortPositionDataTPSL)}))
             setActiveTradeType(TRADE_POSITION.SHORT)
             setIsUpdate(true)
         }
@@ -446,6 +446,14 @@ const TPSL: React.FC = () => {
         const triggerProfitPrice = confirmedData.profit_trigger_price
         const triggerStopPrice = confirmedData.stop_trigger_price
 
+        if (!triggerProfitPrice && confirmedLongPositionDataTPSL) {
+            //@TODO need to add tp/sl cancel order history
+        }
+
+        if (!triggerStopPrice && !confirmedShortPositionDataTPSL) {
+
+        }
+
         if (!triggerProfitPrice && !triggerStopPrice) {
             setLongPositionDataTPSL(null)
             setShortPositionDataTPSL(null)
@@ -473,6 +481,7 @@ const TPSL: React.FC = () => {
             const tpSlOrderData = {
                 contracts: `${cryptoType}USDT`,
                 quantity: "Entire Position",
+                quantity_value: Number(orderValue / (isInsideAction ? currentPrice : currentCryptoData.close)),
                 trigger_price: {tp: Number(confirmedData.profit_trigger_price), sl: Number(confirmedData.stop_trigger_price)},
                 order_price: "Market",
                 trade_type: activeTradeType === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,

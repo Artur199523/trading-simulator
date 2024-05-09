@@ -1,6 +1,6 @@
 import React from "react";
 
-import {EXIST_TYPE, HEDGING, HIDDEN_BLOCKS, MARGIN_MODE, MODALS, ORDER_STATUS, POSITION_MODE, TRADE_POSITION, TRADE_TYPE} from "utils";
+import {EXIST_TYPE, HEDGING, HIDDEN_BLOCKS, MARGIN_MODE, MODALS, ORDER_STATUS, POSITION_MODE, TRADE_POSITION, TRADE_TYPE, TRIGGER_PRICE_TYPE} from "utils";
 
 import {PositionDataITF} from "components/molecules/RightBar/Futures/type";
 import {HistoryItem} from "store/simulator/type";
@@ -88,7 +88,6 @@ export interface SimulatorTradingChartDetailsContextITF {
     setCurrentCryptoData: (data: HistoryItem) => void
     setLongPositionDataTPSL: (position: PositionITF) => void
     setShortPositionDataTPSL: (position: PositionITF) => void
-    serOrderHistoryTPSL: (history: OrderHistoryTPSLITF[]) => void
     setLimitOrders: (order: (prev: OrderITF[]) => any[]) => void
     setConfirmedLongPositionDataTPSL: (tpsl: PositionITF) => void
     setConfirmedShortPositionDataTPSL: (tpsl: PositionITF) => void
@@ -101,6 +100,7 @@ export interface SimulatorTradingChartDetailsContextITF {
     setStopLimitPreOrders: (order: (prev: StopOrderITF[]) => StopOrderITF[]) => void
     setStopLimitOrdersMarks: (mark: (prev: OrderMarkITF[]) => OrderMarkITF[]) => void
     setTradeHistory: (history: (prev: TradeHistoryITF[]) => TradeHistoryITF[]) => void
+    serOrderHistoryTPSL: (history: (prev: OrderHistoryTPSLITF[]) => OrderHistoryTPSLITF[]) => void
     setCurrentOrdersTPSL: (order: (prev: CurrentOrdersTPSLITF[]) => CurrentOrdersTPSLITF[]) => void
     setProfitLossHistory: (history: (prev: ProfitLossHistoryITF[]) => ProfitLossHistoryITF[]) => void
     setOrderHistoryLimitMarket: (order: (prev: OrderHistoryLimitMarketITF[]) => OrderHistoryLimitMarketITF[]) => void
@@ -199,6 +199,7 @@ export interface ProfitLossHistoryITF {
 export interface CurrentOrdersTPSLITF {
     contracts: string
     quantity: string
+    quantity_value: number
     trigger_price: { tp: number, sl: number }
     order_price: string
     trade_type: TRADE_TYPE
@@ -234,12 +235,13 @@ export interface OrderHistoryTPSLITF {
     contracts: string
     filled_actual_qty: { filled: number, actual_qty: number }
     trigger_price: number
-    filled_price_order_price: { filled_price: number, order_price: string }
+    filled_price_order_price: { filled_price: number | string, order_price: string }
     trade_type: TRADE_TYPE
     status: ORDER_STATUS
     order_No: string
-    order_time: string
+    order_time: Date
     color: OrderColorT
+    trigger_price_type: TRIGGER_PRICE_TYPE
 }
 
 export interface TradeHistoryITF {
