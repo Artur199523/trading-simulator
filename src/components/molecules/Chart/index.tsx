@@ -9,10 +9,10 @@ import {useAppDispatch, useAppSelector} from "store";
 
 import UnrealizedItem from "../RightBar/Futures/Components/UnrealizedItem";
 
+import {ConfirmedPositionData} from "../../../layouts/providers/type";
 import {HistoryItem, TradingVolumeITF} from "store/simulator/type";
 
 import "./style.scss"
-import {ConfirmedPositionData} from "../../../layouts/providers/type";
 
 const Chart: React.FC = () => {
     const dispatch = useAppDispatch()
@@ -21,6 +21,8 @@ const Chart: React.FC = () => {
     const {isPlay, next, currentSpeed, setNext} = useSimulatorToolsContext()
     const {setBalanceTradeableCrypto, setBalanceUSDT} = useSimulatorPlayerInfoContext()
     const {
+        confirmedShortPositionDataTPSL,
+        confirmedLongPositionDataTPSL,
         confirmedShortPositionData,
         confirmedLongPositionData,
         stopLimitOrdersMarks,
@@ -298,6 +300,8 @@ const Chart: React.FC = () => {
 
         //========================FUTURES====================
         trackChangesOfPositions()
+        trackPositionLiquidity()
+        trackOrderOfTPSL()
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentCryptoData?.close]);
@@ -339,6 +343,43 @@ const Chart: React.FC = () => {
                     />
                 }
             })
+        }
+    }
+
+    const trackOrderOfTPSL = () => {
+        if (confirmedLongPositionDataTPSL) {
+            const {stop_trigger_price, profit_trigger_price} = confirmedLongPositionDataTPSL
+
+            if (currentCryptoData.close > Number(profit_trigger_price)) {
+                //@TODO create logic
+            }
+
+            if (currentCryptoData.close < Number(stop_trigger_price)) {
+                //@TODO create logic
+            }
+        }
+
+        if (confirmedShortPositionDataTPSL) {
+            const {stop_trigger_price, profit_trigger_price} = confirmedShortPositionDataTPSL
+
+            if (currentCryptoData.close < Number(profit_trigger_price)) {
+                //@TODO create logic
+            }
+
+            if (currentCryptoData.close > Number(stop_trigger_price)) {
+                //@TODO create logic
+            }
+        }
+    }
+
+    const trackPositionLiquidity = () => {
+
+        if (confirmedLongPositionData && confirmedLongPositionData.liquidity_price && confirmedLongPositionData.liquidity_price > currentCryptoData.close) {
+            //@TODO create logic
+        }
+
+        if (confirmedShortPositionData && confirmedShortPositionData.liquidity_price && confirmedShortPositionData.liquidity_price < currentCryptoData.close) {
+            //@TODO create logic
         }
     }
 

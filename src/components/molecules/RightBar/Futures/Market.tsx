@@ -7,16 +7,18 @@ import {
     useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
 import {
+    INFO,
     ERROR,
     MODALS,
     HEDGING,
     TRAD_TYPE,
     POSITION_MODE,
     TRADE_POSITION,
+    fixedNumber,
     interruptionRef,
     showNotification,
     calculationOrderCostLongPosition,
-    calculationOrderCostShortPosition, formatNumber, fixedNumber
+    calculationOrderCostShortPosition
 } from "utils";
 
 import OrderValueInfo from "./Components/OrderValueInfo";
@@ -36,7 +38,7 @@ const Market: React.FC = () => {
     const fieldsCopy = interruptionRef(settingsFields)
     const [fieldsValue, setFieldsValue] = useState<SettingsFieldsMarketITF>(fieldsCopy)
 
-    const {adjustLeverage, positionMode, riskLimit} = useSimulatorTradingContext()
+    const {adjustLeverage, positionMode, riskLimit,} = useSimulatorTradingContext()
     const {setCurrentModal, setDataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
     const {
         longPositionDataTPSL,
@@ -44,6 +46,7 @@ const Market: React.FC = () => {
         setLongPositionDataTPSL,
         setShortPositionDataTPSL,
     } = useSimulatorTradingChartDetailsContext()
+    const {confirmedLongPositionData, confirmedShortPositionData} = useSimulatorTradingChartDetailsContext()
     const {balanceUSDT} = useSimulatorPlayerInfoContext()
 
     const isTPSL = !!longPositionDataTPSL || !!shortPositionDataTPSL
@@ -63,6 +66,10 @@ const Market: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [adjustLeverage]);
 
+    useEffect(() => {
+        setFieldsValue(settingsFields)
+    }, [confirmedShortPositionData, confirmedLongPositionData]);
+
     const inputHandle = (event: React.ChangeEvent<HTMLInputElement>) => {
         const {value, name} = event.target
         const fields = interruptionRef(fieldsValue)
@@ -80,7 +87,7 @@ const Market: React.FC = () => {
             case "order_value_percent":
                 const calculatedOrderValueUSDT = valueToNumber * (balanceUSDT * adjustLeverage) / 100
 
-                fields.order_value_usdt = fixedNumber(calculatedOrderValueUSDT,4)
+                fields.order_value_usdt = fixedNumber(calculatedOrderValueUSDT, 4)
                 break
         }
 
@@ -91,6 +98,11 @@ const Market: React.FC = () => {
         const currentOrderValue = fieldsValue.order_value_usdt
         const orderCostLong = calculationOrderCostLongPosition(currentOrderValue, adjustLeverage, 0.055)
         const orderCostShort = calculationOrderCostShortPosition(currentOrderValue, adjustLeverage, 0.055)
+
+        if (confirmedShortPositionData || confirmedLongPositionData) {
+            showNotification(INFO.INCREASE_POSITION, "info", 0)
+            return;
+        }
 
         if (process.position === TRADE_POSITION.LONG && orderCostLong > balanceUSDT) {
             showNotification(ERROR.INSUFFICIENT, "error", 0)
@@ -107,10 +119,10 @@ const Market: React.FC = () => {
             return
         }
 
-        if (Number(currentOrderValue) > riskLimit) {
-            showNotification(ERROR.EXCEEDED_RISK_ZONE, "error", 0)
-            return;
-        }
+        // if (Number(currentOrderValue) > riskLimit) {
+        //     showNotification(ERROR.EXCEEDED_RISK_ZONE, "error", 0)
+        //     return;
+        // }
 
         if (positionMode === POSITION_MODE.HEDGE) {
             if (process.hedgingType === HEDGING.OPEN) {

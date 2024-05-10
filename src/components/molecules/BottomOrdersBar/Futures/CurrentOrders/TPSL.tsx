@@ -44,9 +44,17 @@ const TPSL: React.FC = () => {
             setConfirmedShortPositionDataTPSL(null)
         }
 
-        serOrderHistoryTPSL(prev =>
-            [{...generatedHistory}, {...generatedHistory, trigger_price: trigger_price.sl, trigger_price_type: TRIGGER_PRICE_TYPE.STOP}, ...prev]
-        )
+        if (Number(trigger_price.tp)) {
+            serOrderHistoryTPSL(prev =>
+                [{...generatedHistory}, ...prev]
+            )
+        }
+
+        if (Number(trigger_price.sl)) {
+            serOrderHistoryTPSL(prev =>
+                [{...generatedHistory, trigger_price: trigger_price.sl, trigger_price_type: TRIGGER_PRICE_TYPE.STOP}, ...prev]
+            )
+        }
 
         showNotification("Order removed successfully", "success", 0)
     }

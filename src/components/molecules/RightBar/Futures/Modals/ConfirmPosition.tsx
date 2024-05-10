@@ -3,11 +3,12 @@ import classNames from "classnames";
 import {v4 as uuidv4} from 'uuid';
 
 import {
+    useSimulatorToolsContext,
     useSimulatorOptionsContext,
     useSimulatorTradingContext,
     useFuturesTradingModalContext,
     useSimulatorPlayerInfoContext,
-    useSimulatorTradingChartDetailsContext, useSimulatorToolsContext
+    useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
 import {
     MODALS,
@@ -68,13 +69,14 @@ const ConfirmPosition: React.FC = () => {
         setConfirmedShortPositionDataHistory,
     } = useSimulatorTradingChartDetailsContext()
     const {setBalanceUSDT} = useSimulatorPlayerInfoContext()
-    const {setCurrentSpeed} = useSimulatorToolsContext()
+    const {setCurrentSpeed, setIsPlay} = useSimulatorToolsContext()
     const {setCurrentModal, dataForModal} = useFuturesTradingModalContext<ConfirmPositionDataForModalWithTPSLITF>()
 
     const {trade_position_process, trade_type, order_value_usdt, profit_trigger_price, stop_trigger_price, trade_position} = dataForModal
     const {close: currentPrice} = currentCryptoData
 
     useEffect(() => {
+        setIsPlay(true)
         setCurrentSpeed(1)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -195,7 +197,7 @@ const ConfirmPosition: React.FC = () => {
             contracts: `${cryptoType}USDT`,
             filled_total: {filled: calculatedQuantity, total: calculatedQuantity},
             filled_price_order_price: {filled_price: currentPrice, order_price: "Market"},
-            trade_type: positionType === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
+            trade_type: positionType === TRADE_POSITION.LONG ? TRADE_TYPE.OPEN_LONG : TRADE_TYPE.CLOSE_SHORT,
             order_type: "Market",
             filled_type: EXIST_TYPE.TRADE,
             transaction_id: uuidv4().split("-")[0],
@@ -228,7 +230,7 @@ const ConfirmPosition: React.FC = () => {
                 im: calculationIM(order_value_usdt, adjustLeverage),
                 close_by: <OrderClosedBy positionType={positionType}/>,
                 mm: calculationMM(adjustLeverage, 0.55, order_value_usdt),
-                liquidity_price: calculatedLiquidity ? calculatedLiquidity : "--",
+                liquidity_price: calculatedLiquidity ? calculatedLiquidity : 0,
                 unrealized_pl: <UnrealizedItem profit={0} percent={0} isIncrease={false}/>,
                 quantity: <QuantityItem positionType={positionType} value={calculatedQuantity}/>,
                 realized_pl: -calculationRealizedPL(calculatedQuantity, currentPrice, 0.055),

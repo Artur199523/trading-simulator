@@ -37,14 +37,20 @@ const OrderPlacementPreferences: React.FC = () => {
             <div className="futures-modal_order_placement_preferences">
                 <div className="futures-modal_order_placement_preferences_check-item">
                     <div className="futures-modal_order_placement_preferences_check-item_checkbox">
-                        <CheckBox extent="medium" checked={isChecked.crypto} name="tradable_crypto" onChange={(event) => handleChange(event)}/>
+                        <div>
+                            <CheckBox extent="medium" checked={isChecked.crypto} name="tradable_crypto" onChange={(event) => handleChange(event)}/>
+                            <span>Order by Qty</span>
+                        </div>
                         <span>{cryptoType}</span>
                     </div>
                     <p>Please enter your order qty denominated in {cryptoType} terms.</p>
                 </div>
                 <div className="futures-modal_order_placement_preferences_check-item">
                     <div className="futures-modal_order_placement_preferences_check-item_checkbox">
-                        <CheckBox extent="medium" checked={isChecked.usdt} name="usdt" onChange={(event) => handleChange(event)}/>
+                        <div>
+                            <CheckBox extent="medium" checked={isChecked.usdt} name="usdt" onChange={(event) => handleChange(event)}/>
+                            <span>Order by Value</span>
+                        </div>
                         <span>USDT</span>
                     </div>
                     <p>Please enter your desired order value. You can modify the required margin by adjusting the applied leverage.</p>

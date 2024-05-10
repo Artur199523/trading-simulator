@@ -49,25 +49,17 @@
             margin-right: 12px;
           }
         }
+      }
 
-        &_content {
-          .TabContent {
-            max-height: 220px;
+      & > .TabContent {
+        max-height: 250px;
+        overflow: auto;
+        height: 100%;
+        position: relative;
 
-            td {
-              height: 50px;
-            }
-          }
+        td {
+          height: 50px;
         }
-
-        & > .TabContent {
-          max-height: 250px;
-          overflow: auto;
-          height: 100%;
-          position: relative;
-        }
-
-
       }
       .quantity {
         color: $long;

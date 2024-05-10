@@ -8,14 +8,14 @@ import {
     useFuturesTradingModalContext,
     useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
-import {CALL_ENVIRONMENT, MODALS, ORDER_TYPE, TRAD_TYPE, TRADE_POSITION, TRADE_TYPE, TRIGGERS} from "utils";
+import {CALL_ENVIRONMENT, MODALS, ORDER_STATUS, ORDER_TYPE, TRAD_TYPE, TRADE_POSITION, TRADE_TYPE, TRIGGER_PRICE_TYPE, TRIGGERS} from "utils";
 
 import {Button, Input, InputRangeSlider, ModalWindowTemplate} from "components";
 import {interruptionRef} from "utils/functions/interruptionRef";
 import TPSLTrigger from "../Components/TPSLTrigger";
 
 import {HeaderItemITF, InputOptionsITF, PositionDataITF, SettingsFieldsITF, TPSLDataForModalITF} from "../type";
-import {OrderColorT} from "layouts/providers/type";
+import {OrderColorT, OrderHistoryTPSLITF} from "layouts/providers/type";
 
 import "./style.scss"
 
@@ -58,6 +58,8 @@ const TPSL: React.FC = () => {
     const {setCurrentModal} = useFuturesTradingModalContext()
     const {dataForModal} = useFuturesTradingModalContext<TPSLDataForModalITF>()
     const {
+        currentOrdersTPSL,
+        serOrderHistoryTPSL,
         setCurrentOrdersTPSL,
         longPositionDataTPSL,
         shortPositionDataTPSL,
@@ -446,12 +448,33 @@ const TPSL: React.FC = () => {
         const triggerProfitPrice = confirmedData.profit_trigger_price
         const triggerStopPrice = confirmedData.stop_trigger_price
 
-        if (!triggerProfitPrice && confirmedLongPositionDataTPSL) {
-            //@TODO need to add tp/sl cancel order history
-        }
+        if (currentOrdersTPSL.length) {
+            const {contracts, color, order_No, trade_type, trigger_price, quantity_value, order_price} = currentOrdersTPSL[0]
 
-        if (!triggerStopPrice && !confirmedShortPositionDataTPSL) {
+            const generatedHistory: OrderHistoryTPSLITF = {
+                color: color,
+                order_No: order_No,
+                contracts: contracts,
+                trade_type: trade_type,
+                order_time: new Date(),
+                status: ORDER_STATUS.CANCELED,
+                trigger_price: trigger_price.tp,
+                trigger_price_type: TRIGGER_PRICE_TYPE.PROFIT,
+                filled_actual_qty: {filled: 0, actual_qty: Number(quantity_value)},
+                filled_price_order_price: {filled_price: "--", order_price: order_price}
+            }
 
+            if (!triggerProfitPrice) {
+                serOrderHistoryTPSL(prev => [{...generatedHistory}, ...prev])
+                // setCurrentOrdersTPSL(prev => [{...prev[0], trigger_price: {...trigger_price, tp: 0,}}])
+            }
+
+            if (!triggerStopPrice) {
+                serOrderHistoryTPSL(prev =>
+                    [{...generatedHistory, trigger_price: trigger_price.sl, trigger_price_type: TRIGGER_PRICE_TYPE.STOP}, ...prev]
+                )
+                setCurrentOrdersTPSL(prev => [{...prev[0], trigger_price: {...trigger_price, sl: 0,}}])
+            }
         }
 
         if (!triggerProfitPrice && !triggerStopPrice) {
@@ -478,19 +501,21 @@ const TPSL: React.FC = () => {
                 setConfirmedLongPositionDataTPSL(confirmedData)
             }
 
-            const tpSlOrderData = {
-                contracts: `${cryptoType}USDT`,
-                quantity: "Entire Position",
-                quantity_value: Number(orderValue / (isInsideAction ? currentPrice : currentCryptoData.close)),
-                trigger_price: {tp: Number(confirmedData.profit_trigger_price), sl: Number(confirmedData.stop_trigger_price)},
-                order_price: "Market",
-                trade_type: activeTradeType === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
-                order_No: uuidv4().split("-")[0],
-                order_time: new Date(),
-                color: (activeTradeType === TRADE_POSITION.LONG ? "red" : "green") as OrderColorT,
-            }
+            if(!currentOrdersTPSL.length){
+                const tpSlOrderData = {
+                    contracts: `${cryptoType}USDT`,
+                    quantity: "Entire Position",
+                    quantity_value: Number(orderValue / (isInsideAction ? currentPrice : currentCryptoData.close)),
+                    trigger_price: {tp: Number(confirmedData.profit_trigger_price), sl: Number(confirmedData.stop_trigger_price)},
+                    order_price: "Market",
+                    trade_type: activeTradeType === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
+                    order_No: uuidv4().split("-")[0],
+                    order_time: new Date(),
+                    color: (activeTradeType === TRADE_POSITION.LONG ? "red" : "green") as OrderColorT,
+                }
 
-            setCurrentOrdersTPSL(prev => [...prev, tpSlOrderData])
+                setCurrentOrdersTPSL(prev => [...prev, tpSlOrderData])
+            }
         }
 
         setCurrentModal(MODALS.CLOSE)

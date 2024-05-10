@@ -17,6 +17,7 @@ const TradeHistory: React.FC = () => {
         const data = interruptionRef(tradeHistory)
 
         return data.map((order) => {
+
             const {contracts, color, filled_price_order_price, filled_total, trade_type, transaction_time} = order
             const {filled_price, order_price} = filled_price_order_price
             const {filled, total} = filled_total

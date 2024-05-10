@@ -14,19 +14,21 @@ import "../style.scss"
 
 const FuturesOrders = () => {
     const [activeTab, setActiveTab] = useState<string>(ORDER_ACTIVE_TAB.POSITION)
-    const {confirmedLongPositionData, confirmedShortPositionDataTPSL} = useSimulatorTradingChartDetailsContext()
+    const {confirmedLongPositionData, confirmedShortPositionData, currentOrdersTPSL} = useSimulatorTradingChartDetailsContext()
 
     const longPositionCount = confirmedLongPositionData ? 1 : 0
-    const shortPositionCount = confirmedShortPositionDataTPSL ? 1 : 0
-    const totalCount = longPositionCount + shortPositionCount
+    const shortPositionCount = confirmedShortPositionData ? 1 : 0
+    const totalCountOfPositions = longPositionCount + shortPositionCount
+
+    const ordersTPSL = currentOrdersTPSL.length
 
     return (
         <div className="bottom-order-bar_futures-orders">
             <div className="bottom-order-bar_futures-orders_tabs">
                 <span>Trade</span>
-                <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.POSITION} setActiveTab={setActiveTab}>{`Position(${totalCount})`}</TabItem>
+                <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.POSITION} setActiveTab={setActiveTab}>{`Position(${totalCountOfPositions})`}</TabItem>
                 <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.PL} setActiveTab={setActiveTab}>P&L</TabItem>
-                <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.CURRENT_ORDERS} setActiveTab={setActiveTab}>Current Orders(0)</TabItem>
+                <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.CURRENT_ORDERS} setActiveTab={setActiveTab}>{`Current Orders(${ordersTPSL})`}</TabItem>
                 <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.ORDER_HISTORY} setActiveTab={setActiveTab}>Order History</TabItem>
                 <TabItem activeTab={activeTab} id={ORDER_ACTIVE_TAB.TRADE_HISTORY} setActiveTab={setActiveTab}>Trade History</TabItem>
             </div>

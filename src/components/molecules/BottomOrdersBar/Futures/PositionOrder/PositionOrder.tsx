@@ -10,10 +10,16 @@ const PositionOrder = () => {
     let positionsData = [];
 
     if (confirmedShortPositionData) {
+        const {liquidity_price} = confirmedShortPositionData
+        confirmedShortPositionData.liquidity_price = liquidity_price ? liquidity_price : "--"
+
         positionsData = [confirmedShortPositionData]
     }
 
     if (confirmedLongPositionData) {
+        const {liquidity_price} = confirmedLongPositionData
+        confirmedLongPositionData.liquidity_price = liquidity_price ? liquidity_price : "--"
+
         positionsData = [...positionsData, confirmedLongPositionData]
     }
 
