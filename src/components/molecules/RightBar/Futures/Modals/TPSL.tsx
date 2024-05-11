@@ -32,6 +32,7 @@ const settingsFields: SettingsFieldsITF = {
         stop_percent: 0,
         stop_validation: {issue: false, message: "The Stop Loss price must be lower than the order price"},
         name: TRADE_POSITION.LONG,
+        order_No: ""
     },
     Short: {
         current_profit_trigger: TRIGGERS.ROI,
@@ -45,6 +46,7 @@ const settingsFields: SettingsFieldsITF = {
         stop_percent: 0,
         stop_validation: {issue: false, message: "The Stop Loss price must be higher than the order price"},
         name: TRADE_POSITION.SHORT,
+        order_No: ""
     }
 }
 
@@ -447,6 +449,9 @@ const TPSL: React.FC = () => {
         const confirmedData: PositionDataITF = interruptionRef(fieldsValue[activeTradeType])
         const triggerProfitPrice = confirmedData.profit_trigger_price
         const triggerStopPrice = confirmedData.stop_trigger_price
+        const orderNo = uuidv4().split("-")[0]
+
+        confirmedData.order_No = orderNo
 
         if (currentOrdersTPSL.length) {
             const {contracts, color, order_No, trade_type, trigger_price, quantity_value, order_price} = currentOrdersTPSL[0]
@@ -466,7 +471,7 @@ const TPSL: React.FC = () => {
 
             if (!triggerProfitPrice) {
                 serOrderHistoryTPSL(prev => [{...generatedHistory}, ...prev])
-                // setCurrentOrdersTPSL(prev => [{...prev[0], trigger_price: {...trigger_price, tp: 0,}}])
+                setCurrentOrdersTPSL(prev => [{...prev[0], trigger_price: {...trigger_price, tp: 0,}}])
             }
 
             if (!triggerStopPrice) {
@@ -475,6 +480,8 @@ const TPSL: React.FC = () => {
                 )
                 setCurrentOrdersTPSL(prev => [{...prev[0], trigger_price: {...trigger_price, sl: 0,}}])
             }
+
+            setCurrentOrdersTPSL(prev => [{...prev[0], trigger_price: {tp: Number(triggerProfitPrice), sl: Number(triggerStopPrice)}, order_time: new Date()}])
         }
 
         if (!triggerProfitPrice && !triggerStopPrice) {
@@ -501,7 +508,7 @@ const TPSL: React.FC = () => {
                 setConfirmedLongPositionDataTPSL(confirmedData)
             }
 
-            if(!currentOrdersTPSL.length){
+            if (!currentOrdersTPSL.length) {
                 const tpSlOrderData = {
                     contracts: `${cryptoType}USDT`,
                     quantity: "Entire Position",
@@ -509,7 +516,7 @@ const TPSL: React.FC = () => {
                     trigger_price: {tp: Number(confirmedData.profit_trigger_price), sl: Number(confirmedData.stop_trigger_price)},
                     order_price: "Market",
                     trade_type: activeTradeType === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
-                    order_No: uuidv4().split("-")[0],
+                    order_No: orderNo,
                     order_time: new Date(),
                     color: (activeTradeType === TRADE_POSITION.LONG ? "red" : "green") as OrderColorT,
                 }

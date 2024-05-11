@@ -1,15 +1,27 @@
 import React, {useEffect, useRef, useState, memo} from "react";
 import {createChart} from "lightweight-charts";
+import {v4 as uuidv4} from 'uuid'
 
 import {useSimulatorOptionsContext, useSimulatorPlayerInfoContext, useSimulatorToolsContext, useSimulatorTradingChartDetailsContext} from "layouts/providers";
-import {multiply, plus, showNotification, calculateProfitPriceByTrigger, calculationChange} from "utils";
+import {
+    multiply,
+    plus,
+    showNotification,
+    calculateProfitPriceByTrigger,
+    calculationChange,
+    TRADE_POSITION,
+    TRADE_TYPE,
+    ORDER_STATUS,
+    EXIST_TYPE,
+    INFO, TRIGGER_PRICE_TYPE, fixedNumber, TRAD_TYPE
+} from "utils";
 import {candleStickOptions, chartOptions, histogramApplyOptions, histogramOptions} from "./options";
 import {getCryptoTradingHistory} from "store/simulator/actions";
 import {useAppDispatch, useAppSelector} from "store";
 
 import UnrealizedItem from "../RightBar/Futures/Components/UnrealizedItem";
 
-import {ConfirmedPositionData} from "../../../layouts/providers/type";
+import {ConfirmedPositionData, OrderHistoryLimitMarketITF, OrderHistoryTPSLITF, ProfitLossHistoryITF, TradeHistoryITF} from "../../../layouts/providers/type";
 import {HistoryItem, TradingVolumeITF} from "store/simulator/type";
 
 import "./style.scss"
@@ -31,14 +43,22 @@ const Chart: React.FC = () => {
         limitOrdersMarks,
         stopLimitOrders,
         limitOrders,
-        setConfirmedLongPositionData,
+        currentOrdersTPSL,
+        setConfirmedShortPositionDataTPSL,
+        setConfirmedLongPositionDataTPSL,
         setConfirmedShortPositionData,
+        setConfirmedLongPositionData,
+        setOrderHistoryLimitMarket,
         setStopLimitOrdersMarks,
         setStopLimitPreOrders,
         setCurrentCryptoData,
+        setProfitLossHistory,
+        setCurrentOrdersTPSL,
         setLimitOrdersMarks,
+        serOrderHistoryTPSL,
         setStopLimitOrders,
         setMarketOrders,
+        setTradeHistory,
         setLimitOrders,
     } = useSimulatorTradingChartDetailsContext()
 
@@ -349,13 +369,72 @@ const Chart: React.FC = () => {
     const trackOrderOfTPSL = () => {
         if (confirmedLongPositionDataTPSL) {
             const {stop_trigger_price, profit_trigger_price} = confirmedLongPositionDataTPSL
+            const {calculated_quantity, entry_price, leverage, value, realized_pl, im} = confirmedLongPositionData
+            const {color, order_No, contracts, trade_type, trigger_price, quantity_value, order_price} = currentOrdersTPSL[0]
 
-            if (currentCryptoData.close > Number(profit_trigger_price)) {
-                //@TODO create logic
-            }
+            if ((Number(profit_trigger_price) && currentCryptoData.close > Number(profit_trigger_price)) || (Number(stop_trigger_price) && currentCryptoData.close < Number(stop_trigger_price))) {
+                const triggerType = (Number(profit_trigger_price) && currentCryptoData.close > Number(profit_trigger_price)) ? TRIGGER_PRICE_TYPE.PROFIT : TRIGGER_PRICE_TYPE.STOP
+                const currentTriggerPrice = triggerType === TRIGGER_PRICE_TYPE.PROFIT ? profit_trigger_price : stop_trigger_price
+                const profit = calculateProfitPriceByTrigger(currentTriggerPrice, entry_price, leverage, value)
 
-            if (currentCryptoData.close < Number(stop_trigger_price)) {
-                //@TODO create logic
+                const orderHistory: OrderHistoryLimitMarketITF = {
+                    contracts: `${cryptoType}USDT`,
+                    filled_total: {filled: calculated_quantity, total: calculated_quantity},
+                    filled_price_order_price: {filled_price: Number(currentTriggerPrice), order_price: "Market"},
+                    trade_type: TRADE_TYPE.CLOSE_LONG,
+                    order_type: "Market",
+                    status: ORDER_STATUS.FILLED,
+                    order_No: uuidv4().split("-")[0],
+                    order_time: new Date(),
+                    color: "red",
+                }
+
+                const tradeHistory: TradeHistoryITF = {
+                    contracts: `${cryptoType}USDT`,
+                    filled_total: {filled: calculated_quantity, total: calculated_quantity},
+                    filled_price_order_price: {filled_price: Number(currentTriggerPrice), order_price: "Market"},
+                    trade_type: TRADE_TYPE.CLOSE_LONG,
+                    order_type: "Market",
+                    filled_type: EXIST_TYPE.TRADE,
+                    transaction_id: uuidv4().split("-")[0],
+                    transaction_time: new Date(),
+                    color: "red",
+                }
+
+                const profitLossHistory: ProfitLossHistoryITF = {
+                    contracts: `${cryptoType}USDT`,
+                    quantity: calculated_quantity,
+                    entry_price,
+                    exit_price: Number(currentTriggerPrice),
+                    trade_type: TRADE_TYPE.CLOSE_LONG,
+                    closed_pl: profit + realized_pl,
+                    exit_type: EXIST_TYPE.TRADE,
+                    trade_time: new Date(),
+                    color: "red",
+                }
+
+                const orderHistoryTPSLITF: OrderHistoryTPSLITF = {
+                    color: color,
+                    order_No: order_No,
+                    contracts: contracts,
+                    trade_type: trade_type,
+                    order_time: new Date(),
+                    status: ORDER_STATUS.FILLED,
+                    trigger_price: triggerType === TRIGGER_PRICE_TYPE.PROFIT ? trigger_price.tp : trigger_price.sl,
+                    trigger_price_type: triggerType,
+                    filled_actual_qty: {filled: fixedNumber(quantity_value, 2) as number, actual_qty: Number(quantity_value)},
+                    filled_price_order_price: {filled_price: currentTriggerPrice, order_price: order_price}
+                }
+
+                setOrderHistoryLimitMarket(prev => [orderHistory, ...prev])
+                serOrderHistoryTPSL(prev => [orderHistoryTPSLITF, ...prev])
+                setProfitLossHistory(prev => [profitLossHistory, ...prev])
+                console.log(profit, realized_pl, profit + realized_pl)
+                setBalanceUSDT(prev => prev + im + (profit + realized_pl))
+                setTradeHistory(prev => [tradeHistory, ...prev])
+                setCurrentOrdersTPSL(prev => prev = [])
+                setConfirmedLongPositionData(null)
+                setConfirmedLongPositionDataTPSL(null)
             }
         }
 
@@ -369,17 +448,69 @@ const Chart: React.FC = () => {
             if (currentCryptoData.close > Number(stop_trigger_price)) {
                 //@TODO create logic
             }
+
+            setCurrentOrdersTPSL(prev => prev.filter(order => order.order_No !== confirmedLongPositionDataTPSL.order_No))
         }
     }
 
     const trackPositionLiquidity = () => {
+        const isLongPositionTrackWorking = confirmedLongPositionData && confirmedLongPositionData.liquidity_price && confirmedLongPositionData.liquidity_price > currentCryptoData.close
+        const isShortPositionTrackWorking = confirmedShortPositionData && confirmedShortPositionData.liquidity_price && confirmedShortPositionData.liquidity_price < currentCryptoData.close
 
-        if (confirmedLongPositionData && confirmedLongPositionData.liquidity_price && confirmedLongPositionData.liquidity_price > currentCryptoData.close) {
-            //@TODO create logic
-        }
+        if (isLongPositionTrackWorking || isShortPositionTrackWorking) {
+            const currentPositionData = confirmedLongPositionData ? confirmedLongPositionData : confirmedShortPositionData
+            const currentPosition = confirmedLongPositionData ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT
+            const {calculated_quantity, im, entry_price, position, liquidity_price} = currentPositionData
 
-        if (confirmedShortPositionData && confirmedShortPositionData.liquidity_price && confirmedShortPositionData.liquidity_price < currentCryptoData.close) {
-            //@TODO create logic
+            let orderHistory: OrderHistoryLimitMarketITF = {
+                contracts: `${cryptoType}USDT`,
+                filled_total: {filled: calculated_quantity, total: calculated_quantity},
+                filled_price_order_price: {filled_price: Number(liquidity_price), order_price: "Market"},
+                trade_type: currentPosition === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
+                order_type: "Market",
+                status: ORDER_STATUS.FILLED,
+                order_No: uuidv4().split("-")[0],
+                order_time: new Date(),
+                color: currentPosition === TRADE_POSITION.LONG ? "red" : "green",
+            }
+
+            let tradeHistory: TradeHistoryITF = {
+                contracts: `${cryptoType}USDT`,
+                filled_total: {filled: calculated_quantity, total: calculated_quantity},
+                filled_price_order_price: {filled_price: Number(liquidity_price), order_price: "Market"},
+                trade_type: currentPosition === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
+                order_type: "Market",
+                filled_type: EXIST_TYPE.TRADE,
+                transaction_id: uuidv4().split("-")[0],
+                transaction_time: new Date(),
+                color: currentPosition === TRADE_POSITION.LONG ? "red" : "green",
+            }
+
+            let profitLossHistory: ProfitLossHistoryITF = {
+                contracts: `${cryptoType}USDT`,
+                quantity: calculated_quantity,
+                entry_price,
+                exit_price: Number(liquidity_price),
+                trade_type: position === TRADE_POSITION.LONG ? TRADE_TYPE.CLOSE_LONG : TRADE_TYPE.CLOSE_SHORT,
+                closed_pl: -im,
+                exit_type: EXIST_TYPE.TRADE,
+                trade_time: new Date(),
+                color: position === TRADE_POSITION.LONG ? "red" : "green",
+            }
+
+            setOrderHistoryLimitMarket(prev => [orderHistory, ...prev])
+            setProfitLossHistory(prev => [profitLossHistory, ...prev])
+            setTradeHistory(prev => [tradeHistory, ...prev])
+
+            if (currentPosition === TRADE_POSITION.LONG) {
+                setConfirmedLongPositionData(null)
+                setConfirmedLongPositionDataTPSL(null)
+            } else {
+                setConfirmedShortPositionData(null)
+                setConfirmedShortPositionDataTPSL(null)
+            }
+
+            showNotification(INFO.LIQUIDITY_EXCEED, "success", 0)
         }
     }
 

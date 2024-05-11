@@ -18,9 +18,12 @@ import "./style.scss"
 const ClosPositionMarket: React.FC = () => {
     const {setCurrentModal} = useFuturesTradingModalContext()
     const {cryptoType} = useSimulatorOptionsContext()
+    const {setBalanceUSDT} = useSimulatorPlayerInfoContext()
+
     const {
         confirmedLongPositionData,
         confirmedShortPositionData,
+        setCurrentOrdersTPSL,
         setTradeHistory,
         setProfitLossHistory,
         setOrderHistoryLimitMarket,
@@ -29,8 +32,6 @@ const ClosPositionMarket: React.FC = () => {
         setConfirmedLongPositionDataTPSL,
         setConfirmedShortPositionDataTPSL,
     } = useSimulatorTradingChartDetailsContext()
-
-    const {setBalanceUSDT} = useSimulatorPlayerInfoContext()
 
     const currentPositionData = confirmedLongPositionData ? confirmedLongPositionData : confirmedShortPositionData
     const currentPosition = confirmedLongPositionData ? TRADE_POSITION.LONG : TRADE_POSITION.SHORT
@@ -79,6 +80,7 @@ const ClosPositionMarket: React.FC = () => {
         setOrderHistoryLimitMarket(prev => [orderHistory, ...prev])
         setProfitLossHistory(prev => [profitLossHistory, ...prev])
         setTradeHistory(prev => [tradeHistory, ...prev])
+        setCurrentOrdersTPSL(() => [])
     }
 
     const confirmPreference = () => {

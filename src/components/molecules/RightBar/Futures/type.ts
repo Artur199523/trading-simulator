@@ -52,6 +52,7 @@ export interface PositionDataITF {
     name: TRADE_POSITION
     entry_price?: number
     id?: string
+    order_No?: string
 }
 
 export interface SettingsFieldsValidationITF {
