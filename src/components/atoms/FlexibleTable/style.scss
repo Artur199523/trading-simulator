@@ -40,6 +40,14 @@
     &_item {
       background: #101014;
 
+      &.left-padding {
+        & > td {
+          &:first-child {
+            padding-left: 20px !important;
+          }
+        }
+      }
+
       & > td {
         height: 52px;
         color: #fff;

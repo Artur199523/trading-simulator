@@ -7,8 +7,7 @@ import {FlexibleTableItemITF, FlexibleTableITF} from "./type";
 import {NoData} from "assets/svg";
 import "./style.scss"
 
-// @TODO continue table creating for future
-const FlexibleTable: React.FC<FlexibleTableITF> = ({header, body}) => {
+const FlexibleTable: React.FC<FlexibleTableITF> = ({header, body, isPadding = false}) => {
     return (
         <React.Fragment>
             <table className="flexible-table-container">
@@ -22,8 +21,8 @@ const FlexibleTable: React.FC<FlexibleTableITF> = ({header, body}) => {
                 <tbody className="flexible-table-container_body">
                 {body.length &&
                     <React.Fragment>
-                        {body.map((row, rowIndex) => (
-                            <tr className="flexible-table-container_body_item" key={rowIndex}>
+                        {body.map((row: any, rowIndex: number) => (
+                            <tr className={`flexible-table-container_body_item ${isPadding ? "left-padding" : ""}`} key={rowIndex}>
                                 {header.map((header, index) => (
                                     <td
                                         className={`flexible-table-container_body_item_text-block ${header.className ? header.className : ""}`}

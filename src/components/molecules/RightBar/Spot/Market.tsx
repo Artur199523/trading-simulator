@@ -1,9 +1,10 @@
 import React, {memo, useEffect, useState} from "react";
+import {v4 as uuidv4} from 'uuid'
 
 import {useSimulatorOptionsContext, useSimulatorPlayerInfoContext, useSimulatorTradingChartDetailsContext, useSimulatorTradingContext} from "layouts/providers";
 
-import {divide, ERROR, minus, multiply, plus, showNotification} from "utils";
-import {Input, InputRange, InputRangeSlider} from "components";
+import {divide, ERROR, minus, multiply, plus, showNotification, TRAD_TYPE_NAME, SPOT_ORDER_STATUS} from "utils";
+import {Input, InputRangeSlider} from "components";
 import TradeButton from "../TradeButton";
 
 import {ProcessT} from "layouts/providers/type";
@@ -26,7 +27,7 @@ const Market: React.FC = () => {
         switch (side) {
             case "buy":
                 if (balanceUSDT >= Number(value)) {
-                    let orderId = 0
+                    let orderId = uuidv4().split("-")[0]
 
                     setValue("")
                     setPercent(0)
@@ -35,24 +36,23 @@ const Market: React.FC = () => {
                     setBalanceUSDT(prev => minus(prev, value))
 
                     setMarketOrders(prev => {
-                        orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
-
-                        showNotification(`Order M${orderId} placed (BUY:Market)`, "info", 500)
-
-                        showNotification(`Order M${orderId} executed (BUY:Market)`, "info", 1000)
+                        // showNotification(`Order M${orderId} placed (BUY:Market)`, "info", 500)
+                        //
+                        // showNotification(`Order M${orderId} executed (BUY:Market)`, "info", 1000)
 
                         return [...prev, {
-                            symbol: "ETH",
-                            side: "Buy",
-                            type: "Market",
-                            quantity: divide(value, currentCryptoData.close),
-                            price: Number(value),
-                            limit_price: 0,
-                            stop_price: 0,
                             last: 0,
-                            status: "Filled",
+                            side: "Buy",
+                            stop_price: 0,
+                            limit_price: 0,
+                            color: "green",
                             order_id: orderId,
-                            date: new Date()
+                            symbol: cryptoType,
+                            price: Number(value),
+                            date: new Date(),
+                            type: TRAD_TYPE_NAME.MARKET,
+                            status: SPOT_ORDER_STATUS.FILLED,
+                            quantity: divide(value, currentCryptoData.close)
                         }]
                     })
 
@@ -71,7 +71,7 @@ const Market: React.FC = () => {
                 break
             case "sell":
                 if (balanceTradeableCrypto >= Number(value)) {
-                    let orderId = 0
+                    let orderId = uuidv4().split("-")[0]
 
                     setValue("")
                     setPercent(0)
@@ -80,24 +80,23 @@ const Market: React.FC = () => {
                     setBalanceTradeableCrypto(prev => minus(prev, value))
 
                     setMarketOrders(prev => {
-                        orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
-
-                        showNotification(`Order M${orderId} placed (SELL:Market)`, "info", 500)
-
-                        showNotification(`Order M${orderId} executed (SELL:Market)`, "info", 1000)
+                        // showNotification(`Order M${orderId} placed (SELL:Market)`, "info", 500)
+                        //
+                        // showNotification(`Order M${orderId} executed (SELL:Market)`, "info", 1000)
 
                         return [...prev, {
-                            symbol: "ETH",
+                            color: "red",
                             side: "Sell",
-                            type: "Market",
-                            quantity: multiply(value, currentCryptoData.close),
-                            price: Number(value),
+                            symbol: "ETH",
                             limit_price: 0,
                             stop_price: 0,
-                            last: Number(price),
-                            status: "Filled",
                             order_id: orderId,
-                            date: new Date()
+                            last: Number(price),
+                            price: Number(value),
+                            date: new Date(),
+                            type: TRAD_TYPE_NAME.MARKET,
+                            status: SPOT_ORDER_STATUS.FILLED,
+                            quantity: multiply(value, currentCryptoData.close)
                         }]
                     })
 
@@ -118,7 +117,6 @@ const Market: React.FC = () => {
     }
 
     const rangeHandle = (percent: number) => {
-        console.log(percent)
         const processBalance = process === "buy" ? balanceUSDT : balanceTradeableCrypto
         const calculatedPrice = divide(multiply(processBalance, percent), 100)
         const currentPrice = calculatedPrice === 0 ? "" : calculatedPrice.toString()

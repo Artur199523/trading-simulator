@@ -4,7 +4,7 @@
   background: #00121f;
   height: 300px;
 
-  &_futures-orders {
+  &_futures-orders, &_spot-orders {
     display: flex;
     flex-direction: column;
 
@@ -61,6 +61,7 @@
           height: 50px;
         }
       }
+
       .quantity {
         color: $long;
       }
@@ -73,10 +74,10 @@
         color: $short;
       }
     }
+  }
 
-    &_spot-order {
+  &_spot-order {
 
-    }
   }
 
   .order-contract {
@@ -99,7 +100,7 @@
   }
 }
 
-.order-trade-type {
+.order-trade-type, .order-side-type {
   &.green {
     color: $long;
   }

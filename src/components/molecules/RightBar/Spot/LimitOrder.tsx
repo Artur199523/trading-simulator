@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from "react";
+import {v4 as uuidv4} from 'uuid'
 
 import {
     useSimulatorTradingContext,
@@ -6,9 +7,9 @@ import {
     useSimulatorPlayerInfoContext,
     useSimulatorTradingChartDetailsContext
 } from "layouts/providers";
-import {divide, ERROR, minus, multiply, plus, showNotification} from "utils";
+import {divide, ERROR, minus, multiply, plus, showNotification, SPOT_ORDER_STATUS, TRAD_TYPE_NAME} from "utils";
 
-import {Input, InputRange, InputRangeSlider} from "components";
+import {Input, InputRangeSlider} from "components";
 import TradeButton from "../TradeButton";
 
 import {OrderITF, ProcessT} from "layouts/providers/type";
@@ -117,31 +118,30 @@ const LimitOrder: React.FC = () => {
                     const currentPrice = Number(multiply(currentCryptoData.close, quantityCrypto))
 
                     if (currentBalance >= currentPrice) {
-                        let orderId = 0
+                        let orderId = uuidv4().split("-")[0]
 
                         setBalanceTradeableCrypto(prev => plus(prev, quantityCrypto))
                         setBalanceUSDT(prev => minus(prev, currentPrice))
                         resetData()
 
                         setLimitOrders((prev: OrderITF[]) => {
-                            orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
-
-                            showNotification(`Order L${orderId} placed (BUY:Limit)`, "info", 500)
-
-                            showNotification(`Order L${orderId} executed (BUY:Limit)`, "info", 1000)
+                            // showNotification(`Order L${orderId} placed (BUY:Limit)`, "info", 500)
+                            //
+                            // showNotification(`Order L${orderId} executed (BUY:Limit)`, "info", 1000)
 
                             return [...prev, {
-                                symbol: cryptoType,
-                                side: "Buy",
-                                type: "Limit",
-                                quantity: Number(quantityCrypto),
-                                price: 0,
-                                limit_price: Number(currentCryptoData.close),
-                                stop_price: 0,
                                 last: 0,
-                                status: "Filled",
+                                price: 0,
+                                side: "Buy",
+                                stop_price: 0,
+                                color: "green",
+                                date: new Date(),
                                 order_id: orderId,
-                                date: new Date()
+                                symbol: cryptoType,
+                                type: TRAD_TYPE_NAME.LIMIT,
+                                quantity: Number(quantityCrypto),
+                                status: SPOT_ORDER_STATUS.FILLED,
+                                limit_price: Number(currentCryptoData.close)
                             }]
                         })
 
@@ -159,32 +159,31 @@ const LimitOrder: React.FC = () => {
                     }
                 } else {
                     if (balanceUSDT >= Number(totalPrice)) {
-                        let orderId = 0
+                        let orderId = uuidv4().split("-")[0]
 
                         setBalanceUSDT(prev => prev - Number(totalPrice))
                         resetData()
 
                         setLimitOrders((prev: OrderITF[]) => {
-                            orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
-
-                            showNotification(`Order L${orderId} placed (BUY:Limit)`, "info", 500)
+                            // showNotification(`Order L${orderId} placed (BUY:Limit)`, "info", 500)
 
                             return [...prev, {
-                                symbol: cryptoType,
-                                side: "Buy",
-                                type: "Limit",
-                                quantity: Number(quantityCrypto),
-                                price: 0,
-                                limit_price: Number(priceUSDT),
-                                stop_price: 0,
                                 last: 0,
-                                status: "Working",
+                                price: 0,
+                                side: "Buy",
+                                color: "green",
+                                stop_price: 0,
+                                date: new Date(),
                                 order_id: orderId,
-                                date: new Date()
+                                symbol: cryptoType,
+                                type: TRAD_TYPE_NAME.LIMIT,
+                                limit_price: Number(priceUSDT),
+                                quantity: Number(quantityCrypto),
+                                status: SPOT_ORDER_STATUS.WORKING
                             }]
                         })
                     } else {
-                        alert("Insufficient USDT balance")
+                        showNotification(ERROR.INSUFFICIENT, "error", 0)
                     }
                 }
                 break
@@ -192,31 +191,30 @@ const LimitOrder: React.FC = () => {
                 if (priceUSDT < currentCryptoData.close) {
 
                     if (balanceTradeableCrypto >= Number(quantityCrypto)) {
-                        let orderId = 0
+                        let orderId = uuidv4().split("-")[0]
 
                         setBalanceTradeableCrypto(prev => minus(prev, quantityCrypto))
                         setBalanceUSDT(prev => plus(prev, multiply(quantityCrypto, priceUSDT)))
                         resetData()
 
                         setLimitOrders((prev: OrderITF[]) => {
-                            orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
-
-                            showNotification(`Order L${orderId} placed (SELL:Limit)`, "info", 500)
-
-                            showNotification(`Order L${orderId} executed (SELL:Limit)`, "info", 1000)
+                            // showNotification(`Order L${orderId} placed (SELL:Limit)`, "info", 500)
+                            //
+                            // showNotification(`Order L${orderId} executed (SELL:Limit)`, "info", 1000)
 
                             return [...prev, {
-                                symbol: cryptoType,
-                                side: "Sell",
-                                type: "Limit",
-                                quantity: Number(quantityCrypto),
-                                price: 0,
-                                limit_price: Number(priceUSDT),
-                                stop_price: 0,
                                 last: 0,
-                                status: "Filled",
+                                price: 0,
+                                color: "red",
+                                side: "Sell",
+                                stop_price: 0,
+                                date: new Date(),
                                 order_id: orderId,
-                                date: new Date()
+                                symbol: cryptoType,
+                                type: TRAD_TYPE_NAME.LIMIT,
+                                limit_price: Number(priceUSDT),
+                                quantity: Number(quantityCrypto),
+                                status: SPOT_ORDER_STATUS.FILLED
                             }]
                         })
 
@@ -234,28 +232,27 @@ const LimitOrder: React.FC = () => {
                     }
                 } else {
                     if (balanceTradeableCrypto >= Number(quantityCrypto)) {
-                        let orderId = 0
+                        let orderId = uuidv4().split("-")[0]
 
                         setBalanceTradeableCrypto(prev => minus(prev, quantityCrypto))
                         resetData()
 
                         setLimitOrders((prev: OrderITF[]) => {
-                            orderId = prev.length ? prev[prev.length - 1].order_id + 1 : 1
-
-                            showNotification(`Order L${orderId} placed (SELL:Limit)`, "info", 500)
+                            // showNotification(`Order L${orderId} placed (SELL:Limit)`, "info", 500)
 
                             return [...prev, {
-                                symbol: cryptoType,
-                                side: "Sell",
-                                type: "Limit",
-                                quantity: Number(quantityCrypto),
-                                price: 0,
-                                limit_price: Number(priceUSDT),
-                                stop_price: 0,
                                 last: 0,
-                                status: "Working",
+                                price: 0,
+                                color: "red",
+                                side: "Sell",
+                                stop_price: 0,
+                                date: new Date(),
                                 order_id: orderId,
-                                date: new Date()
+                                symbol: cryptoType,
+                                type: TRAD_TYPE_NAME.LIMIT,
+                                limit_price: Number(priceUSDT),
+                                quantity: Number(quantityCrypto),
+                                status: SPOT_ORDER_STATUS.WORKING
                             }]
                         })
                     } else {

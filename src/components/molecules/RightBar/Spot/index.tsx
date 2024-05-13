@@ -15,17 +15,17 @@ const Spot: React.FC = () => {
             <div className="spot_tabs">
                 <TabItem activeTab={activeTab} id="limit" setActiveTab={setActiveTab}>Limit</TabItem>
                 <TabItem activeTab={activeTab} id="market" setActiveTab={setActiveTab}>Market</TabItem>
-                <TabItem activeTab={activeTab} id="stop-limit" setActiveTab={setActiveTab}>Stop-limit</TabItem>
+                {/*<TabItem activeTab={activeTab} id="stop-limit" setActiveTab={setActiveTab}>Stop-limit</TabItem>*/}
             </div>
             <Balance/>
             <TabContent id="limit" activeTab={activeTab}><LimitOrder/></TabContent>
             <TabContent id="market" activeTab={activeTab}><Market/></TabContent>
-            <TabContent id="stop-limit" activeTab={activeTab}>
-                <StopOrderLimitModalsProvider>
-                    <StopLimit/>
-                    <Modals/>
-                </StopOrderLimitModalsProvider>
-            </TabContent>
+            {/*<TabContent id="stop-limit" activeTab={activeTab}>*/}
+            {/*    <StopOrderLimitModalsProvider>*/}
+            {/*        <StopLimit/>*/}
+            {/*        <Modals/>*/}
+            {/*    </StopOrderLimitModalsProvider>*/}
+            {/*</TabContent>*/}
         </div>
     )
 }
