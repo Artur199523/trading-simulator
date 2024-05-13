@@ -197,7 +197,7 @@ const ConfirmPosition: React.FC = () => {
             contracts: `${cryptoType}USDT`,
             filled_total: {filled: calculatedQuantity, total: calculatedQuantity},
             filled_price_order_price: {filled_price: currentPrice, order_price: "Market"},
-            trade_type: positionType === TRADE_POSITION.LONG ? TRADE_TYPE.OPEN_LONG : TRADE_TYPE.CLOSE_SHORT,
+            trade_type: positionType === TRADE_POSITION.LONG ? TRADE_TYPE.OPEN_LONG : TRADE_TYPE.OPEN_SHORT,
             order_type: "Market",
             filled_type: EXIST_TYPE.TRADE,
             transaction_id: uuidv4().split("-")[0],
@@ -262,6 +262,8 @@ const ConfirmPosition: React.FC = () => {
                     setConfirmedShortPositionData({
                         ...gropedData,
                     })
+
+                    setBalanceUSDT(prev => minus(prev, Number(parseInt(orderCost))))
                     setConfirmedShortPositionDataHistory(prev => [...prev, gropedData])
                 } else {
                     setBalanceUSDT(prev => minus(prev, Number(parseInt(orderCost))))

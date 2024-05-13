@@ -4,16 +4,18 @@ import {v4 as uuidv4} from 'uuid'
 
 import {useSimulatorOptionsContext, useSimulatorPlayerInfoContext, useSimulatorToolsContext, useSimulatorTradingChartDetailsContext} from "layouts/providers";
 import {
-    multiply,
-    plus,
-    showNotification,
-    calculateProfitPriceByTrigger,
-    calculationChange,
-    TRADE_POSITION,
+    INFO,
+    EXIST_TYPE,
     TRADE_TYPE,
     ORDER_STATUS,
-    EXIST_TYPE,
-    INFO, TRIGGER_PRICE_TYPE, fixedNumber, TRAD_TYPE
+    TRADE_POSITION,
+    TRIGGER_PRICE_TYPE,
+    plus,
+    multiply,
+    fixedNumber,
+    showNotification,
+    calculationChange,
+    calculateProfitPriceByTrigger,
 } from "utils";
 import {candleStickOptions, chartOptions, histogramApplyOptions, histogramOptions} from "./options";
 import {getCryptoTradingHistory} from "store/simulator/actions";
@@ -21,7 +23,7 @@ import {useAppDispatch, useAppSelector} from "store";
 
 import UnrealizedItem from "../RightBar/Futures/Components/UnrealizedItem";
 
-import {ConfirmedPositionData, OrderHistoryLimitMarketITF, OrderHistoryTPSLITF, ProfitLossHistoryITF, TradeHistoryITF} from "../../../layouts/providers/type";
+import {ConfirmedPositionData, OrderHistoryLimitMarketITF, OrderHistoryTPSLITF, ProfitLossHistoryITF, TradeHistoryITF} from "layouts/providers/type";
 import {HistoryItem, TradingVolumeITF} from "store/simulator/type";
 
 import "./style.scss"
@@ -38,12 +40,12 @@ const Chart: React.FC = () => {
         confirmedShortPositionData,
         confirmedLongPositionData,
         stopLimitOrdersMarks,
+        currentOrdersTPSL,
         currentCryptoData,
         marketOrdersMarks,
         limitOrdersMarks,
         stopLimitOrders,
         limitOrders,
-        currentOrdersTPSL,
         setConfirmedShortPositionDataTPSL,
         setConfirmedLongPositionDataTPSL,
         setConfirmedShortPositionData,
@@ -429,7 +431,6 @@ const Chart: React.FC = () => {
                 setOrderHistoryLimitMarket(prev => [orderHistory, ...prev])
                 serOrderHistoryTPSL(prev => [orderHistoryTPSLITF, ...prev])
                 setProfitLossHistory(prev => [profitLossHistory, ...prev])
-                console.log(profit, realized_pl, profit + realized_pl)
                 setBalanceUSDT(prev => prev + im + (profit + realized_pl))
                 setTradeHistory(prev => [tradeHistory, ...prev])
                 setCurrentOrdersTPSL(prev => prev = [])
@@ -440,16 +441,75 @@ const Chart: React.FC = () => {
 
         if (confirmedShortPositionDataTPSL) {
             const {stop_trigger_price, profit_trigger_price} = confirmedShortPositionDataTPSL
+            const {calculated_quantity, entry_price, leverage, value, realized_pl, im} = confirmedShortPositionData
+            const {color, order_No, contracts, trade_type, trigger_price, quantity_value, order_price} = currentOrdersTPSL[0]
 
-            if (currentCryptoData.close < Number(profit_trigger_price)) {
-                //@TODO create logic
+            const isProfitTriggerPriceWorking = Number(profit_trigger_price) && currentCryptoData.close < Number(profit_trigger_price)
+            const isStopTriggerPriceWorking = Number(stop_trigger_price) && currentCryptoData.close > Number(stop_trigger_price)
+
+            if (isProfitTriggerPriceWorking || isStopTriggerPriceWorking) {
+                const triggerType = isProfitTriggerPriceWorking ? TRIGGER_PRICE_TYPE.PROFIT : TRIGGER_PRICE_TYPE.STOP
+                const currentTriggerPrice = triggerType === TRIGGER_PRICE_TYPE.PROFIT ? profit_trigger_price : stop_trigger_price
+                const profit = calculateProfitPriceByTrigger(currentTriggerPrice, entry_price, leverage, value)
+
+                const orderHistory: OrderHistoryLimitMarketITF = {
+                    contracts: `${cryptoType}USDT`,
+                    filled_total: {filled: calculated_quantity, total: calculated_quantity},
+                    filled_price_order_price: {filled_price: Number(currentTriggerPrice), order_price: "Market"},
+                    trade_type: TRADE_TYPE.CLOSE_SHORT,
+                    order_type: "Market",
+                    status: ORDER_STATUS.FILLED,
+                    order_No: uuidv4().split("-")[0],
+                    order_time: new Date(),
+                    color: "green",
+                }
+
+                const tradeHistory: TradeHistoryITF = {
+                    contracts: `${cryptoType}USDT`,
+                    filled_total: {filled: calculated_quantity, total: calculated_quantity},
+                    filled_price_order_price: {filled_price: Number(currentTriggerPrice), order_price: "Market"},
+                    trade_type: TRADE_TYPE.CLOSE_SHORT,
+                    order_type: "Market",
+                    filled_type: EXIST_TYPE.TRADE,
+                    transaction_id: uuidv4().split("-")[0],
+                    transaction_time: new Date(),
+                    color: "green",
+                }
+
+                const profitLossHistory: ProfitLossHistoryITF = {
+                    contracts: `${cryptoType}USDT`,
+                    quantity: calculated_quantity,
+                    entry_price,
+                    exit_price: Number(currentTriggerPrice),
+                    trade_type: TRADE_TYPE.CLOSE_SHORT,
+                    closed_pl: Number(((profit ? -profit : +profit) + realized_pl).toFixed(2)),
+                    exit_type: EXIST_TYPE.TRADE,
+                    trade_time: new Date(),
+                    color: "green",
+                }
+
+                const orderHistoryTPSLITF: OrderHistoryTPSLITF = {
+                    color: color,
+                    order_No: order_No,
+                    contracts: contracts,
+                    trade_type: trade_type,
+                    order_time: new Date(),
+                    status: ORDER_STATUS.FILLED,
+                    trigger_price: triggerType === TRIGGER_PRICE_TYPE.PROFIT ? trigger_price.tp : trigger_price.sl,
+                    trigger_price_type: triggerType,
+                    filled_actual_qty: {filled: fixedNumber(quantity_value, 2) as number, actual_qty: Number(quantity_value)},
+                    filled_price_order_price: {filled_price: currentTriggerPrice, order_price: order_price}
+                }
+
+                setOrderHistoryLimitMarket(prev => [orderHistory, ...prev])
+                serOrderHistoryTPSL(prev => [orderHistoryTPSLITF, ...prev])
+                setProfitLossHistory(prev => [profitLossHistory, ...prev])
+                setBalanceUSDT(prev => prev + im + ((profit ? -profit : +profit) + realized_pl))
+                setTradeHistory(prev => [tradeHistory, ...prev])
+                setCurrentOrdersTPSL(prev => prev = [])
+                setConfirmedShortPositionData(null)
+                setConfirmedShortPositionDataTPSL(null)
             }
-
-            if (currentCryptoData.close > Number(stop_trigger_price)) {
-                //@TODO create logic
-            }
-
-            setCurrentOrdersTPSL(prev => prev.filter(order => order.order_No !== confirmedLongPositionDataTPSL.order_No))
         }
     }
 
