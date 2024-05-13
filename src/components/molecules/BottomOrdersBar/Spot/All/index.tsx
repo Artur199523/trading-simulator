@@ -24,14 +24,14 @@ const All: React.FC<OrderTableITF> = ({removeOrder}) => {
     const convertedData = () => {
         const data = interruptionRef([...marketOrders, ...limitOrders, ...filledStopData, ...workingStopData, ...cancelledStopData])
 
-        return data.map(order => {
+        return data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(order => {
             const {date, status, side, color} = order
             order.date = format(date, "yyyy-MMM-dd hh:mm:ss")
             order.action = status === SPOT_ORDER_STATUS.WORKING ? <button onClick={() => removeOrder(order)}>Cancel</button> : ""
             order.side = <SideType value={side} color={color}/>
 
             return order
-        })
+        }).sort((a, b) => new Date(b.date).getDate() > new Date(a.date).getDate());
     }
 
     return <FlexibleTable

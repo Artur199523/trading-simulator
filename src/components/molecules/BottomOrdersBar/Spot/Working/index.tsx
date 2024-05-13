@@ -25,7 +25,7 @@ const Working: React.FC<OrderTableITF> = ({removeOrder}) => {
     const convertedData = () => {
         const data = interruptionRef([...workingLimitData, ...workingMarketData, ...workingStopData, ...workingStopPredData])
 
-        return data.map(order => {
+        return data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(order => {
             const {date, side, color} = order
 
             order.date = format(date, "yyyy-MMM-dd hh:mm:ss")

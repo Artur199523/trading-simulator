@@ -19,7 +19,7 @@ const Cancelled: React.FC = () => {
     const convertedData = () => {
         const data = interruptionRef([...cancelledLimitData, ...cancelledStopData])
 
-        return data.map(order => {
+        return data.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(order => {
             const {date, side, color} = order
 
             order.date = format(date, "yyyy-MMM-dd hh:mm:ss")
