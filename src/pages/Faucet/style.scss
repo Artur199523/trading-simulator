@@ -1,0 +1,32 @@
+.faucet {
+  padding: 50px;
+
+  h1 {
+    color: white;
+    text-align: center;
+    font-size: calc(1.375rem + 1.5vw);
+  }
+
+  &_input-block {
+    padding: 30px;
+    margin: 20px auto;
+    width: 60%;
+    border-radius: 25px;
+    background: white;
+    height: 200px;
+
+    input {
+      color: #000a11;
+    }
+
+    button {
+      width: 200px;
+      margin: auto;
+    }
+
+    p {
+      margin-top: 20px;
+      text-align: center;
+    }
+  }
+}
