@@ -1,4 +1,5 @@
 import {SPOT_ORDERS_HEADERS} from "../enums/spot";
+import {SpotMarketInputsFieldsITF} from "./type";
 
 export const SPOT_ALL_ORDERS = [
     {value: SPOT_ORDERS_HEADERS.SYMBOL, displayName: "Symbol"},
@@ -14,3 +15,14 @@ export const SPOT_ALL_ORDERS = [
 ]
 
 export const SPOT_WORKING_ACTION = {value: SPOT_ORDERS_HEADERS.ACTION, displayName: "Action"}
+
+export const SPOT_MARKET_INPUT_FIELDS: SpotMarketInputsFieldsITF = {
+    buy: {
+        order_value: "",
+        percent: 0
+    },
+    sell: {
+        order_value: "",
+        percent: 0
+    }
+}

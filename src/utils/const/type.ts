@@ -20,3 +20,14 @@ export interface OrderHistoryMarketLimitITF {
     value: ORDER_HISTORY_MARKET_LIMIT_HEADERS
     displayName: string
 }
+
+export interface SpotMarketInputsFieldsITF {
+    buy: {
+        order_value: string,
+        percent: number
+    },
+    sell: {
+        order_value: string,
+        percent: number
+    }
+}
